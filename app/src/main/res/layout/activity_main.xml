@@ -97,8 +97,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/stdBorderWidth"
-                android:backgroundTint="@color/colorAccent" />
-
+                android:background="@color/colorAccent" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -106,11 +105,12 @@
                 android:padding="@dimen/stdPadding"
                 android:text="@string/desc"
                 android:textSize="@dimen/stdTextSize" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/stdBorderWidth"
-                android:backgroundTint="@color/colorAccent" />
+                android:background="@color/colorAccent" />
+
+
 
             <EditText
                 android:id="@+id/editMessage"
