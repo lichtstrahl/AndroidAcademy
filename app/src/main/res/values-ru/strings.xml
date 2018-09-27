@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AndroidAcademy</string>
+    <string name="name">Игорь Смирнов</string>
+    <string name="bmstu">МГТУ им. Н.Э. Баумана</string>
+    <string name="atlant">ХК Атлант</string>
+    <string name="android_academy">Android Academy</string>
+    <string name="send">Отправить сообщение</string>
+    <string name="enter">Написать сообщение...</string>
+    <string name="desc_igor">Изображение Игоря</string>
+    <string name="desc_mbstu">Иконка МГТУ им. Н.Э. Баумана</string>
+    <string name="desc_academy">Иконка Андроид-Академии</string>
+    <string name="desc_atlant">Иконка ХК Атлант</string>
+    <string name="feedback">Обратная связь</string>
+    <string name="notFoundEmailActiviy">Не найдено приложений, для отправки почты</string>
+</resources>

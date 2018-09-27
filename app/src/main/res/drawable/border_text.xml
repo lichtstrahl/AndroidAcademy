@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+
+
+    <shape
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:shape="rectangle">
+
+        <stroke
+            android:color="@color/actionBar1"
+            android:width="@dimen/stdBorderWidth">
+        </stroke>
+
+        <corners
+            android:topLeftRadius="2dp"
+            android:bottomRightRadius="2dp">
+        </corners>
+    </shape>
+
+</layer-list>

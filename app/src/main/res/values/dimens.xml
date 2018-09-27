@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="avatar_h">300dp</dimen>
+    <dimen name="icon">28dp</dimen>
+    <dimen name="stdPadding">8dp</dimen>
+    <dimen name="stdTextSize">16sp</dimen>
+    <dimen name="buttonTextSize">20sp</dimen>
+    <dimen name="stdBorderWidth">2dp</dimen>
+    <dimen name="stdButtonSize">40dp</dimen>
+</resources>

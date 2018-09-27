@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">AndroidAcademy</string>
+    <string name="name">Igor Smirnov</string>
+
+    <string name="NULL" translatable="false">NULL</string>
+
+    <string name="bmstu">BMSTU</string>
+    <string name="android_academy">Android Academy</string>
+    <string name="atlant">HC Atlant</string>
+    <string name="desc" translatable="false">Игорь является начинающим Android-разработчиком. Совмещает самообучение и учебу в МГТУ им. Н.Э. Баумана. Любимыми языками программирования Игорь называет Java и C/C++. Также является активным фанатом хоккейного клуба Атлант (Московская Область). Если у вас есть замечания или предложения по используемому приложению, вы всегда можете с ним связаться с помощью формы ниже. Если вы обнаружите какие-либо проблемы или просто хотите сказать "Привет", обязательно пишите!</string>
+    <string name="send">send message</string>
+    <string name="enter">Enter a message...</string>
+
+    <!-- Content Description -->
+    <string name="desc_igor">Igor Avatar</string>
+    <string name="desc_mbstu">BMSTU Icon</string>
+    <string name="desc_academy">Android Academy icon</string>
+    <string name="desc_atlant">Atlant icon</string>
+    <string name="desc_vk" translatable="false">VK</string>
+    <string name="desc_telegram" translatable="false">Telegram</string>
+
+    <string name="feedback">Feedback</string>
+    <string name="notFoundEmailActiviy">Not found activity for Email</string>
+</resources>
