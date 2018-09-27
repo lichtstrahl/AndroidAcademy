@@ -17,9 +17,9 @@ public class ListenerEditText implements TextWatcher {
         subject = PublishSubject.create();
         ed.addTextChangedListener(this);
         Disposable disposable = subject.subscribe(
-                (x)-> view.setVisibility(x.isEmpty() ? View.INVISIBLE : View.VISIBLE),
-                (e)-> Log.e(TAG, e.getMessage()));
-
+                x -> view.setVisibility(x.isEmpty() ? View.INVISIBLE : View.VISIBLE),
+                e -> Log.e(TAG, e.getMessage())
+        );
     }
 
     @Override
