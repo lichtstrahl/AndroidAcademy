@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.editMessage)
     EditText editMessage;
 
+    @BindView(R.id.buttonSend)
+    Button buttonSend;
     @OnClick(R.id.buttonSend)
     public void sendClick() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -30,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonGoogle)
     public void googleClick() {
-        openBrowser("https://plus.google.com/u/0/101741358658381124829");
+        openBrowser(getString(R.string.urlGooglePlusAccount));
     }
 
     @OnClick(R.id.buttonVK)
     public void vkClick() {
-        openBrowser("https://vk.com/igorsmirnov0");
+        openBrowser(getString(R.string.urlVKAccount));
     }
 
     private void openBrowser(String url) {
@@ -49,6 +52,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTitle(R.string.name);
         ButterKnife.bind(this);
+        new ListenerEditText(editMessage, buttonSend);
     }
-
 }

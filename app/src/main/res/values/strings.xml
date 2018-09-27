@@ -21,4 +21,6 @@
 
     <string name="feedback">Feedback</string>
     <string name="notFoundEmailActiviy">Not found activity for Email</string>
+    <string name="urlGooglePlusAccount">https://plus.google.com/u/0/101741358658381124829</string>
+    <string name="urlVKAccount">https://vk.com/igorsmirnov0</string>
 </resources>
