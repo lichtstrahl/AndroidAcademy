@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends AppCompatActivity {
+public class AboutActivity extends AppCompatActivity {
     @BindView(R.id.editMessage)
     EditText editMessage;
 
