@@ -1,0 +1,19 @@
+
+nsquid:S1450"RRemove the "TAG" field and declare it as a local variable in the relevant methods.(äè¦Â8“õ²¯â,
+=squid:S1170"!Make this final field static too.(ƒ¢Ã×8“õ²¯â,
+=squid:S1170"!Make this final field static too.(Äßè€8“õ²¯â,
+Bsquid:S1170"!Make this final field static too.(Á—ıÌüÿÿÿÿ8“õ²¯â,
+=squid:S1170"!Make this final field static too.(ø…ÑÂ8“õ²¯â,
+Bsquid:S1170"!Make this final field static too.(ãı”Êÿÿÿÿÿ8“õ²¯â,
+Bsquid:S1170"!Make this final field static too.(åÓßùÿÿÿÿ8“õ²¯â,
+=squid:S1170"!Make this final field static too.(ëÿóØ8“õ²¯â,
+Bsquid:S1170"!Make this final field static too.(³é¹¯ûÿÿÿÿ8“õ²¯â,
+ksquid:S00116"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(äè¦Â8“õ²¯â,
+xsquid:S00116"[Rename this field "KEY_INTENT_TITLE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒ¢Ã×8“õ²¯â,
+|squid:S00116"_Rename this field "KEY_INTENT_IMAGE_URL" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Äßè€8“õ²¯â,
+…squid:S00116"cRename this field "KEY_INTENT_CATEGORY_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Á—ıÌüÿÿÿÿ8“õ²¯â,
+~squid:S00116"aRename this field "KEY_INTENT_CATEGORY_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ø…ÑÂ8“õ²¯â,
+|squid:S00116"ZRename this field "KEY_INTENT_DATE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ãı”Êÿÿÿÿÿ8“õ²¯â,
+squid:S00116"]Rename this field "KEY_INTENT_PREVIEW" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(åÓßùÿÿÿÿ8“õ²¯â,
+wsquid:S00116"ZRename this field "KEY_INTENT_FULL" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ëÿóØ8“õ²¯â,
+Zsquid:UselessImportCheck"1Remove this unused import 'java.text.DateFormat'.(÷Œá¼8“õ²¯â,

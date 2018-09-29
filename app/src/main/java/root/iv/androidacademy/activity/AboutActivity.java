@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +11,8 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import root.iv.androidacademy.ListenerEditText;
+import root.iv.androidacademy.R;
 
 
 public class AboutActivity extends AppCompatActivity {

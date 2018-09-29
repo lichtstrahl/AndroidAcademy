@@ -13,4 +13,8 @@
     <string name="desc_atlant">Иконка ХК Атлант</string>
     <string name="feedback">Обратная связь</string>
     <string name="notFoundEmailActiviy">Не найдено приложений, для отправки почты</string>
+    <string name="hello">Привет</string>
+    <string name="news">Новости</string>
+    <string name="about">Об авторе</string>
+    <string name="newsImage">Изображение новости</string>
 </resources>

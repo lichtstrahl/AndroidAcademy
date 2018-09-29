@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".MainActivity">
+        tools:context=".activity.AboutActivity">
 
         <ImageView
             android:layout_width="match_parent"
@@ -43,11 +43,10 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/border_text"
                     android:paddingEnd="@dimen/stdPadding"
                     android:paddingStart="@dimen/stdPadding"
                     android:text="@string/bmstu"
-                    android:textSize="@dimen/stdTextSize" />
+                    android:textSize="@dimen/middleText" />
             </LinearLayout>
 
             <LinearLayout
@@ -69,7 +68,7 @@
                     android:paddingEnd="@dimen/stdPadding"
                     android:paddingStart="@dimen/stdPadding"
                     android:text="@string/android_academy"
-                    android:textSize="@dimen/stdTextSize" />
+                    android:textSize="@dimen/middleText" />
             </LinearLayout>
 
             <LinearLayout
@@ -91,7 +90,7 @@
                     android:paddingEnd="@dimen/stdPadding"
                     android:paddingStart="@dimen/stdPadding"
                     android:text="@string/atlant"
-                    android:textSize="@dimen/stdTextSize" />
+                    android:textSize="@dimen/middleText" />
             </LinearLayout>
 
             <View
@@ -104,7 +103,7 @@
                 android:layout_weight="2"
                 android:padding="@dimen/stdPadding"
                 android:text="@string/desc"
-                android:textSize="@dimen/stdTextSize" />
+                android:textSize="@dimen/middleText" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/stdBorderWidth"
