@@ -50,4 +50,5 @@ public class NewsDetailsActivity extends AppCompatActivity {
         Glide.with(this).load(newsItem.getImageUrl()).into(viewImage);
         layout.setBackgroundColor(getResources().getColor(newsItem.getCategory().getColor()));
     }
+    
 }
