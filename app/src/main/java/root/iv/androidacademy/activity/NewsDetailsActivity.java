@@ -18,7 +18,7 @@ import root.iv.androidacademy.R;
 public class NewsDetailsActivity extends AppCompatActivity{
     public static void start(Context context, NewsItem item) {
         Intent intent = new Intent(context, NewsDetailsActivity.class);
-        item.putToExtra(intent);
+        intent.putExtra(NewsItem.INTENT_TAG, item);
         context.startActivity(intent);
     }
 
@@ -33,15 +33,13 @@ public class NewsDetailsActivity extends AppCompatActivity{
     @BindView(R.id.layoutBG)
     ConstraintLayout layout;
 
-    private NewsItem newsItem = new NewsItem();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
         ButterKnife.bind(this);
 
-        newsItem.loadFromExtra(getIntent());
+        NewsItem newsItem = getIntent().getParcelableExtra(NewsItem.INTENT_TAG);
         setTitle(newsItem.getCategory().getName());
         viewTitle.setText(newsItem.getTitle());
         viewDate.setText(newsItem.getPublishDateString());

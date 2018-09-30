@@ -1,34 +1,23 @@
 package root.iv.androidacademy;
 
-import android.content.Intent;
-import android.util.Log;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class NewsItem {
-    private final String TAG = getClass().getName();
-    public  final String KEY_INTENT_TITLE = "KEY_INSTANCE_TITLE";
-    private String title;
-    public final String KEY_INTENT_IMAGE_URL = "KEY_INSTANCE_IMAGE_URL";
-    private String imageUrl;
-    public final String KEY_INTENT_CATEGORY_NAME = "KEY_INSTANCE_CATEGORY_NAME";
-    public final String KEY_INTENT_CATEGORY_ID = "KEY_INSTANCE_CATEGORY_ID";
-    public final String KEY_INTENT_CATEGORY_COLOR = "KEY_INTENT_CATEGORY_COLOR";
-    private Category category;
-    public final String KEY_INTENT_DATE = "KEY_INTENT_DATE";
-    private Date publishDate;
-    public final String KEY_INTENT_PREVIEW = "KEY_INTENT_PREVIEW";
-    private String previewText;
-    public final String KEY_INTENT_FULL = "KEY_INTENT_FULL";
-    private String fullText;
+public class NewsItem implements Parcelable {
     private final String dateFormat = "E dd:MM:yyyy KK:mm a";
+    public static final String INTENT_TAG = "NewsItem";
+    private String title;
+    private String imageUrl;
+    private String previewText;
+    private String fullText;
+    private Category category;
+    private Date publishDate;
 
     public NewsItem() {
-
     }
     public NewsItem(String title, String imageUrl, Category category, Date publishDate, String previewText, String fullText) {
         this.title = title;
@@ -38,6 +27,18 @@ public class NewsItem {
         this.previewText = previewText;
         this.fullText = fullText;
     }
+
+    public NewsItem(Parcel source) {
+        String data[] = new String[4];
+        source.readStringArray(data);
+        title = data[0];
+        imageUrl = data[1];
+        previewText = data[2];
+        fullText = data[3];
+        category = (Category)source.readValue(Category.class.getClassLoader());
+        publishDate = (Date)source.readValue(Date.class.getClassLoader());
+    }
+
 
     public String getTitle() {
         return title;
@@ -68,32 +69,27 @@ public class NewsItem {
         return dFormat.format(publishDate);
     }
 
-    public void putToExtra(Intent intent) {
-        intent.putExtra(KEY_INTENT_TITLE, title);
-        intent.putExtra(KEY_INTENT_IMAGE_URL, imageUrl);
-        intent.putExtra(KEY_INTENT_CATEGORY_NAME, category.getName());
-        intent.putExtra(KEY_INTENT_CATEGORY_ID, category.getId());
-        intent.putExtra(KEY_INTENT_CATEGORY_COLOR, category.getColor());
-        intent.putExtra(KEY_INTENT_DATE, getPublishDateString());
-        intent.putExtra(KEY_INTENT_PREVIEW, previewText);
-        intent.putExtra(KEY_INTENT_FULL, fullText);
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[] {title, imageUrl, previewText, fullText});
+        dest.writeValue(category);
+        dest.writeValue(publishDate);
     }
-    public void loadFromExtra(Intent intent) {
-        try {
-            title = intent.getStringExtra(KEY_INTENT_TITLE);
-            imageUrl = intent.getStringExtra(KEY_INTENT_IMAGE_URL);
-            // TODO Сделай что-нибудь с этим! Это кастыль
-            category = new Category(
-                    intent.getIntExtra(KEY_INTENT_CATEGORY_ID, 0),
-                    intent.getStringExtra(KEY_INTENT_CATEGORY_NAME),
-                    intent.getIntExtra(KEY_INTENT_CATEGORY_COLOR, 0)
-            );
-            publishDate = new SimpleDateFormat(dateFormat, Locale.getDefault()).parse(intent.getStringExtra(KEY_INTENT_DATE));
-            previewText = intent.getStringExtra(KEY_INTENT_PREVIEW);
-            fullText = intent.getStringExtra(KEY_INTENT_FULL);
-        } catch (ParseException e) {
-            Log.e(TAG, e.getMessage());
+
+    public static final Parcelable.Creator<NewsItem> CREATOR = new Parcelable.Creator<NewsItem>() {
+        @Override
+        public NewsItem createFromParcel(Parcel source) {
+            return new NewsItem(source);
         }
-    }
+
+        @Override
+        public NewsItem[] newArray(int size) {
+            return new NewsItem[size];
+        }
+    };
 }
