@@ -2,7 +2,6 @@ package root.iv.androidacademy;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,7 +79,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         private final TextView  viewTitle;
         private final TextView viewPreview;
         private final TextView viewDate;
-        private final ConstraintLayout layout;
+        private final ViewGroup layout;
         NewsViewHolder(View item) {
             super(item);
             layout = item.findViewById(R.id.layoutBG);

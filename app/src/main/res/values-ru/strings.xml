@@ -17,4 +17,5 @@
     <string name="news">Новости</string>
     <string name="about">Об авторе</string>
     <string name="newsImage">Изображение новости</string>
+    <string name="exit">Выход</string>
 </resources>

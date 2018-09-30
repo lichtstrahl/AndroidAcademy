@@ -21,7 +21,7 @@ import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.R;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
-    private final String TAG = getClass().getName();
+    private static final String TAG = "NewsListActivity";
     RecyclerView listNews;
 
     @Override
@@ -39,7 +39,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 .buildRequestManager(Glide.with(this))
                 .buildListener(this)
                 .build()
-
         );
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             listNews.setLayoutManager(new LinearLayoutManager(this));
@@ -67,6 +66,9 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.itemExit:
+                finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -76,6 +78,5 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.i(TAG, String.valueOf(newConfig.orientation));
-
     }
 }

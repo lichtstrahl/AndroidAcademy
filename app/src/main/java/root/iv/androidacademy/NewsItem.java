@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class NewsItem implements Parcelable {
-    private final String dateFormat = "E dd:MM:yyyy KK:mm a";
+    private static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
     public static final String INTENT_TAG = "NewsItem";
     private String title;
     private String imageUrl;
@@ -29,7 +29,7 @@ public class NewsItem implements Parcelable {
     }
 
     public NewsItem(Parcel source) {
-        String data[] = new String[4];
+        String[] data = new String[4];
         source.readStringArray(data);
         title = data[0];
         imageUrl = data[1];
@@ -65,7 +65,7 @@ public class NewsItem implements Parcelable {
     }
 
     public String getPublishDateString() {
-        SimpleDateFormat dFormat = new SimpleDateFormat(dateFormat, Locale.getDefault());
+        SimpleDateFormat dFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         return dFormat.format(publishDate);
     }
 

@@ -30,7 +30,8 @@
     <string name="newsImage">News image</string>
 
     <!-- Sample data -->
-    <string name="sampleCategory">Criminal</string>
-    <string name="sampleTitle">Police warn daredevil cliff jumpers who are \'risking their lives for likes\'</string>
-    <string name="samplePreview">Police in Los Angeles say they are spending hundreds of thousands of dollars airlifting cliff jumpers out of dangerous spots.</string>
+    <string name="sampleCategory" translatable="false">Criminal</string>
+    <string name="sampleTitle" translatable="false">Police warn daredevil cliff jumpers who are \'risking their lives for likes\'</string>
+    <string name="samplePreview" translatable="false">Police in Los Angeles say they are spending hundreds of thousands of dollars airlifting cliff jumpers out of dangerous spots.</string>
+    <string name="exit">Exit</string>
 </resources>

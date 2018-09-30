@@ -6,17 +6,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 
 public class ListenerEditText implements TextWatcher {
-    private final String TAG = getClass().getName();
+    private static final String TAG = "ListenerEditText";
     private PublishSubject<String> subject;
 
     public ListenerEditText(EditText ed, View view) {
         subject = PublishSubject.create();
         ed.addTextChangedListener(this);
-        Disposable disposable = subject.subscribe(
+        subject.subscribe(
                 x -> view.setVisibility(x.isEmpty() ? View.INVISIBLE : View.VISIBLE),
                 e -> Log.e(TAG, e.getMessage())
         );
