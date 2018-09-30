@@ -8,18 +8,19 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-import java.util.ArrayList;
+import com.bumptech.glide.Glide;
 
 import butterknife.ButterKnife;
 import root.iv.androidacademy.DataUtils;
 import root.iv.androidacademy.NewsAdapter;
-import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
 
-public class NewsListActivity extends AppCompatActivity {
+public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = getClass().getName();
     RecyclerView listNews;
 
@@ -30,11 +31,26 @@ public class NewsListActivity extends AppCompatActivity {
         setTitle(R.string.news);
         ButterKnife.bind(this);
         listNews = findViewById(R.id.listNews);
-        listNews.setAdapter(new NewsAdapter(this, DataUtils.generateNews()));
+        listNews.setAdapter(
+                NewsAdapter.getBuilderNewsAdapter()
+                .buildListNews(DataUtils.generateNews())
+                .buildResources(getResources())
+                .buildInflater(LayoutInflater.from(this))
+                .buildRequestManager(Glide.with(this))
+                .buildListener(this)
+                .build()
+
+        );
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             listNews.setLayoutManager(new LinearLayoutManager(this));
         else
             listNews.setLayoutManager(new GridLayoutManager(this, 2));
+    }
+
+    @Override
+    public void onClick(View v) {
+        int pos = listNews.getChildAdapterPosition(v);
+        NewsDetailsActivity.start(this, ((NewsAdapter) listNews.getAdapter()).getItem(pos));
     }
 
     @Override

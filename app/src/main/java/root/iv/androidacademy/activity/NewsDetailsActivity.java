@@ -15,8 +15,7 @@ import butterknife.ButterKnife;
 import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
 
-public class NewsDetailsActivity extends AppCompatActivity {
-
+public class NewsDetailsActivity extends AppCompatActivity{
     public static void start(Context context, NewsItem item) {
         Intent intent = new Intent(context, NewsDetailsActivity.class);
         item.putToExtra(intent);
