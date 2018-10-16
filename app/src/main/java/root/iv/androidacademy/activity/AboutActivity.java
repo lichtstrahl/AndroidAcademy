@@ -70,12 +70,12 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         setTitle(R.string.name);
         ButterKnife.bind(this);
-//        Glide.with(this).load(R.drawable.igor_smirnov).into(imageAvatar);
-//        Glide.with(this).load(R.drawable.ic_bmstu).into(imageBMSTU);
-//        Glide.with(this).load(R.drawable.ic_android_academy).into(imageAcademy);
-//        Glide.with(this).load(R.drawable.ic_atlant).into(imageAtlant);
-//        Glide.with(this).load(R.drawable.ic_vk).into(imageVK);
-//        Glide.with(this).load(R.drawable.ic_googleplus).into(imageGoogle);
+        Glide.with(this).load(R.drawable.igor_smirnov).into(imageAvatar);
+        Glide.with(this).load(R.drawable.ic_bmstu).into(imageBMSTU);
+        Glide.with(this).load(R.drawable.ic_android_academy).into(imageAcademy);
+        Glide.with(this).load(R.drawable.ic_atlant).into(imageAtlant);
+        Glide.with(this).load(R.drawable.ic_vk).into(imageVK);
+        Glide.with(this).load(R.drawable.ic_googleplus).into(imageGoogle);
     }
 
 
@@ -83,6 +83,7 @@ public class AboutActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         listenerEditText = new ListenerEditText(editMessage, buttonSend);
+        listenerEditText.onTextChanged(editMessage.getText().toString(),0,0,0);
     }
 
     @Override

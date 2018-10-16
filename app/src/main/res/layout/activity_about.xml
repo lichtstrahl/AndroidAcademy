@@ -15,7 +15,7 @@
             android:layout_height="@dimen/avatar_h"
             android:contentDescription="@string/name"
             android:scaleType="centerCrop"
-            android:src="@drawable/igor_smirnov" />
+            tools:src="@drawable/igor_smirnov" />
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
