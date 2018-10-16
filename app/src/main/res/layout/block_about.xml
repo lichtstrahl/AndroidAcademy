@@ -12,7 +12,7 @@
         android:layout_marginStart="@dimen/stdMargin"
         android:contentDescription="@string/desc_igor"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_bmstu" />
+        android:src="@drawable/ic_bmstu" />
 
     <TextView
         android:id="@+id/textBMSTU"
@@ -34,7 +34,7 @@
         android:layout_marginStart="@dimen/stdMargin"
         android:contentDescription="@string/desc_academy"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_android_academy" />
+        android:src="@drawable/ic_android_academy" />
 
     <TextView
         android:id="@+id/textAcademy"
@@ -55,7 +55,7 @@
         android:layout_marginStart="@dimen/stdMargin"
         android:contentDescription="@string/desc_atlant"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_atlant" />
+        android:src="@drawable/ic_atlant" />
 
     <TextView
         android:id="@+id/textAtlant"
@@ -108,6 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editMessage"
         android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/stdMargin"
         android:background="@android:color/transparent"
         android:text="@string/send"
         android:textColor="@color/colorAccent"
@@ -129,7 +130,7 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/desc_vk"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_vk" />
+        android:src="@drawable/ic_vk" />
 
     <ImageButton
         android:id="@+id/buttonGoogle"
@@ -138,6 +139,6 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/desc_telegram"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_googleplus" />
+        android:src="@drawable/ic_googleplus" />
     </LinearLayout>
 </RelativeLayout>

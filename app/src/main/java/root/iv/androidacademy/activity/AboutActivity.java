@@ -35,6 +35,8 @@ public class AboutActivity extends AppCompatActivity {
     ImageView imageGoogle;
     @BindView(R.id.buttonSend)
     Button buttonSend;
+    private ListenerEditText listenerEditText;
+
     @OnClick(R.id.buttonSend)
     public void sendClick() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -68,12 +70,24 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         setTitle(R.string.name);
         ButterKnife.bind(this);
-        Glide.with(this).load(R.drawable.igor_smirnov).into(imageAvatar);
-        Glide.with(this).load(R.drawable.ic_bmstu).into(imageBMSTU);
-        Glide.with(this).load(R.drawable.ic_android_academy).into(imageAcademy);
-        Glide.with(this).load(R.drawable.ic_atlant).into(imageAtlant);
-        Glide.with(this).load(R.drawable.ic_vk).into(imageVK);
-        Glide.with(this).load(R.drawable.ic_googleplus).into(imageGoogle);
-        new ListenerEditText(editMessage, buttonSend);
+//        Glide.with(this).load(R.drawable.igor_smirnov).into(imageAvatar);
+//        Glide.with(this).load(R.drawable.ic_bmstu).into(imageBMSTU);
+//        Glide.with(this).load(R.drawable.ic_android_academy).into(imageAcademy);
+//        Glide.with(this).load(R.drawable.ic_atlant).into(imageAtlant);
+//        Glide.with(this).load(R.drawable.ic_vk).into(imageVK);
+//        Glide.with(this).load(R.drawable.ic_googleplus).into(imageGoogle);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listenerEditText = new ListenerEditText(editMessage, buttonSend);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        listenerEditText.unsubscribe();
     }
 }

@@ -1,7 +1,7 @@
 package root.iv.androidacademy;
 
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,42 +14,42 @@ import com.bumptech.glide.RequestManager;
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-    private List<NewsItem> listNews = null;
-    private Resources res = null;
-    private LayoutInflater inflater = null;
-    private RequestManager glide = null;
-    private View.OnClickListener listener = null;
-    private NewsAdapter(){}
+    private List<NewsItem> listNews;
+    private LayoutInflater inflater;
+    private View.OnClickListener listener;
+    private NewsAdapter(BuilderNewsAdapter builder){
+        listNews = builder.listNews;
+        inflater = builder.inflater;
+        listener = builder.listener;
+    }
     public static BuilderNewsAdapter getBuilderNewsAdapter() {
-        return new NewsAdapter().new BuilderNewsAdapter();
+        return new NewsAdapter.BuilderNewsAdapter();
     }
 
-    public class BuilderNewsAdapter {
+    public static class BuilderNewsAdapter {
+        private List<NewsItem> listNews;
+        private LayoutInflater inflater;
+        private View.OnClickListener listener;
         public BuilderNewsAdapter buildListNews(List<NewsItem> items) {
             listNews = items;
-            return this;
-        }
-        public BuilderNewsAdapter buildResources(Resources r) {
-            res = r;
             return this;
         }
         public BuilderNewsAdapter buildInflater(LayoutInflater inf) {
             inflater = inf;
             return this;
         }
-        public BuilderNewsAdapter buildRequestManager(RequestManager manager) {
-            glide = manager;
-            return this;
-        }
         public BuilderNewsAdapter buildListener(View.OnClickListener l) {
             listener = l;
             return  this;
         }
+
+        @Nullable
         public NewsAdapter build() {
-            if (listNews != null && res != null && inflater != null && glide != null && listener != null)
-                return NewsAdapter.this;
-            else
+            if (listNews != null && inflater != null  && listener != null) {
+                return new NewsAdapter(this);
+            } else {
                 return null;
+            }
         }
     }
 
@@ -59,9 +59,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return new NewsViewHolder(inflater.inflate(R.layout.item_news, viewGroup, false));
     }
 
+
+
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder viewHolder, int i) {
-        viewHolder.bindNewsItemView(glide, i);
+        viewHolder.bindNewsItemView(i);
     }
 
     @Override
@@ -91,14 +93,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             item.setOnClickListener(listener);
         }
 
-        public void bindNewsItemView(RequestManager glide, int pos) {
+        public void bindNewsItemView(int pos) {
             NewsItem newsItem = listNews.get(pos);
             viewCategory.setText(newsItem.getCategory().getName());
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());
-            glide.load(newsItem.getImageUrl()).into(imageView);
-            layout.setBackgroundColor(res.getColor(newsItem.getCategory().getColor()));
+            GlideApp.with(imageView.getContext()).load(newsItem.getImageUrl()).into(imageView);
+            int color = layout.getContext().getResources().getColor(newsItem.getCategory().getColor());
+            layout.setBackgroundColor(color);
         }
     }
 }

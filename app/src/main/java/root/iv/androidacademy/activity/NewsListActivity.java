@@ -22,7 +22,7 @@ import root.iv.androidacademy.R;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "NewsListActivity";
-    RecyclerView listNews;
+    private RecyclerView listNews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +34,11 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         listNews.setAdapter(
                 NewsAdapter.getBuilderNewsAdapter()
                 .buildListNews(DataUtils.generateNews())
-                .buildResources(getResources())
                 .buildInflater(LayoutInflater.from(this))
-                .buildRequestManager(Glide.with(this))
                 .buildListener(this)
                 .build()
         );
+
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             listNews.setLayoutManager(new LinearLayoutManager(this));
         else
