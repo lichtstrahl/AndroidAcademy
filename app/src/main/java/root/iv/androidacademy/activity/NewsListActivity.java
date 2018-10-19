@@ -60,6 +60,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 loadCommon();
                 break;
         }
+
     }
 
     @Override
@@ -96,25 +97,34 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         Log.i(TAG, String.valueOf(newConfig.orientation));
     }
 
-    // Загружаем все новости за раз в фоновом потоке
-    private void loadCommon() {
-        new Thread(() ->
-                ((NewsAdapter)listNews.getAdapter()).append(DataUtils.news)
-        ).start();
+    private void pause(int mlsec) {
+        try {Thread.sleep(mlsec);}
+        catch (InterruptedException e) {Log.e(TAG, e.getMessage());}
     }
 
+    // Загружаем все новости за раз в фоновом потоке
+    private void loadCommon() {
+        new Thread(() ->{
+                ((NewsAdapter)listNews.getAdapter()).append(DataUtils.news);
+//                pause(2000);
+            }
+        ).start();
+    }
+    // Загружаем новости по отдельности
     private void loadSplit() {
         int count = DataUtils.news.size();
         ExecutorService executor = Executors.newFixedThreadPool(count);
         for (int i = 0; i < count; i++)
             executor.execute(new RunnableNewsLoad(i, (NewsAdapter)listNews.getAdapter()));
+//        pause(2000);
     }
-
+    // По отдельности и через Rx
     private void loadRx() {
         Observable.fromIterable(DataUtils.news)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(new NewsItemObserver((NewsAdapter)listNews.getAdapter()));
+//        pause(2000);
     }
 }
 
