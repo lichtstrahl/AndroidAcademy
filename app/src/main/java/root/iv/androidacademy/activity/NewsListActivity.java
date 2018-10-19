@@ -1,8 +1,10 @@
 package root.iv.androidacademy.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,8 +30,9 @@ import root.iv.androidacademy.R;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "NewsListActivity";
-    private final Loader loader = Loader.LOADER_RX;
+    private final Loader loader = Loader.LOADER_COMMON;
     private RecyclerView listNews;
+    private AlertDialog loadDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,10 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         else
             listNews.setLayoutManager(new GridLayoutManager(this, 2));
 
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setView(R.layout.dialog).setCancelable(false);
+
         switch (loader) {
             case LOADER_RX:
                 loadRx();
@@ -61,6 +68,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 break;
         }
 
+        loadDialog = builder.create();
+        loadDialog.show();
     }
 
     @Override
@@ -92,12 +101,18 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.i(TAG, String.valueOf(newConfig.orientation));
     }
 
-    private void pause(int mlsec) {
+   public static void pause(int mlsec) {
         try {Thread.sleep(mlsec);}
         catch (InterruptedException e) {Log.e(TAG, e.getMessage());}
     }
@@ -106,7 +121,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     private void loadCommon() {
         new Thread(() ->{
                 ((NewsAdapter)listNews.getAdapter()).append(DataUtils.news);
-//                pause(2000);
+                runOnUiThread(()->listNews.getAdapter().notifyDataSetChanged());
+                loadDialog.dismiss();
             }
         ).start();
     }
@@ -116,7 +132,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         ExecutorService executor = Executors.newFixedThreadPool(count);
         for (int i = 0; i < count; i++)
             executor.execute(new RunnableNewsLoad(i, (NewsAdapter)listNews.getAdapter()));
-//        pause(2000);
+
     }
     // По отдельности и через Rx
     private void loadRx() {
@@ -124,7 +140,50 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(new NewsItemObserver((NewsAdapter)listNews.getAdapter()));
-//        pause(2000);
+    }
+
+    class NewsItemObserver implements Observer<NewsItem> {
+        private Disposable disposable;
+        private NewsAdapter adapter;
+        NewsItemObserver(NewsAdapter a) {
+            adapter = a;
+        }
+        @Override
+        public void onSubscribe(Disposable d) {
+            disposable = d;
+        }
+
+        @Override
+        public void onNext(NewsItem newsItem) {
+            adapter.append(newsItem);
+            runOnUiThread(() ->adapter.notifyDataSetChanged());
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(NewsListActivity.TAG, e.getMessage());
+        }
+
+        @Override
+        public void onComplete() {
+            disposable.dispose();
+            loadDialog.dismiss();
+        }
+    }
+
+    class RunnableNewsLoad implements Runnable {
+        private int index;
+        private NewsAdapter adapter;
+        public RunnableNewsLoad(int i, NewsAdapter adapter) {
+            this.index = i;
+            this.adapter = adapter;
+        }
+        @Override
+        public void run() {
+            adapter.append(DataUtils.news.get(index));
+            runOnUiThread(()->adapter.notifyDataSetChanged());
+            loadDialog.dismiss();
+        }
     }
 }
 
@@ -132,46 +191,4 @@ enum Loader {
     LOADER_COMMON,
     LOADER_SPLIT,
     LOADER_RX
-}
-
-
-class NewsItemObserver implements Observer<NewsItem> {
-    private Disposable disposable;
-    private NewsAdapter adapter;
-    NewsItemObserver(NewsAdapter a) {
-        adapter = a;
-    }
-    @Override
-    public void onSubscribe(Disposable d) {
-        disposable = d;
-    }
-
-    @Override
-    public void onNext(NewsItem newsItem) {
-        adapter.append(newsItem);
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        Log.e(NewsListActivity.TAG, e.getMessage());
-    }
-
-    @Override
-    public void onComplete() {
-        disposable.dispose();
-    }
-}
-
-
-class RunnableNewsLoad implements Runnable {
-    private int index;
-    private NewsAdapter adapter;
-    public RunnableNewsLoad(int i, NewsAdapter adapter) {
-        this.index = i;
-        this.adapter = adapter;
-    }
-    @Override
-    public void run() {
-        adapter.append(DataUtils.news.get(index));
-    }
 }

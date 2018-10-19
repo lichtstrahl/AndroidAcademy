@@ -26,4 +26,9 @@
 
     <!-- Margin -->
     <dimen name="itemMargin">4dp</dimen>
+
+
+    <!-- Dialog -->
+    <dimen name="dialogW">250dp</dimen>
+    <dimen name="dialogH">100dp</dimen>
 </resources>
