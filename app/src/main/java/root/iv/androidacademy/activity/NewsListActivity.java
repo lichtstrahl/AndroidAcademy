@@ -1,6 +1,5 @@
 package root.iv.androidacademy.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
