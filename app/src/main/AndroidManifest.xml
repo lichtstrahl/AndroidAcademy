@@ -15,11 +15,14 @@
         <activity android:name=".activity.NewsListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.NewsDetailsActivity"></activity>
+        <activity android:name=".activity.NewsDetailsActivity" />
+        <activity android:name=".activity.ThreadActivity">
+
+        </activity>
     </application>
 
 </manifest>

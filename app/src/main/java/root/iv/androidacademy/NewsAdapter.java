@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
@@ -27,7 +28,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public static class BuilderNewsAdapter {
-        private List<NewsItem> listNews;
+        private List<NewsItem> listNews = new LinkedList<>();
         private LayoutInflater inflater;
         private View.OnClickListener listener;
         public BuilderNewsAdapter buildListNews(List<NewsItem> items) {
@@ -73,6 +74,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     public NewsItem getItem(int pos) {
         return listNews.get(pos);
+    }
+
+    public void append(NewsItem item) {
+        listNews.add(item);
+    }
+    public void append(List<NewsItem> items) {
+        for (NewsItem item : items)
+            append(item);
     }
 
     class NewsViewHolder extends RecyclerView.ViewHolder {
