@@ -16,7 +16,6 @@ import android.view.View;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
@@ -59,7 +58,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog).setCancelable(false);
 
-
         loadDialog = builder.create();
         loadDialog.show();
     }
@@ -95,7 +93,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new LoaderSplit();
+        loader = new LoaderRX();
         loader.load();
     }
 
@@ -173,7 +171,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.computation())
                     .subscribe(observer);
-            observer.onComplete();
         }
     }
 

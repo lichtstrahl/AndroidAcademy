@@ -82,7 +82,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     public void append(NewsItem item) {
         listNews.add(item);
-        pause(2000);
+        pause(200);
     }
     public void append(List<NewsItem> items) {
         for (NewsItem item : items)
