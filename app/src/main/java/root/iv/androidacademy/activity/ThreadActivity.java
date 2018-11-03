@@ -4,19 +4,20 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import root.iv.androidacademy.R;
 
 public class ThreadActivity extends AppCompatActivity {
-    private ivThread th1, th2;
-    public final static String TAG = "ThreadActivity";
-    private THREAD curThread;
+    private ivThread threadLeft;
+    private ivThread threadRight;
+    public static final String TAG = "ThreadActivity";
+    private THREAD curThread = null;
     private final Object lock = new Object();
     @BindView(R.id.textView)
     TextView viewThread;
+    private long msPause = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,31 +29,33 @@ public class ThreadActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        th1 = new ivThread(new LeftLeg());
-        th1.start();
-        th2 = new ivThread(new RightLeg());
-        th2.start();
+        threadLeft = new ivThread(new LeftLeg());
+        threadRight = new ivThread(new RightLeg());
+        threadRight.start();
+        threadLeft.start();
     }
-
 
     private class LeftLeg implements StopRunnable {
         private boolean isRunning = true;
-        private final String name = "LEFT";
+        private static final String NAME = "LEFT";
         @Override
         public void run() {
-            while (isRunning) {
-                synchronized (lock) {
-                    if (curThread == THREAD.LEFT)
-                        continue;
-                    curThread = THREAD.LEFT;
-                    runOnUiThread(()->viewThread.setText(name));
-                    // Без паузы какая-то дичь
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, e.getMessage());
+            try {
+                while (isRunning) {
+                    synchronized (lock) {
+                        while (curThread == THREAD.LEFT) {
+                            lock.wait();
+                        }
+                        curThread = THREAD.LEFT;
+                        lock.wait(msPause);
+                        runOnUiThread(()->viewThread.setText(NAME));
+                        Log.i(TAG, NAME);
+                        lock.notifyAll();
                     }
                 }
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -63,22 +66,25 @@ public class ThreadActivity extends AppCompatActivity {
     }
     private class RightLeg implements StopRunnable {
         private boolean isRunning = true;
-        private final String name = "RIGHT";
+        private static final String NAME = "RIGHT";
         @Override
         public void run() {
-            while (isRunning) {
-                synchronized (lock) {
-                    if (curThread == THREAD.RIGHT)
-                        continue;
-                    curThread = THREAD.RIGHT;
-                    runOnUiThread(()->viewThread.setText(name));
-                    // Без паузы какая-то дичь
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, e.getMessage());
+            try {
+                while (isRunning) {
+                    synchronized (lock) {
+                        while (curThread == THREAD.RIGHT) {
+                            lock.wait();
+                        }
+                        curThread = THREAD.RIGHT;
+                        lock.wait(msPause);
+                        runOnUiThread(()->viewThread.setText(NAME));
+                        Log.i(TAG, NAME);
+                        lock.notifyAll();
                     }
                 }
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -91,24 +97,23 @@ public class ThreadActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        th1.finish();
-        th2.finish();
+        threadLeft.finish();
+        threadRight.finish();
     }
 }
 
 enum THREAD {
-    LEFT,
-    RIGHT
+    LEFT, RIGHT
 }
 
 class ivThread extends Thread {
     private StopRunnable action;
-    public ivThread(StopRunnable a) {
+    ivThread(StopRunnable a) {
         super(a);
         action = a;
     }
 
-    public void finish() {
+    void finish() {
         action.finish();
     }
 }
