@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- STD -->
     <dimen name="avatar_h">300dp</dimen>
     <dimen name="icon">28dp</dimen>
     <dimen name="stdPadding">8dp</dimen>
-    <dimen name="stdTextSize">16sp</dimen>
+    <dimen name="stdMargin">8dp</dimen>
     <dimen name="buttonTextSize">20sp</dimen>
     <dimen name="stdBorderWidth">2dp</dimen>
     <dimen name="stdButtonSize">40dp</dimen>
+
+    <!-- TextSize -->
+    <dimen name="smallText">11sp</dimen>
+    <dimen name="middleText">14sp</dimen>
+    <dimen name="bigText">20sp</dimen>
+    <dimen name="extraText">25sp</dimen>
+    <dimen name="xxText">30sp</dimen>
+
+    <!-- IconSize -->
+    <dimen name="smallIcon">28dp</dimen>
+    <dimen name="middleIcon">35dp</dimen>
+    <dimen name="bigIcon">48dp</dimen>
+    <dimen name="extraIcon">60dp</dimen>
+    <dimen name="xxIcon">78dp</dimen>
+    <dimen name="xxxIcon">92dp</dimen>
+
+    <!-- Margin -->
+    <dimen name="itemMargin">4dp</dimen>
 </resources>

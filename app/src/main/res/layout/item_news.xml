@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/itemMargin">
+
+    <RelativeLayout
+        android:id="@+id/layoutBG"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/criminalColor">
+
+        <TextView
+            android:id="@+id/viewCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textSize="@dimen/middleText"
+            tools:text="@tools:sample/cities" />
+
+            <TextView
+                android:id="@+id/viewTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/stdMargin"
+                android:layout_below="@id/viewCategory"
+                android:layout_toStartOf="@id/imageView"
+                android:maxLines="3"
+                android:paddingStart="@dimen/stdPadding"
+                android:paddingEnd="@dimen/stdPadding"
+                android:textSize="@dimen/middleText"
+                android:textStyle="bold"
+                tools:text="@string/sampleTitle" />
+
+            <TextView
+                android:id="@+id/viewPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/stdMargin"
+                android:layout_toStartOf="@id/imageView"
+                android:maxLines="5"
+                android:paddingStart="@dimen/stdPadding"
+                android:paddingEnd="@dimen/stdPadding"
+                android:textSize="@dimen/smallText"
+                android:layout_below="@id/viewTitle"
+                tools:text="@string/samplePreview" />
+
+            <TextView
+                android:id="@+id/viewDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/stdMargin"
+                android:layout_below="@id/viewPreview"
+                android:paddingStart="@dimen/stdPadding"
+                android:paddingEnd="@dimen/stdPadding"
+                android:textSize="@dimen/smallText"
+                android:maxLines="1"
+                tools:text="@string/NULL" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/xxxIcon"
+            android:layout_height="@dimen/xxxIcon"
+            android:layout_below="@+id/viewCategory"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/viewTitle"
+            android:layout_alignBottom="@id/viewPreview"
+            android:layout_marginEnd="@dimen/stdMargin"
+            android:contentDescription="@string/newsImage"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@tools:sample/avatars" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
