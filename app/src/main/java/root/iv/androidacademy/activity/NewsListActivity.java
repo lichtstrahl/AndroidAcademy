@@ -119,6 +119,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     // Загружаем все новости за раз в фоновом потоке
     class LoaderCommon implements ILoader {
         private Thread th = null;
+        
         @Override
         public void stop() {
             if (th != null) th.interrupt();
@@ -140,6 +141,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     // Загружаем новости по отдельности
     class LoaderSplit implements ILoader {
         private ExecutorService executor = null;
+
         @Override
         public void stop() {
             if (executor != null) executor.shutdownNow();
@@ -159,6 +161,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
 
     class LoaderRX implements ILoader {
         private NewsItemObserver observer = null;
+
         @Override
         public void stop() {
             if (observer != null) observer.dispose();
@@ -183,9 +186,11 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     class NewsItemObserver implements Observer<NewsItem> {
         private Disposable disposable;
         private NewsAdapter adapter;
+
         NewsItemObserver(NewsAdapter a) {
             adapter = a;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             disposable = d;
@@ -215,6 +220,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     class RunnableNewsLoad implements Runnable {
         private int index;
         private NewsAdapter adapter;
+
         RunnableNewsLoad(int i, NewsAdapter adapter) {
             this.index = i;
             this.adapter = adapter;
