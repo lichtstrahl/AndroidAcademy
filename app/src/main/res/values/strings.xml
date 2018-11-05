@@ -29,6 +29,8 @@
     <string name="about">About</string>
     <string name="newsImage">News image</string>
 
+    <string name="loading">Please wait. Loading ...</string>
+
     <!-- Sample data -->
     <string name="sampleCategory" translatable="false">Criminal</string>
     <string name="sampleTitle" translatable="false">Police warn daredevil cliff jumpers who are \'risking their lives for likes\'</string>
