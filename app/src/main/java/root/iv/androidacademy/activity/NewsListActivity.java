@@ -119,7 +119,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     // Загружаем все новости за раз в фоновом потоке
     class LoaderCommon implements ILoader {
         private Thread th = null;
-        
+
         @Override
         public void stop() {
             if (th != null) th.interrupt();
