@@ -7,66 +7,10 @@
     tools:context=".activity.NewsDetailsActivity">
 
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/layoutBG"
+    <WebView
+        android:id="@+id/web"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="400dp">
 
-        <ImageView
-            android:id="@+id/viewImage"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:layout_marginBottom="4dp"
-            android:contentDescription="@string/newsImage"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toTopOf="@+id/viewTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <TextView
-            android:id="@+id/viewTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
-            android:textSize="@dimen/bigText"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/viewDate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewImage"
-            tools:text="@string/NULL" />
-
-        <TextView
-            android:id="@+id/viewDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:textSize="@dimen/smallText"
-            app:layout_constraintBottom_toTopOf="@+id/viewFull"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewTitle"
-            tools:text="@tools:sample/date/ddmmyy" />
-
-        <TextView
-            android:id="@+id/viewFull"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/NULL"
-            android:textSize="@dimen/bigText"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewDate" />
-    </android.support.constraint.ConstraintLayout>
+    </WebView>
 </ScrollView>

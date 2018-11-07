@@ -1,10 +1,15 @@
 package root.iv.androidacademy.activity;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,16 +27,8 @@ public class NewsDetailsActivity extends AppCompatActivity{
         context.startActivity(intent);
     }
 
-    @BindView(R.id.viewTitle)
-    TextView viewTitle;
-    @BindView(R.id.viewDate)
-    TextView viewDate;
-    @BindView(R.id.viewFull)
-    TextView viewFull;
-    @BindView(R.id.viewImage)
-    ImageView viewImage;
-    @BindView(R.id.layoutBG)
-    ConstraintLayout layout;
+    @BindView(R.id.web)
+    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +38,26 @@ public class NewsDetailsActivity extends AppCompatActivity{
 
         NewsItem newsItem = getIntent().getParcelableExtra(NewsItem.INTENT_TAG);
         setTitle(newsItem.getCategory().getName());
-        viewTitle.setText(newsItem.getTitle());
-        viewDate.setText(newsItem.getPublishDateString());
-        viewFull.setText(newsItem.getFullText());
-        Glide.with(this).load(newsItem.getImageUrl()).into(viewImage);
-        layout.setBackgroundColor(getResources().getColor(newsItem.getCategory().getColor()));
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl(newsItem.getFullText());
+        webView.setWebViewClient(new WebClient());
+//        webView.loadUrl(newsItem.getFullText());
+    }
+
+    class  WebClient extends WebViewClient {
+        @TargetApi(Build.VERSION_CODES.N)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            view.loadUrl(request.getUrl().toString());
+            return true;
+        }
+
+        // Для старых устройств
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class NewsItem implements Parcelable {
         this.category = builder.category;
         this.publishDate = builder.publishDate;
         this.previewText = builder.previewText;
-        this.fullText = builder.previewText;
+        this.fullText = builder.fullText;
     }
 
     public static NewsItemBuilder getNewsItemBuilder() {
