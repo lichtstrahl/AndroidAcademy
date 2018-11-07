@@ -1,4 +1,4 @@
-package root.iv.androidacademy.dto;
+package root.iv.androidacademy.retrofit.dto;
 
 import com.google.gson.annotations.SerializedName;
 

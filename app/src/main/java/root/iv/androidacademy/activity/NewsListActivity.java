@@ -14,8 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -24,22 +22,16 @@ import java.util.concurrent.Executors;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
+import root.iv.androidacademy.App;
 import root.iv.androidacademy.DataUtils;
 import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.dto.ResponseRandomGIF;
+import root.iv.androidacademy.retrofit.TopStoriesAPI;
+import root.iv.androidacademy.retrofit.TopStoriesObserver;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "NewsListActivity";
@@ -99,44 +91,16 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
             case R.id.itemExit:
                 finish();
                 return true;
-            case R.id.itemTest:
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .build();
-                GifEndpoint gifEndpoint = retrofit.create(GifEndpoint.class);
-                gifEndpoint.random("eXCBWU376PVqBR8tSbhfbjl9d3nveiqQ").enqueue(new Callback<ResponseRandomGIF>() {
-                    @Override
-                    public void onResponse(Call<ResponseRandomGIF> call, Response<ResponseRandomGIF> response) {
-                        ResponseRandomGIF randomGIF = response.body();
-                        if (randomGIF != null) {
-
-                        } else
-                            Log.e(TAG, "Body is null");
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseRandomGIF> call, Throwable t) {
-                        Log.e(TAG, t.getMessage());
-                    }
-                });
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    interface GifEndpoint {
-        @GET("/v1/gifs/random")
-        Call<ResponseRandomGIF> random(@Query("api_key") String apiKey);
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new LoaderCommon();
+        loader = new LoaderRetrofit();
         loader.load();
     }
 
@@ -200,7 +164,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 for (NewsItem item : DataUtils.NEWS) {
                     if (th.isInterrupted())
                         return;
-                    ((NewsAdapter) listNews.getAdapter()).append(item);
+                    ((NewsAdapter) listNews.getAdapter()).appendWhichPause(item);
                 }
             }
         }
@@ -245,6 +209,27 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    class LoaderRetrofit implements ILoader {
+        private TopStoriesObserver observer = new TopStoriesObserver(
+                ((NewsAdapter)listNews.getAdapter()),
+                () -> {
+                    loadDialog.dismiss();
+                });
+        @Override
+        public void stop() {
+            observer.dispose();
+        }
+
+        @Override
+        public void load() {
+            TopStoriesAPI topStoriesAPI = App.getRetrofit().create(TopStoriesAPI.class);
+            topStoriesAPI.getTopStories("world", App.getAPIKey())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(observer);
+        }
+    }
+
     interface ILoader {
         void stop();
         void load();
@@ -266,7 +251,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
 
         @Override
         public void onNext(NewsItem newsItem) {
-            adapter.append(newsItem);
+            adapter.appendWhichPause(newsItem);
             runOnUiThread(() ->adapter.notifyDataSetChanged());
         }
 
@@ -295,7 +280,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         }
         @Override
         public void run() {
-            adapter.append(DataUtils.NEWS.get(index));
+            adapter.appendWhichPause(DataUtils.NEWS.get(index));
             runOnUiThread(()->adapter.notifyDataSetChanged());
         }
     }

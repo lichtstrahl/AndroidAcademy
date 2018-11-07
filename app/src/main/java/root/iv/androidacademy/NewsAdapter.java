@@ -78,14 +78,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return listNews.get(pos);
     }
 
-    public void append(NewsItem item) {
+    public void appendWhichPause(NewsItem item) {
         listNews.add(item);
         pause(200);
     }
-    public void append(List<NewsItem> items) {
-        for (NewsItem item : items)
-            append(item);
+
+    public void append(NewsItem item) {
+        listNews.add(item);
+        notifyItemInserted(listNews.size()-1);
     }
+
+
 
     class NewsViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imageView;

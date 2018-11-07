@@ -2,6 +2,7 @@ package root.iv.androidacademy;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +20,9 @@ public class NewsItem implements Parcelable {
 
     public NewsItem() {
     }
+
+
+    @Deprecated
     public NewsItem(String title, String imageUrl, Category category, Date publishDate, String previewText, String fullText) {
         this.title = title;
         this.imageUrl = imageUrl;
@@ -28,7 +32,67 @@ public class NewsItem implements Parcelable {
         this.fullText = fullText;
     }
 
-    public NewsItem(Parcel source) {
+    private NewsItem(NewsItemBuilder builder) {
+        this.title = builder.title;
+        this.imageUrl = builder.imageUrl;
+        this.category = builder.category;
+        this.publishDate = builder.publishDate;
+        this.previewText = builder.previewText;
+        this.fullText = builder.previewText;
+    }
+
+    public static NewsItemBuilder getNewsItemBuilder() {
+        return new NewsItemBuilder();
+    }
+
+    public static class NewsItemBuilder {
+        private String title = null;
+        private String imageUrl = null;
+        private Category category = null;
+        private Date publishDate = null;
+        private String previewText = null;
+        private String fullText = null;
+
+        public NewsItemBuilder buildTitle(String t) {
+            title = t;
+            return this;
+        }
+
+        public NewsItemBuilder buildImageURL(@Nullable String url) {
+            imageUrl = (url != null) ? url : "";
+            return this;
+        }
+
+        public NewsItemBuilder buildCategory(Category c) {
+            category = c;
+            return this;
+        }
+
+        public NewsItemBuilder buildPublishDate(Date date) {
+            publishDate = date;
+            return this;
+        }
+
+        public NewsItemBuilder buildPreviewText(String text) {
+            previewText = text;
+            return this;
+        }
+
+        public NewsItemBuilder buildFullText(String text) {
+            fullText = text;
+            return this;
+        }
+
+        @Nullable
+        public NewsItem build() {
+            if (title != null && imageUrl != null && category != null && publishDate != null && previewText != null && fullText != null)
+                return new NewsItem(this);
+            else
+                return null;
+        }
+    }
+
+    private NewsItem(Parcel source) {
         String[] data = new String[4];
         source.readStringArray(data);
         title = data[0];
