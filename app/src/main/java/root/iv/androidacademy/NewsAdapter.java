@@ -9,12 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.RequestManager;
-
 import java.util.LinkedList;
 import java.util.List;
 
-import static root.iv.androidacademy.activity.NewsListActivity.pause;
+import static root.iv.androidacademy.Stopper.pause;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;

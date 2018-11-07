@@ -19,4 +19,5 @@
     <string name="newsImage">Изображение новости</string>
     <string name="exit">Выход</string>
     <string name="loading">Пожалуйста подождите. Идёт загрузка ...</string>
+    <string name="test">Тест</string>
 </resources>

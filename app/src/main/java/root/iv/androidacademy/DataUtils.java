@@ -12,7 +12,7 @@ public class DataUtils {
     static final Category criminal = new Category(2, "Criminal", R.color.criminalColor);
     static final Category animals = new Category(3, "Animals", R.color.animalColor);
     static final Category music = new Category(4, "Music", R.color.musicColor);
-    public static List<NewsItem> news = new ArrayList<>(Arrays.asList(
+    public static final List<NewsItem> NEWS = new ArrayList<>(Arrays.asList(
             new NewsItem(
                     "Tourist filmed sitting on 5m-long crocodile",
                     "https://e3.365dm.com/18/09/736x414/skynews-crocodile-australia_4433218.jpg",
@@ -132,9 +132,7 @@ public class DataUtils {
                         )
 
     ));
-    public static List<NewsItem> getNews() {
-        return news;
-    }
+
     private DataUtils() {}
     private static Date createDate(int year, int month, int date, int hrs, int min) {
         return new GregorianCalendar(year, month - 1, date, hrs, min).getTime();
