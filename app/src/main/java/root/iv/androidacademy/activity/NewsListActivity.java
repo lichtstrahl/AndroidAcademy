@@ -14,6 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -93,7 +98,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new LoaderRX();
+        loader = new LoaderCommon();
         loader.load();
     }
 
@@ -109,32 +114,64 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         Log.i(TAG, String.valueOf(newConfig.orientation));
     }
 
-   public static void pause(int mlsec) {
+    public static void pause(int mlsec) {
         try {Thread.sleep(mlsec);}
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
+    interface Command {
+        void execute();
+    }
+
     // Загружаем все новости за раз в фоновом потоке
     class LoaderCommon implements ILoader {
         private Thread th = null;
-
+        private List<Command> commands = Arrays.asList(
+                new AppendToAdapter(),
+                new NotifyAdapter(),
+                new DismissDialog()
+        );
         @Override
         public void stop() {
             if (th != null) th.interrupt();
-            th = null;
+            // Пришлось убрать th = null
         }
 
         @Override
         public void load() {
-            th = new Thread(() ->{
-                ((NewsAdapter)listNews.getAdapter()).append(DataUtils.news);
-                runOnUiThread(()->listNews.getAdapter().notifyDataSetChanged());
+            th = new Thread(() -> {
+                for (Command cmd : commands) {
+                    if (th.isInterrupted())
+                        return;
+                    cmd.execute();
+                }
+            });
+            th.start();
+        }
+
+        class DismissDialog implements Command {
+            @Override
+            public void execute() {
                 loadDialog.dismiss();
             }
-            );
-            th.start();
+        }
+        class NotifyAdapter implements Command {
+            @Override
+            public void execute() {
+                runOnUiThread(()->listNews.getAdapter().notifyDataSetChanged());
+            }
+        }
+        class AppendToAdapter implements Command {
+            @Override
+            public void execute() {
+                for (NewsItem item : DataUtils.news) {
+                    if (th.isInterrupted())
+                        return;
+                    ((NewsAdapter) listNews.getAdapter()).append(item);
+                }
+            }
         }
     }
 
