@@ -27,7 +27,7 @@ public class NewsItem implements Parcelable {
         this.fullText = builder.fullText;
     }
 
-    public static NewsItemBuilder getNewsItemBuilder() {
+    public static NewsItemBuilder getBuilder() {
         return new NewsItemBuilder();
     }
 
@@ -89,7 +89,7 @@ public class NewsItem implements Parcelable {
     }
 
     private NewsItem(Parcel source) {
-        String[] data = new String[5];
+        String[] data = new String[4];
         source.readStringArray(data);
         title = data[0];
         imageUrl = data[1];

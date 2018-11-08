@@ -14,36 +14,39 @@ import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;
+    private List<NewsItem> deletedNews;
     private LayoutInflater inflater;
     private View.OnClickListener listener;
     private String curSection = Category.SECTIONS[0].getName();
+    private String filter = "";
 
-    private NewsAdapter(BuilderNewsAdapter builder){
+    private NewsAdapter(Builder builder){
         listNews = builder.listNews;
         inflater = builder.inflater;
         listener = builder.listener;
+        deletedNews = new LinkedList<>();
     }
 
-    public static BuilderNewsAdapter getBuilderNewsAdapter() {
-        return new NewsAdapter.BuilderNewsAdapter();
+    public static Builder getBuilderNewsAdapter() {
+        return new Builder();
     }
 
-    public static class BuilderNewsAdapter {
-        private List<NewsItem> listNews = new LinkedList<>();
-        private LayoutInflater inflater;
-        private View.OnClickListener listener;
+    public static class Builder {
+        private List<NewsItem> listNews = null;
+        private LayoutInflater inflater = null;
+        private View.OnClickListener listener = null;
 
-        public BuilderNewsAdapter buildListNews(List<NewsItem> items) {
+        public Builder buildListNews(List<NewsItem> items) {
             listNews = items;
             return this;
         }
 
-        public BuilderNewsAdapter buildInflater(LayoutInflater inf) {
+        public Builder buildInflater(LayoutInflater inf) {
             inflater = inf;
             return this;
         }
 
-        public BuilderNewsAdapter buildListener(View.OnClickListener l) {
+        public Builder buildListener(View.OnClickListener l) {
             listener = l;
             return  this;
         }
@@ -65,7 +68,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @NonNull
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new NewsViewHolder(inflater.inflate(R.layout.item_news, viewGroup, false));
+        View view = inflater.inflate(R.layout.item_news, viewGroup, false);
+        if (i != 0) view.setVisibility(View.GONE);
+        return new NewsViewHolder(view);
     }
 
     @Override
@@ -84,11 +89,44 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     public void clear() {
         listNews.clear();
+        notifyItemRangeRemoved(0, listNews.size());
     }
 
     public void append(NewsItem item) {
         listNews.add(item);
         notifyItemInserted(listNews.size()-1);
+    }
+
+    public void remove(NewsItem item) {
+        int index = listNews.indexOf(item);
+        if (index != -1) {
+            listNews.remove(item);
+            notifyItemRemoved(index);
+        }
+    }
+
+    public void setFilter(String newFilter) {
+        filter = newFilter;
+
+        for (NewsItem item : listNews) {
+            String fullText = item.getCategory().getName() + " " + item.getTitle() + " " + item.getPreviewText();
+            if (!fullText.toLowerCase().contains(filter.toLowerCase()))
+                deletedNews.add(item);
+        }
+
+        LinkedList<NewsItem> reload = new LinkedList<>();
+        for (NewsItem item : deletedNews) {
+            String fullText = item.getCategory().getName() + " " + item.getTitle() + " " + item.getPreviewText();
+            if (fullText.toLowerCase().contains(filter.toLowerCase())) {
+                append(item);
+                reload.add(item);
+            }
+        }
+        deletedNews.removeAll(reload);
+
+
+        for (NewsItem item : deletedNews)
+            remove(item);
     }
 
     class NewsViewHolder extends RecyclerView.ViewHolder {

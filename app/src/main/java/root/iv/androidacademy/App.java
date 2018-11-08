@@ -11,17 +11,26 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import root.iv.androidacademy.retrofit.TopStoriesAPI;
 
 public class App extends Application {
     private static Retrofit retrofit;
     private static final String URL = "http://api.nytimes.com";
     private static final String API_KEY = "94c9d30bd1334f149a0d3028ae662d27";
     private static final String TAG_GLOBAL = "AndroidAcademy";
+
+    public static TopStoriesAPI getApiTopStories() {
+        return apiTopStories;
+    }
+
+    private static TopStoriesAPI apiTopStories;
+
     @Override
     public void onCreate() {
         super.onCreate();
         OkHttpClient client = createClient();
         configurationRetrofit(client);
+        apiTopStories = retrofit.create(TopStoriesAPI.class);
     }
 
 

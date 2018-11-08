@@ -14,9 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.LinkedList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,9 +27,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.App;
 import root.iv.androidacademy.Category;
+import root.iv.androidacademy.ListenerEditText;
 import root.iv.androidacademy.NewsAdapter;
+import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.retrofit.TopStoriesAPI;
 import root.iv.androidacademy.retrofit.TopStoriesObserver;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
@@ -34,9 +38,13 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     private RecyclerView listNews;
     private AlertDialog loadDialog;
     private ILoader loader;
+    private ListenerEditText inputListener;
 
     @BindView(R.id.spinner)
     Spinner spinner;
+
+    @BindView(R.id.input)
+    EditText input;
 
     private void loadSpinner() {
         ArrayAdapter<Category> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
@@ -68,6 +76,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         listNews = findViewById(R.id.listNews);
         listNews.setAdapter(
                 NewsAdapter.getBuilderNewsAdapter()
+                .buildListNews(new LinkedList<>())
                 .buildInflater(LayoutInflater.from(this))
                 .buildListener(this)
                 .build()
@@ -85,6 +94,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
 
         loadDialog = builder.create();
         loadDialog.show();
+
+        inputListener = new ListenerEditText(input);
     }
 
     @Override
@@ -129,15 +140,26 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         loader.stop();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        inputListener.subscribe(((NewsAdapter)listNews.getAdapter())::setFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        inputListener.unsubscribe();
+    }
+
     /**
      * Содержит поле observer, которое хранит адапетр, а также функции, вызывающиеся в случае успеха/неудаче при загрузке
      */
     class LoaderRetrofit implements ILoader {
-        private TopStoriesObserver observer = new TopStoriesObserver(
-                ((NewsAdapter)listNews.getAdapter()),
-                spinner.getSelectedItem().toString(),
-                () -> loadDialog.dismiss(),
-                () -> {
+        private TopStoriesObserver observer = TopStoriesObserver.getBuilder()
+                .buildAdapter((NewsAdapter)listNews.getAdapter())
+                .buildComplete(() -> loadDialog.dismiss())
+                .buildError(() -> {
                     Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
                     loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
                     TextView textView = loadDialog.findViewById(R.id.text);
@@ -146,8 +168,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener((view) -> {
                         this.load();
                     });
-                }
-        );
+                })
+                .build();
 
         @Override
         public void stop() {
@@ -157,8 +179,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         // TODO Сделать выбор категорий
         @Override
         public void load() {
-            TopStoriesAPI topStoriesAPI = App.getRetrofit().create(TopStoriesAPI.class);
-            topStoriesAPI.getTopStories(spinner.getSelectedItem().toString())
+            App.getApiTopStories().getTopStories(spinner.getSelectedItem().toString())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(observer);

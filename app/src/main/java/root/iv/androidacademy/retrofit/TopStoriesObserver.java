@@ -1,6 +1,8 @@
 package root.iv.androidacademy.retrofit;
 
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import java.text.ParseException;
@@ -25,14 +27,49 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     private Action complete;
     private Action error;
     private Disposable disposable;
-    private String section;
 
-    public TopStoriesObserver(NewsAdapter a, String s, Action c, Action e) {
-        adapter = a;
-        complete = c;
-        error = e;
-        section = s;
+    private TopStoriesObserver(Builder builder) {
+        this.adapter = builder.adapter;
+        this.complete = builder.complete;
+        this.error = builder.error;
     }
+
+    public static Builder getBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private NewsAdapter adapter = null;
+        private Action complete = null;
+        private Action error = null;
+
+        public Builder buildAdapter(NewsAdapter a) {
+            this.adapter = a;
+            return this;
+        }
+
+        public Builder buildComplete(Action c) {
+            complete = c;
+            return this;
+        }
+
+        public Builder buildError(Action e) {
+            error = e;
+            return this;
+        }
+
+        @Nullable
+        public TopStoriesObserver build() {
+            boolean done = adapter != null && complete != null && error != null;
+            if (done) {
+                return new TopStoriesObserver(this);
+            }
+            else {
+                return null;
+            }
+        }
+    }
+
 
     private void complete() {
         try {
@@ -59,7 +96,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
 
     private NewsItem buildNewsItem(NewsDTO dto) throws ParseException {
         String imageURL = findImageURL(dto.getMulimedia());
-        return NewsItem.getNewsItemBuilder()
+        return NewsItem.getBuilder()
                 .buildTitle(dto.getTitle())
                 .buildCategory(new Category(dto.getCategoryName(), R.color.colorHome))
                 .buildFullText(dto.getFullTextURL())
@@ -84,14 +121,12 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     @Override
     public void onSuccess(TopStoriesDTO stories) {
         if (stories != null) {
-            int count = adapter.getItemCount();
             // ПИЗДЕЦ БЛЯТЬ ОТКУДА Я ДОЛЖЕН БЫЛ ЭТО УЗНАТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             adapter.clear();
-            adapter.notifyItemRangeRemoved(0, count);
+
             for (NewsDTO news : stories.getListNews()) {
                 try {
                     adapter.append(buildNewsItem(news));
-                    adapter.notifyItemInserted(adapter.getItemCount()-1);
                 } catch (ParseException e) {
                     App.stdLog(e);
                 }
