@@ -25,11 +25,13 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     private Action complete;
     private Action error;
     private Disposable disposable;
+    private String section;
 
-    public TopStoriesObserver(NewsAdapter a, Action c, Action e) {
+    public TopStoriesObserver(NewsAdapter a, String s, Action c, Action e) {
         adapter = a;
         complete = c;
         error = e;
+        section = s;
     }
 
     private void complete() {

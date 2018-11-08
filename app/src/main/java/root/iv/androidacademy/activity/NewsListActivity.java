@@ -46,6 +46,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         Toast.makeText(NewsListActivity.this, Category.SECTIONS[position].getName(), Toast.LENGTH_SHORT).show();
+                        ((NewsAdapter)listNews.getAdapter()).setNewSection(Category.SECTIONS[position].getName());
                         loader.load();
                     }
 
@@ -134,6 +135,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     class LoaderRetrofit implements ILoader {
         private TopStoriesObserver observer = new TopStoriesObserver(
                 ((NewsAdapter)listNews.getAdapter()),
+                spinner.getSelectedItem().toString(),
                 () -> loadDialog.dismiss(),
                 () -> {
                     Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();

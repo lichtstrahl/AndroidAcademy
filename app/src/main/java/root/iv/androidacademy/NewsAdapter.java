@@ -1,6 +1,5 @@
 package root.iv.androidacademy;
 
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -10,20 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-
 import java.util.LinkedList;
 import java.util.List;
-
-import static root.iv.androidacademy.Stopper.pause;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;
     private LayoutInflater inflater;
     private View.OnClickListener listener;
+    private String curSection = Category.SECTIONS[0].getName();
+
     private NewsAdapter(BuilderNewsAdapter builder){
         listNews = builder.listNews;
         inflater = builder.inflater;
@@ -62,6 +56,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 return null;
             }
         }
+    }
+
+    public void setNewSection(String section) {
+        curSection = section;
     }
 
     @NonNull
@@ -123,7 +121,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                     .load(newsItem.getImageUrl())
                     .into(imageView);
             imageView.setVisibility(newsItem.getImageUrl().isEmpty() ? View.GONE : View.VISIBLE);
-            int color = layout.getContext().getResources().getColor(newsItem.getCategory().getColor());
+            int colorID = Category.getColorForSection(curSection);
+            int color = layout.getContext().getResources().getColor(colorID);
             layout.setBackgroundColor(color);
         }
     }

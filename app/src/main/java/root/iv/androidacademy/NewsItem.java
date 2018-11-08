@@ -54,6 +54,7 @@ public class NewsItem implements Parcelable {
             return this;
         }
 
+
         public NewsItemBuilder buildPublishDate(Date date) {
             publishDate = date;
             return this;
@@ -71,15 +72,24 @@ public class NewsItem implements Parcelable {
 
         @Nullable
         public NewsItem build() {
-            if (title != null && imageUrl != null && category != null && publishDate != null && previewText != null && fullText != null)
+            boolean done =
+                    title != null &&
+                    imageUrl != null &&
+                    category != null &&
+                    publishDate != null &&
+                    previewText != null &&
+                    fullText != null;
+
+            if (done) {
                 return new NewsItem(this);
-            else
+            } else {
                 return null;
+            }
         }
     }
 
     private NewsItem(Parcel source) {
-        String[] data = new String[4];
+        String[] data = new String[5];
         source.readStringArray(data);
         title = data[0];
         imageUrl = data[1];

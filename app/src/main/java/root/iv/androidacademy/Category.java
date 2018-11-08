@@ -35,6 +35,13 @@ public class Category implements Serializable {
             new Category("insider", R.color.colorInsider)
     };
 
+    public static int getColorForSection(String section) {
+        for (Category c : SECTIONS)
+            if (c.name.equals(section))
+                return c.colorRes;
+        return SECTIONS[0].colorRes;
+    }
+
     public Category(String name, int color) {
         this.name = name;
         this.colorRes = color;
