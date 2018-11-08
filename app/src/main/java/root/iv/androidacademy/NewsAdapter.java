@@ -113,12 +113,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         public void bindNewsItemView(int pos) {
             NewsItem newsItem = listNews.get(pos);
             viewCategory.setText(newsItem.getCategory().getName());
+            viewCategory.setVisibility(newsItem.getCategory().getName().isEmpty() ? View.GONE : View.VISIBLE);
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());
             GlideApp.with(imageView.getContext()).load(newsItem.getImageUrl()).into(imageView);
+            imageView.setVisibility(newsItem.getImageUrl().isEmpty() ? View.GONE : View.VISIBLE);
             int color = layout.getContext().getResources().getColor(newsItem.getCategory().getColor());
             layout.setBackgroundColor(color);
+            App.stdLog(newsItem.getImageUrl() + "\n" + newsItem.getCategory().getName());
         }
     }
 }

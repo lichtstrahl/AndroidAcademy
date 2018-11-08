@@ -1,8 +1,6 @@
 package root.iv.androidacademy.retrofit;
 
 
-import android.util.Log;
-
 import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import java.text.ParseException;
@@ -65,23 +63,23 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
                     adapter.append(newItem);
                     adapter.notifyItemInserted(adapter.getItemCount()-1);
                 } catch (ParseException e) {
-                    App.stdErrorCatch(e);
+                    App.stdLog(e);
                 }
             }
             try {
                 complete.run();
             } catch (Exception e) {
-                App.stdErrorCatch(e);
+                App.stdLog(e);
             }
         } else
-            App.stdErrorCatch(NULL_BODY);
+            App.stdLog(NULL_BODY);
         // Это правильно? Или он тоже сам где-то отпишется при Success
         disposable.dispose();
     }
 
     @Override
     public void onError(Throwable e) {
-        App.stdErrorCatch(e);
+        App.stdLog(e);
     }
 
     public void dispose() {

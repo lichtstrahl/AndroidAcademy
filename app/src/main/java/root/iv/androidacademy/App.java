@@ -32,10 +32,10 @@ public class App extends Application {
     public static String getAPIKey() {
         return APIKey;
     }
-    public static void stdErrorCatch(Throwable e) {
+    public static void stdLog(Throwable e) {
         Log.e(TAG_GLOBAL, e.getMessage());
     }
-    public static void stdErrorCatch(String msg) {
+    public static void stdLog(String msg) {
         Log.e(TAG_GLOBAL, msg);
     }
 }
