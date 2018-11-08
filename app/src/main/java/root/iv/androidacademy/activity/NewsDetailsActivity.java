@@ -19,6 +19,7 @@ public class NewsDetailsActivity extends AppCompatActivity{
     public static void start(Context context, NewsItem item) {
         Intent intent = new Intent(context, NewsDetailsActivity.class);
         intent.putExtra(NewsItem.INTENT_TAG, item);
+        intent.setExtrasClassLoader(NewsItem.class.getClassLoader());
         context.startActivity(intent);
     }
 
@@ -30,7 +31,8 @@ public class NewsDetailsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
         ButterKnife.bind(this);
-
+        // TODO Какая-то магия для Samsung со StackOverflow
+        getIntent().setExtrasClassLoader(NewsItem.class.getClassLoader());
         NewsItem newsItem = getIntent().getParcelableExtra(NewsItem.INTENT_TAG);
         setTitle(newsItem.getCategory().getName());
         webView.getSettings().setJavaScriptEnabled(true);

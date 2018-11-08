@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -88,16 +89,7 @@ public class NewsItem implements Parcelable {
         }
     }
 
-    private NewsItem(Parcel source) {
-        String[] data = new String[4];
-        source.readStringArray(data);
-        title = data[0];
-        imageUrl = data[1];
-        previewText = data[2];
-        fullText = data[3];
-        category = (Category)source.readValue(Category.class.getClassLoader());
-        publishDate = (Date)source.readValue(Date.class.getClassLoader());
-    }
+
 
 
     public String getTitle() {
@@ -125,6 +117,18 @@ public class NewsItem implements Parcelable {
         return dFormat.format(publishDate);
     }
 
+
+    private NewsItem(Parcel source) {
+        String[] data = new String[4];
+        source.readStringArray(data);
+        title = data[0];
+        imageUrl = data[1];
+        previewText = data[2];
+        fullText = data[3];
+        category = (Category)source.readValue(Category.class.getClassLoader());
+        publishDate = (Date)source.readValue(Date.class.getClassLoader());
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -148,4 +152,5 @@ public class NewsItem implements Parcelable {
             return new NewsItem[size];
         }
     };
+
 }
