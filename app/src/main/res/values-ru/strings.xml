@@ -15,10 +15,11 @@
     <string name="notFoundEmailActiviy">Не найдено приложений, для отправки почты</string>
     <string name="hello">Привет</string>
     <string name="news">Новости</string>
-    <string name="about">Об авторе</string>
+    <string name="menuItemAbout">Об авторе</string>
     <string name="newsImage">Изображение новости</string>
-    <string name="exit">Выход</string>
+    <string name="menuItemExit">Выход</string>
     <string name="loading">Пожалуйста подождите. Идёт загрузка ...</string>
-    <string name="test">Тест</string>
-    <string name="errorLoading">Ошибка при загрузке</string>
+    <string name="menuItemTest">Тест</string>
+    <string name="errorLoading">Ошибка при загрузке :(</string>
+    <string name="reconnect">Переподключиться</string>
 </resources>

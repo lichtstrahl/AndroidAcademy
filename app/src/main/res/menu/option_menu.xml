@@ -5,11 +5,14 @@
 
     <item
         android:id="@+id/itemAbout"
-        android:title="@string/about" />
+        android:title="@string/menuItemAbout" />
     <item
         android:id="@+id/itemExit"
-        android:title="@string/exit"/>
+        android:title="@string/menuItemExit"/>
+
+
     <item
         android:id="@+id/itemTest"
-        android:title="@string/test"/>
+        android:title="@string/menuItemTest"></item>
+
 </menu>

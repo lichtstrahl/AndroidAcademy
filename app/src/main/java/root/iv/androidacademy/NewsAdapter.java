@@ -84,6 +84,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return listNews.get(pos);
     }
 
+    public void clear() {
+        listNews.clear();
+    }
+
     public void append(NewsItem item) {
         listNews.add(item);
         notifyItemInserted(listNews.size()-1);

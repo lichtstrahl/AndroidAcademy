@@ -26,7 +26,7 @@
     <string name="hello">Hello</string>
 
     <string name="news">News</string>
-    <string name="about">About</string>
+    <string name="menuItemAbout">About</string>
     <string name="newsImage">News image</string>
 
     <!-- Alert Dialog -->
@@ -37,6 +37,8 @@
     <string name="sampleCategory" translatable="false">Criminal</string>
     <string name="sampleTitle" translatable="false">Police warn daredevil cliff jumpers who are \'risking their lives for likes\'</string>
     <string name="samplePreview" translatable="false">Police in Los Angeles say they are spending hundreds of thousands of dollars airlifting cliff jumpers out of dangerous spots.</string>
-    <string name="exit">Exit</string>
-    <string name="test">Test</string>
+    <string name="menuItemExit">Exit</string>
+    <string name="menuItemTest">Test</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="menuItemSpinner" translatable="false">spinner</string>
 </resources>

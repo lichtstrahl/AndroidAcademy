@@ -8,21 +8,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.App;
+import root.iv.androidacademy.Category;
 import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.retrofit.TopStoriesAPI;
@@ -34,12 +35,35 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     private AlertDialog loadDialog;
     private ILoader loader;
 
+    @BindView(R.id.spinner)
+    Spinner spinner;
+
+    private void loadSpinner() {
+        ArrayAdapter<Category> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        Toast.makeText(NewsListActivity.this, Category.SECTIONS[position].getName(), Toast.LENGTH_SHORT).show();
+                        loader.load();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
-        setTitle(R.string.news);
         ButterKnife.bind(this);
+        loadSpinner();
+
         listNews = findViewById(R.id.listNews);
         listNews.setAdapter(
                 NewsAdapter.getBuilderNewsAdapter()
@@ -104,21 +128,22 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         loader.stop();
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.i(TAG, String.valueOf(newConfig.orientation));
-    }
-
+    /**
+     * Содержит поле observer, которое хранит адапетр, а также функции, вызывающиеся в случае успеха/неудаче при загрузке
+     */
     class LoaderRetrofit implements ILoader {
         private TopStoriesObserver observer = new TopStoriesObserver(
                 ((NewsAdapter)listNews.getAdapter()),
                 () -> loadDialog.dismiss(),
                 () -> {
+                    Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
                     loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
                     TextView textView = loadDialog.findViewById(R.id.text);
                     textView.setText(R.string.errorLoading);
                     loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
+                    loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener((view) -> {
+                        this.load();
+                    });
                 }
         );
 
@@ -131,7 +156,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public void load() {
             TopStoriesAPI topStoriesAPI = App.getRetrofit().create(TopStoriesAPI.class);
-            topStoriesAPI.getTopStories("world")
+            topStoriesAPI.getTopStories(spinner.getSelectedItem().toString())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(observer);

@@ -27,6 +27,10 @@
     <!-- Margin -->
     <dimen name="itemMargin">4dp</dimen>
 
+    <!-- ToolBar -->
+    <dimen name="spinnerWidth">120dp</dimen>
+    <dimen name="toolbarMenuWidth">40dp</dimen>
+    <dimen name="toolbarHeight">50dp</dimen>
 
     <!-- Dialog -->
     <dimen name="dialogW">250dp</dimen>

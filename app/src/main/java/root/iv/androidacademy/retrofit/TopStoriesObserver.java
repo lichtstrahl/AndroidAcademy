@@ -59,7 +59,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         String imageURL = findImageURL(dto.getMulimedia());
         return NewsItem.getNewsItemBuilder()
                 .buildTitle(dto.getTitle())
-                .buildCategory(new Category(0, dto.getCategoryName(), R.color.darwinColor))
+                .buildCategory(new Category(dto.getCategoryName(), R.color.colorHome))
                 .buildFullText(dto.getFullTextURL())
                 .buildPreviewText(dto.getPreviewText())
                 .buildPublishDate(ISO8601Utils.parse(dto.getPublishDate(), new ParsePosition(0)))
@@ -82,6 +82,10 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     @Override
     public void onSuccess(TopStoriesDTO stories) {
         if (stories != null) {
+            int count = adapter.getItemCount();
+            // ПИЗДЕЦ БЛЯТЬ ОТКУДА Я ДОЛЖЕН БЫЛ ЭТО УЗНАТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            adapter.clear();
+            adapter.notifyItemRangeRemoved(0, count);
             for (NewsDTO news : stories.getListNews()) {
                 try {
                     adapter.append(buildNewsItem(news));
