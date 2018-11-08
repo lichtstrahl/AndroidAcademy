@@ -14,28 +14,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.DataUtils;
 import root.iv.androidacademy.NewsAdapter;
-import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.retrofit.TopStoriesAPI;
 import root.iv.androidacademy.retrofit.TopStoriesObserver;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "NewsListActivity";
-    private final String URL = "http://api.giphy.com";
     private RecyclerView listNews;
     private AlertDialog loadDialog;
     private ILoader loader;
@@ -116,99 +105,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         Log.i(TAG, String.valueOf(newConfig.orientation));
     }
 
-    interface Command {
-        void execute();
-    }
-
-    // Загружаем все новости за раз в фоновом потоке
-    class LoaderCommon implements ILoader {
-        private Thread th = null;
-        private List<Command> commands = Arrays.asList(
-                new AppendToAdapter(),
-                new NotifyAdapter(),
-                new DismissDialog()
-        );
-        @Override
-        public void stop() {
-            if (th != null) th.interrupt();
-            // Пришлось убрать th = null
-        }
-
-        @Override
-        public void load() {
-            th = new Thread(() -> {
-                for (Command cmd : commands) {
-                    if (th.isInterrupted())
-                        return;
-                    cmd.execute();
-                }
-            });
-            th.start();
-        }
-
-        class DismissDialog implements Command {
-            @Override
-            public void execute() {
-                loadDialog.dismiss();
-            }
-        }
-        class NotifyAdapter implements Command {
-            @Override
-            public void execute() {
-                runOnUiThread(()->listNews.getAdapter().notifyDataSetChanged());
-            }
-        }
-        class AppendToAdapter implements Command {
-            @Override
-            public void execute() {
-                for (NewsItem item : DataUtils.NEWS) {
-                    if (th.isInterrupted())
-                        return;
-                    ((NewsAdapter) listNews.getAdapter()).appendWhichPause(item);
-                }
-            }
-        }
-    }
-
-    // Загружаем новости по отдельности
-    class LoaderSplit implements ILoader {
-        private ExecutorService executor = null;
-
-        @Override
-        public void stop() {
-            if (executor != null) executor.shutdownNow();
-        }
-
-        @Override
-        public void load() {
-            int count = DataUtils.NEWS.size();
-            executor = Executors.newFixedThreadPool(count);
-            for (int i = 0; i < count; i++)
-                executor.execute(new RunnableNewsLoad(i, (NewsAdapter)listNews.getAdapter()));
-            executor.submit(() ->
-                    loadDialog.dismiss()
-            );
-        }
-    }
-
-    class LoaderRX implements ILoader {
-        private NewsItemObserver observer = null;
-
-        @Override
-        public void stop() {
-            if (observer != null) observer.dispose();
-        }
-
-        @Override
-        public void load() {
-            observer = new NewsItemObserver((NewsAdapter)listNews.getAdapter());
-            Observable.fromIterable(DataUtils.NEWS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.computation())
-                    .subscribe(observer);
-        }
-    }
-
     class LoaderRetrofit implements ILoader {
         private TopStoriesObserver observer = new TopStoriesObserver(
                 ((NewsAdapter)listNews.getAdapter()),
@@ -223,7 +119,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public void load() {
             TopStoriesAPI topStoriesAPI = App.getRetrofit().create(TopStoriesAPI.class);
-            topStoriesAPI.getTopStories("world", App.getAPIKey())
+            topStoriesAPI.getTopStories("world")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(observer);
@@ -233,55 +129,5 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     interface ILoader {
         void stop();
         void load();
-    }
-
-
-    class NewsItemObserver implements Observer<NewsItem> {
-        private Disposable disposable;
-        private NewsAdapter adapter;
-
-        NewsItemObserver(NewsAdapter a) {
-            adapter = a;
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            disposable = d;
-        }
-
-        @Override
-        public void onNext(NewsItem newsItem) {
-            adapter.appendWhichPause(newsItem);
-            runOnUiThread(() ->adapter.notifyDataSetChanged());
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Log.e(NewsListActivity.TAG, e.getMessage());
-        }
-
-        @Override
-        public void onComplete() {
-            loadDialog.dismiss();
-        }
-
-        void dispose() {
-            disposable.dispose();
-        }
-    }
-
-    class RunnableNewsLoad implements Runnable {
-        private int index;
-        private NewsAdapter adapter;
-
-        RunnableNewsLoad(int i, NewsAdapter adapter) {
-            this.index = i;
-            this.adapter = adapter;
-        }
-        @Override
-        public void run() {
-            adapter.appendWhichPause(DataUtils.NEWS.get(index));
-            runOnUiThread(()->adapter.notifyDataSetChanged());
-        }
     }
 }

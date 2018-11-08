@@ -22,13 +22,13 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     private final String NULL_BODY = "Тело ответа от сервера null (TopStoriesObserver)";
     private NewsAdapter adapter;
     private Action complete;
+    private Disposable disposable;
 
     public TopStoriesObserver(NewsAdapter a, Action action) {
         adapter = a;
         complete = action;
     }
 
-    private Disposable disposable;
     @Override
     public void onSubscribe(Disposable d) {
         disposable = d;

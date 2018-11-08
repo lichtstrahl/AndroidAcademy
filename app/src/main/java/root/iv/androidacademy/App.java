@@ -3,6 +3,11 @@ package root.iv.androidacademy;
 import android.app.Application;
 import android.util.Log;
 
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -10,17 +15,36 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class App extends Application {
     private static Retrofit retrofit;
     private static final String URL = "http://api.nytimes.com";
-    private static final String APIKey = "94c9d30bd1334f149a0d3028ae662d27";
+    private static final String API_KEY = "94c9d30bd1334f149a0d3028ae662d27";
     private static final String TAG_GLOBAL = "AndroidAcademy";
     @Override
     public void onCreate() {
         super.onCreate();
-        configurationRetrofit();
+        OkHttpClient client = createClient();
+        configurationRetrofit(client);
     }
 
-    private static void configurationRetrofit() {
+
+    private static OkHttpClient createClient() {
+        return new OkHttpClient.Builder()
+                .addInterceptor((Interceptor.Chain chain) -> {
+                    Request oldRequest = chain.request();
+                    HttpUrl url = oldRequest.url()
+                            .newBuilder()
+                            .addQueryParameter("api-key", API_KEY)
+                            .build();
+                    Request newRequest = oldRequest.newBuilder()
+                            .url(url)
+                            .build();
+                    return chain.proceed(newRequest);
+                })
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                .build();
+    }
+    private static void configurationRetrofit(OkHttpClient client) {
         retrofit = new Retrofit.Builder()
                 .baseUrl(URL)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
@@ -29,8 +53,8 @@ public class App extends Application {
     public static Retrofit getRetrofit() {
         return retrofit;
     }
-    public static String getAPIKey() {
-        return APIKey;
+    public static String getApiKey() {
+        return API_KEY;
     }
     public static void stdLog(Throwable e) {
         Log.e(TAG_GLOBAL, e.getMessage());
