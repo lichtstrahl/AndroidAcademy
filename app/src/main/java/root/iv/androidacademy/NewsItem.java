@@ -18,20 +18,6 @@ public class NewsItem implements Parcelable {
     private Category category;
     private Date publishDate;
 
-    public NewsItem() {
-    }
-
-
-    @Deprecated
-    public NewsItem(String title, String imageUrl, Category category, Date publishDate, String previewText, String fullText) {
-        this.title = title;
-        this.imageUrl = imageUrl;
-        this.category = category;
-        this.publishDate = publishDate;
-        this.previewText = previewText;
-        this.fullText = fullText;
-    }
-
     private NewsItem(NewsItemBuilder builder) {
         this.title = builder.title;
         this.imageUrl = builder.imageUrl;
@@ -114,10 +100,6 @@ public class NewsItem implements Parcelable {
 
     public Category getCategory() {
         return category;
-    }
-
-    public Date getPublishDate() {
-        return publishDate;
     }
 
     public String getPreviewText() {
