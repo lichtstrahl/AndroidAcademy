@@ -13,6 +13,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -108,14 +113,21 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     class LoaderRetrofit implements ILoader {
         private TopStoriesObserver observer = new TopStoriesObserver(
                 ((NewsAdapter)listNews.getAdapter()),
+                () -> loadDialog.dismiss(),
                 () -> {
-                    loadDialog.dismiss();
-                });
+                    loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
+                    TextView textView = loadDialog.findViewById(R.id.text);
+                    textView.setText(R.string.errorLoading);
+                    loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
+                }
+        );
+
         @Override
         public void stop() {
             observer.dispose();
         }
 
+        // TODO Сделать выбор категорий
         @Override
         public void load() {
             TopStoriesAPI topStoriesAPI = App.getRetrofit().create(TopStoriesAPI.class);

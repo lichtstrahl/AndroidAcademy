@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-
+    android:id="@+id/layout"
     android:layout_width="@dimen/dialogW"
     android:layout_height="@dimen/dialogH">
 
@@ -12,11 +12,20 @@
         android:layout_alignParentStart="true"/>
 
     <TextView
+        android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_toEndOf="@id/progress"
         android:layout_centerInParent="true"
         android:text="@string/loading"/>
+
+    <ImageButton
+        android:id="@+id/buttonReconnect"
+        android:layout_width="@dimen/bigIcon"
+        android:layout_height="@dimen/bigIcon"
+        android:backgroundTint="@android:color/transparent"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/text"/>
 
 </RelativeLayout>

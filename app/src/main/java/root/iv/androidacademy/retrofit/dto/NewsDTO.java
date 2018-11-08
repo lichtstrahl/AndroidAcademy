@@ -6,7 +6,7 @@ import java.util.List;
 
 public class NewsDTO {
     @SerializedName("subsection")
-    private String CategoryName;
+    private String categoryName;
     @SerializedName("title")
     private String title;
     @SerializedName("abstract")
@@ -19,7 +19,7 @@ public class NewsDTO {
     private List<MultimediaDTO> mulimedia;
 
     public String getCategoryName() {
-        return CategoryName;
+        return categoryName;
     }
 
     public String getTitle() {

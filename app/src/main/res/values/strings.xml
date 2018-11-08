@@ -29,7 +29,9 @@
     <string name="about">About</string>
     <string name="newsImage">News image</string>
 
+    <!-- Alert Dialog -->
     <string name="loading">Please wait. Loading ...</string>
+    <string name="errorLoading">Error which loading :(</string>
 
     <!-- Sample data -->
     <string name="sampleCategory" translatable="false">Criminal</string>

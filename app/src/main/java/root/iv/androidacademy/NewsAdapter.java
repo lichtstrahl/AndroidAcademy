@@ -1,5 +1,6 @@
 package root.iv.androidacademy;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -78,11 +84,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return listNews.get(pos);
     }
 
-    public void appendWhichPause(NewsItem item) {
-        listNews.add(item);
-        pause(200);
-    }
-
     public void append(NewsItem item) {
         listNews.add(item);
         notifyItemInserted(listNews.size()-1);
@@ -114,7 +115,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());
-            GlideApp.with(imageView.getContext()).load(newsItem.getImageUrl()).into(imageView);
+            GlideApp.with(imageView.getContext())
+                    .load(newsItem.getImageUrl())
+                    .into(imageView);
             imageView.setVisibility(newsItem.getImageUrl().isEmpty() ? View.GONE : View.VISIBLE);
             int color = layout.getContext().getResources().getColor(newsItem.getCategory().getColor());
             layout.setBackgroundColor(color);
