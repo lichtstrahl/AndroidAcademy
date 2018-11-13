@@ -122,7 +122,10 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     public void onSuccess(TopStoriesDTO stories) {
         if (stories != null) {
             // ПИЗДЕЦ БЛЯТЬ ОТКУДА Я ДОЛЖЕН БЫЛ ЭТО УЗНАТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // АРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРР!!!!!!!!
+            int count = adapter.getItemCount();
             adapter.clear();
+            adapter.notifyItemRangeRemoved(0, count);
 
             for (NewsDTO news : stories.getListNews()) {
                 try {
