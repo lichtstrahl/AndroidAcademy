@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#33691e</color>
     <color name="colorAccent">#81c784</color>
 
-    <color name="actionBar1">#F00</color>
-    <color name="actionBar2">#0F0</color>
-    <color name="actionBar3">#00F</color>
+    <color name="criminalColor">#68a1887f</color>
+    <color name="darwinColor">#6ed7a43f</color>
+    <color name="animalColor">#a5d6a7</color>
+    <color name="musicColor">#80deea</color>
 </resources>

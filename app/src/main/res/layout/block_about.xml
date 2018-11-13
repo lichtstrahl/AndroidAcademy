@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+    <ImageView
+        android:id="@+id/imageBMSTU"
+        android:layout_width="@dimen/icon"
+        android:layout_height="@dimen/icon"
+        android:layout_below="@id/imageAvatar"
+        android:layout_marginStart="@dimen/stdMargin"
+        android:contentDescription="@string/desc_igor"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_bmstu" />
+
+    <TextView
+        android:id="@+id/textBMSTU"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageAvatar"
+        android:layout_toEndOf="@id/imageBMSTU"
+        android:layout_marginTop="@dimen/stdMargin"
+        android:paddingStart="@dimen/stdPadding"
+        android:paddingEnd="@dimen/stdPadding"
+        android:text="@string/bmstu"
+        android:textSize="@dimen/middleText" />
+
+    <ImageView
+        android:id="@+id/imageAcademy"
+        android:layout_width="@dimen/icon"
+        android:layout_height="@dimen/icon"
+        android:layout_below="@id/imageBMSTU"
+        android:layout_marginStart="@dimen/stdMargin"
+        android:contentDescription="@string/desc_academy"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_android_academy" />
+
+    <TextView
+        android:id="@+id/textAcademy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/imageAcademy"
+        android:layout_toEndOf="@id/imageAcademy"
+        android:paddingStart="@dimen/stdPadding"
+        android:paddingEnd="@dimen/stdPadding"
+        android:text="@string/android_academy"
+        android:textSize="@dimen/middleText" />
+
+    <ImageView
+        android:id="@+id/imageAtlant"
+        android:layout_width="@dimen/icon"
+        android:layout_height="@dimen/icon"
+        android:layout_below="@+id/imageAcademy"
+        android:layout_marginStart="@dimen/stdMargin"
+        android:contentDescription="@string/desc_atlant"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_atlant" />
+
+    <TextView
+        android:id="@+id/textAtlant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/imageAtlant"
+        android:layout_toEndOf="@id/imageAtlant"
+        android:paddingStart="@dimen/stdPadding"
+        android:paddingEnd="@dimen/stdPadding"
+        android:text="@string/atlant"
+        android:textSize="@dimen/middleText" />
+
+    <View
+        android:id="@+id/viewLineTop"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/stdBorderWidth"
+        android:layout_below="@id/imageAtlant"
+        android:background="@color/colorAccent" />
+
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/viewLineTop"
+        android:padding="@dimen/stdPadding"
+        android:text="@string/desc"
+        android:textSize="@dimen/middleText" />
+
+    <View
+        android:id="@+id/viewLineBottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/stdBorderWidth"
+        android:layout_below="@id/desc"
+        android:background="@color/colorAccent" />
+
+
+    <EditText
+        android:id="@+id/editMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/viewLineBottom"
+        android:layout_marginStart="@dimen/stdMargin"
+        android:layout_marginEnd="@dimen/stdMargin"
+        android:hint="@string/enter"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/buttonSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editMessage"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/stdMargin"
+        android:background="@android:color/transparent"
+        android:text="@string/send"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/buttonTextSize"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonSend"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/stdPadding">
+
+    <ImageButton
+        android:id="@+id/buttonVK"
+        android:layout_width="@dimen/stdButtonSize"
+        android:layout_height="@dimen/stdButtonSize"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/desc_vk"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_vk" />
+
+    <ImageButton
+        android:id="@+id/buttonGoogle"
+        android:layout_width="@dimen/stdButtonSize"
+        android:layout_height="@dimen/stdButtonSize"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/desc_telegram"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_googleplus" />
+    </LinearLayout>
+</RelativeLayout>

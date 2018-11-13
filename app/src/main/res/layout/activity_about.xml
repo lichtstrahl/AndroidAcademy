@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/avatar_h"
+            android:contentDescription="@string/name"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/igor_smirnov" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageAvatar">
+                <include layout="@layout/block_about"/>
+            </FrameLayout>
+
+    </RelativeLayout>
+</ScrollView>

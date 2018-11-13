@@ -21,4 +21,20 @@
 
     <string name="feedback">Feedback</string>
     <string name="notFoundEmailActiviy">Not found activity for Email</string>
+    <string name="urlGooglePlusAccount" translatable="false">https://plus.google.com/u/0/101741358658381124829</string>
+    <string name="urlVKAccount" translatable="false">https://vk.com/igorsmirnov0</string>
+    <string name="hello">Hello</string>
+
+    <string name="news">News</string>
+    <string name="about">About</string>
+    <string name="newsImage">News image</string>
+
+    <string name="loading">Please wait. Loading ...</string>
+
+    <!-- Sample data -->
+    <string name="sampleCategory" translatable="false">Criminal</string>
+    <string name="sampleTitle" translatable="false">Police warn daredevil cliff jumpers who are \'risking their lives for likes\'</string>
+    <string name="samplePreview" translatable="false">Police in Los Angeles say they are spending hundreds of thousands of dollars airlifting cliff jumpers out of dangerous spots.</string>
+    <string name="exit">Exit</string>
+    <string name="test">Test</string>
 </resources>
