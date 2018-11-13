@@ -61,8 +61,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     public void onNothingSelected(AdapterView<?> parent) {
                     }
                 });
-
-
     }
 
     @Override
@@ -86,7 +84,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         else {
             listNews.setLayoutManager(new GridLayoutManager(this, 2));
         }
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog).setCancelable(false);
@@ -124,7 +121,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     @Override
     protected void onStart() {
@@ -176,8 +172,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     .subscribe(observer);
         }
 
-
-
         class RetrofitProcessor {
             private void completeProcess() {
                 loadDialog.dismiss();
@@ -195,8 +189,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
-
-
 
     interface ILoader {
         void stop();

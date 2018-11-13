@@ -116,7 +116,6 @@ public class NewsItem implements Parcelable {
         return dFormat.format(publishDate);
     }
 
-
     private NewsItem(Parcel source) {
         String[] data = new String[4];
         source.readStringArray(data);
@@ -151,5 +150,4 @@ public class NewsItem implements Parcelable {
             return new NewsItem[size];
         }
     };
-
 }

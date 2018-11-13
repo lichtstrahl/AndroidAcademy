@@ -7,13 +7,13 @@ import java.util.List;
 public class TopStoriesDTO {
     @SerializedName("section")
     private String section;
-
     @SerializedName("results")
     private List<NewsDTO> listNews;
 
     public String getSection() {
         return section;
     }
+
     public List<NewsDTO> getListNews() {
         return listNews;
     }

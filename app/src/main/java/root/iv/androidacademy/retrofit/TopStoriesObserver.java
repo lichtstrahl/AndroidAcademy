@@ -22,6 +22,12 @@ import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 // TODO Добавить функцию removeAll, чтобы больше не забывать про notify
 public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
+    private static final String NULL_BODY = "Тело ответа от сервера null (TopStoriesObserver)";
+    private NewsAdapter adapter;
+    private Action complete;
+    private Action error;
+    private Disposable disposable;
+
     /**
      * Если ответ пришел не null, тогда перебираем все полученные новости.
      * "Строим" элемент для RecycleView и обновляем adapter
@@ -29,7 +35,6 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
      * Всё работает на UI, так как здесь уже все загружено, осталось только нарисовать.
      * @param stories - DTO, полученное из сети. Содержит список всех новостей.
      */
-
     @Override
     public void onSuccess(TopStoriesDTO stories) {
         if (stories != null) {
@@ -52,12 +57,6 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         // Это правильно? Или он тоже сам где-то отпишется при Success
         disposable.dispose();
     }
-    private static final String NULL_BODY = "Тело ответа от сервера null (TopStoriesObserver)";
-    private NewsAdapter adapter;
-    private Action complete;
-    private Action error;
-
-    private Disposable disposable;
 
     private TopStoriesObserver(Builder builder) {
         this.adapter = builder.adapter;
@@ -68,10 +67,10 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     public static Builder getBuilder() {
         return new Builder();
     }
+
     public static class Builder {
         private NewsAdapter adapter = null;
         private Action complete = null;
-
         private Action error = null;
 
         public Builder buildAdapter(NewsAdapter a) {
@@ -88,6 +87,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
             error = e;
             return this;
         }
+
         @Nullable
         public TopStoriesObserver build() {
             boolean done = adapter != null && complete != null && error != null;
@@ -98,9 +98,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
                 return null;
             }
         }
-
     }
-
 
     private void complete() {
         try {

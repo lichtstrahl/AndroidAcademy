@@ -16,15 +16,15 @@ import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
 
 public class NewsDetailsActivity extends AppCompatActivity{
+    @BindView(R.id.web)
+    WebView webView;
+
     public static void start(Context context, NewsItem item) {
         Intent intent = new Intent(context, NewsDetailsActivity.class);
         intent.putExtra(NewsItem.INTENT_TAG, item);
         intent.setExtrasClassLoader(NewsItem.class.getClassLoader());
         context.startActivity(intent);
     }
-
-    @BindView(R.id.web)
-    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +47,6 @@ public class NewsDetailsActivity extends AppCompatActivity{
             view.loadUrl(request.getUrl().toString());
             return true;
         }
-
-        // Для старых устройств
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {

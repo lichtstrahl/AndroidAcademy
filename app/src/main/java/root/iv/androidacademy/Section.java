@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class Section implements Serializable {
     private final String name;
     private final int colorRes;
+
     public static final Section[] SECTIONS = new Section[] {
             new Section("home",R.color.colorHome),
             new Section("opinion", R.color.colorOpinion),

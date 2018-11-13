@@ -18,7 +18,6 @@ public class ListenerEditText implements TextWatcher {
         ed.addTextChangedListener(this);
     }
 
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         // Не используется
@@ -40,6 +39,7 @@ public class ListenerEditText implements TextWatcher {
                 e -> Log.e(TAG, e.getMessage())
         );
     }
+
     public void unsubscribe() {
         disposable.dispose();
     }

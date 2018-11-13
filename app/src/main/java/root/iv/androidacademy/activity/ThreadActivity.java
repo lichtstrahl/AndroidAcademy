@@ -38,6 +38,7 @@ public class ThreadActivity extends AppCompatActivity {
     private class LeftLeg implements StopRunnable {
         private boolean isRunning = true;
         private static final String NAME = "LEFT";
+
         @Override
         public void run() {
             try {
@@ -67,6 +68,7 @@ public class ThreadActivity extends AppCompatActivity {
     private class RightLeg implements StopRunnable {
         private boolean isRunning = true;
         private static final String NAME = "RIGHT";
+
         @Override
         public void run() {
             try {
@@ -108,6 +110,7 @@ enum THREAD {
 
 class ivThread extends Thread {
     private StopRunnable action;
+
     ivThread(StopRunnable a) {
         super(a);
         action = a;
