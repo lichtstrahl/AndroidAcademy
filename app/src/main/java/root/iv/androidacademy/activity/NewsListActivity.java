@@ -156,19 +156,11 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
      * Содержит поле observer, которое хранит адапетр, а также функции, вызывающиеся в случае успеха/неудаче при загрузке
      */
     class LoaderRetrofit implements ILoader {
+        private RetrofitProcessor processor = new RetrofitProcessor();
         private TopStoriesObserver observer = TopStoriesObserver.getBuilder()
                 .buildAdapter((NewsAdapter)listNews.getAdapter())
-                .buildComplete(() -> loadDialog.dismiss())
-                .buildError(() -> {
-                    Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
-                    loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
-                    TextView textView = loadDialog.findViewById(R.id.text);
-                    textView.setText(R.string.errorLoading);
-                    loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
-                    loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener((view) -> {
-                        this.load();
-                    });
-                })
+                .buildComplete(processor::completeProcess)
+                .buildError(processor::errorProcess)
                 .build();
 
         @Override
@@ -184,7 +176,28 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(observer);
         }
+
+
+
+        class RetrofitProcessor {
+            private void completeProcess() {
+                loadDialog.dismiss();
+            }
+
+            private void errorProcess() {
+                Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
+                loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
+                TextView textView = loadDialog.findViewById(R.id.text);
+                textView.setText(R.string.errorLoading);
+                loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
+                loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener((view) -> {
+                    LoaderRetrofit.this.load();
+                });
+            }
+        }
     }
+
+
 
     interface ILoader {
         void stop();

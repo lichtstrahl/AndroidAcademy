@@ -20,12 +20,43 @@ import root.iv.androidacademy.R;
 import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
-
+// TODO Добавить функцию removeAll, чтобы больше не забывать про notify
 public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
+    /**
+     * Если ответ пришел не null, тогда перебираем все полученные новости.
+     * "Строим" элемент для RecycleView и обновляем adapter
+     * В конце выполняем заверщающие действия в Activity (complete)
+     * Всё работает на UI, так как здесь уже все загружено, осталось только нарисовать.
+     * @param stories - DTO, полученное из сети. Содержит список всех новостей.
+     */
+
+    @Override
+    public void onSuccess(TopStoriesDTO stories) {
+        if (stories != null) {
+            // ПИЗДЕЦ БЛЯТЬ ОТКУДА Я ДОЛЖЕН БЫЛ ЭТО УЗНАТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // АРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРР!!!!!!!!
+            int count = adapter.getItemCount();
+            adapter.clear();
+            adapter.notifyItemRangeRemoved(0, count);
+
+            for (NewsDTO news : stories.getListNews()) {
+                try {
+                    adapter.append(buildNewsItem(news));
+                } catch (ParseException e) {
+                    App.stdLog(e);
+                }
+            }
+            complete();
+        } else
+            App.stdLog(NULL_BODY);
+        // Это правильно? Или он тоже сам где-то отпишется при Success
+        disposable.dispose();
+    }
     private static final String NULL_BODY = "Тело ответа от сервера null (TopStoriesObserver)";
     private NewsAdapter adapter;
     private Action complete;
     private Action error;
+
     private Disposable disposable;
 
     private TopStoriesObserver(Builder builder) {
@@ -37,10 +68,10 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     public static Builder getBuilder() {
         return new Builder();
     }
-
     public static class Builder {
         private NewsAdapter adapter = null;
         private Action complete = null;
+
         private Action error = null;
 
         public Builder buildAdapter(NewsAdapter a) {
@@ -57,7 +88,6 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
             error = e;
             return this;
         }
-
         @Nullable
         public TopStoriesObserver build() {
             boolean done = adapter != null && complete != null && error != null;
@@ -68,6 +98,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
                 return null;
             }
         }
+
     }
 
 
@@ -109,36 +140,6 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     @Override
     public void onSubscribe(Disposable d) {
         disposable = d;
-    }
-
-    /**
-     * Если ответ пришел не null, тогда перебираем все полученные новости.
-     * "Строим" элемент для RecycleView и обновляем adapter
-     * В конце выполняем заверщающие действия в Activity (complete)
-     * Всё работает на UI, так как здесь уже все загружено, осталось только нарисовать.
-     * @param stories - DTO, полученное из сети. Содержит список всех новостей.
-     */
-    @Override
-    public void onSuccess(TopStoriesDTO stories) {
-        if (stories != null) {
-            // ПИЗДЕЦ БЛЯТЬ ОТКУДА Я ДОЛЖЕН БЫЛ ЭТО УЗНАТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // АРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРР!!!!!!!!
-            int count = adapter.getItemCount();
-            adapter.clear();
-            adapter.notifyItemRangeRemoved(0, count);
-
-            for (NewsDTO news : stories.getListNews()) {
-                try {
-                    adapter.append(buildNewsItem(news));
-                } catch (ParseException e) {
-                    App.stdLog(e);
-                }
-            }
-            complete();
-        } else
-            App.stdLog(NULL_BODY);
-        // Это правильно? Или он тоже сам где-то отпишется при Success
-        disposable.dispose();
     }
 
     @Override
