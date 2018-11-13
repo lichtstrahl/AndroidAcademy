@@ -17,7 +17,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private List<NewsItem> deletedNews;
     private LayoutInflater inflater;
     private View.OnClickListener listener;
-    private String curSection = Category.SECTIONS[0].getName();
+    private String curSection = Section.SECTIONS[0].getName();
     private String filter = "";
 
     private NewsAdapter(Builder builder){
@@ -109,14 +109,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         filter = newFilter;
 
         for (NewsItem item : listNews) {
-            String fullText = item.getCategory().getName() + " " + item.getTitle() + " " + item.getPreviewText();
+            String fullText = item.getSection().getName() + " " + item.getTitle() + " " + item.getPreviewText();
             if (!fullText.toLowerCase().contains(filter.toLowerCase()))
                 deletedNews.add(item);
         }
 
         LinkedList<NewsItem> reload = new LinkedList<>();
         for (NewsItem item : deletedNews) {
-            String fullText = item.getCategory().getName() + " " + item.getTitle() + " " + item.getPreviewText();
+            String fullText = item.getSection().getName() + " " + item.getTitle() + " " + item.getPreviewText();
             if (fullText.toLowerCase().contains(filter.toLowerCase())) {
                 append(item);
                 reload.add(item);
@@ -150,8 +150,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         public void bindNewsItemView(int pos) {
             NewsItem newsItem = listNews.get(pos);
-            viewCategory.setText(newsItem.getCategory().getName());
-            viewCategory.setVisibility(newsItem.getCategory().getName().isEmpty() ? View.GONE : View.VISIBLE);
+            viewCategory.setText(newsItem.getSection().getName());
+            viewCategory.setVisibility(newsItem.getSection().getName().isEmpty() ? View.GONE : View.VISIBLE);
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());
@@ -159,7 +159,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                     .load(newsItem.getImageUrl())
                     .into(imageView);
             imageView.setVisibility(newsItem.getImageUrl().isEmpty() ? View.GONE : View.VISIBLE);
-            int colorID = Category.getColorForSection(curSection);
+            int colorID = Section.getColorForSection(curSection);
             int color = layout.getContext().getResources().getColor(colorID);
             layout.setBackgroundColor(color);
         }

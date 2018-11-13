@@ -13,7 +13,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.Category;
+import root.iv.androidacademy.Section;
 import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
@@ -129,7 +129,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         String imageURL = findImageURL(dto.getMulimedia());
         return NewsItem.getBuilder()
                 .buildTitle(dto.getTitle())
-                .buildCategory(new Category(dto.getCategoryName(), R.color.colorHome))
+                .buildCategory(Section.valueOf(dto.getCategoryName(), R.color.colorHome))
                 .buildFullText(dto.getFullTextURL())
                 .buildPreviewText(dto.getPreviewText())
                 .buildPublishDate(ISO8601Utils.parse(dto.getPublishDate(), new ParsePosition(0)))

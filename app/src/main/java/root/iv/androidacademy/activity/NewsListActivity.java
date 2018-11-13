@@ -26,10 +26,9 @@ import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.Category;
+import root.iv.androidacademy.Section;
 import root.iv.androidacademy.ListenerEditText;
 import root.iv.androidacademy.NewsAdapter;
-import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.retrofit.TopStoriesObserver;
 
@@ -47,14 +46,14 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     EditText input;
 
     private void loadSpinner() {
-        ArrayAdapter<Category> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
+        ArrayAdapter<Section> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(NewsListActivity.this, Category.SECTIONS[position].getName(), Toast.LENGTH_SHORT).show();
-                        ((NewsAdapter)listNews.getAdapter()).setNewSection(Category.SECTIONS[position].getName());
+                        Toast.makeText(NewsListActivity.this, Section.SECTIONS[position].getName(), Toast.LENGTH_SHORT).show();
+                        ((NewsAdapter)listNews.getAdapter()).setNewSection(Section.SECTIONS[position].getName());
                         loader.load();
                     }
 
