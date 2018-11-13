@@ -7,15 +7,4 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
-    <style name="AppToolBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <!-- Светлые точки -->
-    <style name="LightDots" parent="@style/Widget.AppCompat.ActionButton.Overflow" >
-        <item name="android:tint">@color/colorArts</item>
-    </style>
 </resources>
