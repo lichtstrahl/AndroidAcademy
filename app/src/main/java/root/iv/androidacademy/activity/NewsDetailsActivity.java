@@ -34,7 +34,7 @@ public class NewsDetailsActivity extends AppCompatActivity{
         // TODO Какая-то магия для Samsung со StackOverflow
         getIntent().setExtrasClassLoader(NewsItem.class.getClassLoader());
         NewsItem newsItem = getIntent().getParcelableExtra(NewsItem.INTENT_TAG);
-        setTitle(newsItem.getSection().getName());
+        setTitle(newsItem.getSection());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(newsItem.getFullText());
         webView.setWebViewClient(new WebClient());

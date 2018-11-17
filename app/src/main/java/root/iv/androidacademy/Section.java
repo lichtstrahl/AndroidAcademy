@@ -1,8 +1,6 @@
 package root.iv.androidacademy;
 
-
 import android.support.annotation.Nullable;
-
 import java.io.Serializable;
 
 public class Section implements Serializable {
@@ -63,7 +61,7 @@ public class Section implements Serializable {
         return colorRes;
     }
 
-    @Nullable
+    @Deprecated
     public static Section valueOf(String name, int colorRes) {
         for (Section section : SECTIONS)
             if (section.getName().equals(name) && section.getColor() == colorRes)

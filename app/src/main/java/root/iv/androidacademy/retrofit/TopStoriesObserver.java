@@ -127,8 +127,8 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         String imageURL = findImageURL(dto.getMulimedia());
         return NewsItem.getBuilder()
                 .buildTitle(dto.getTitle())
-                .buildCategory(Section.valueOf(dto.getCategoryName(), R.color.colorHome))
                 .buildFullText(dto.getFullTextURL())
+                .buildCategory(dto.getCategoryName())
                 .buildPreviewText(dto.getPreviewText())
                 .buildPublishDate(ISO8601Utils.parse(dto.getPublishDate(), new ParsePosition(0)))
                 .buildImageURL(imageURL)

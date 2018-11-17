@@ -15,7 +15,7 @@ public class NewsItem implements Parcelable {
     private String imageUrl;
     private String previewText;
     private String fullText;
-    private Section section;
+    private String section;
     private Date publishDate;
 
     private NewsItem(NewsItemBuilder builder) {
@@ -34,7 +34,7 @@ public class NewsItem implements Parcelable {
     public static class NewsItemBuilder {
         private String title = null;
         private String imageUrl = null;
-        private Section section = null;
+        private String section = null;
         private Date publishDate = null;
         private String previewText = null;
         private String fullText = null;
@@ -49,7 +49,7 @@ public class NewsItem implements Parcelable {
             return this;
         }
 
-        public NewsItemBuilder buildCategory(Section c) {
+        public NewsItemBuilder buildCategory(String c) {
             section = c;
             return this;
         }
@@ -99,7 +99,7 @@ public class NewsItem implements Parcelable {
         return imageUrl;
     }
 
-    public Section getSection() {
+    public String getSection() {
         return section;
     }
 
@@ -117,13 +117,13 @@ public class NewsItem implements Parcelable {
     }
 
     private NewsItem(Parcel source) {
-        String[] data = new String[4];
+        String[] data = new String[5];
         source.readStringArray(data);
         title = data[0];
         imageUrl = data[1];
         previewText = data[2];
         fullText = data[3];
-        section = (Section)source.readValue(Section.class.getClassLoader());
+        section = data[4];
         publishDate = (Date)source.readValue(Date.class.getClassLoader());
     }
 
@@ -134,8 +134,7 @@ public class NewsItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {title, imageUrl, previewText, fullText});
-        dest.writeValue(section);
+        dest.writeStringArray(new String[] {title, imageUrl, previewText, fullText, section});
         dest.writeValue(publishDate);
     }
 

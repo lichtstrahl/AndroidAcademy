@@ -109,14 +109,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         filter = newFilter;
 
         for (NewsItem item : listNews) {
-            String fullText = item.getSection().getName() + " " + item.getTitle() + " " + item.getPreviewText();
+            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
             if (!fullText.toLowerCase().contains(filter.toLowerCase()))
                 deletedNews.add(item);
         }
 
         LinkedList<NewsItem> reload = new LinkedList<>();
         for (NewsItem item : deletedNews) {
-            String fullText = item.getSection().getName() + " " + item.getTitle() + " " + item.getPreviewText();
+            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
             if (fullText.toLowerCase().contains(filter.toLowerCase())) {
                 append(item);
                 reload.add(item);
@@ -150,8 +150,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         public void bindNewsItemView(int pos) {
             NewsItem newsItem = listNews.get(pos);
-            viewCategory.setText(newsItem.getSection().getName());
-            viewCategory.setVisibility(newsItem.getSection().getName().isEmpty() ? View.GONE : View.VISIBLE);
+            viewCategory.setText(newsItem.getSection());
+            viewCategory.setVisibility(newsItem.getSection().isEmpty() ? View.GONE : View.VISIBLE);
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());

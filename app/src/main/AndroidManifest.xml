@@ -15,9 +15,9 @@
         <activity android:name=".activity.AboutActivity" />
         <activity android:name=".activity.NewsListActivity">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.section.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".activity.NewsDetailsActivity" />
