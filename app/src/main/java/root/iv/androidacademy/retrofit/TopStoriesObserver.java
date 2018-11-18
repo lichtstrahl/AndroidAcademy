@@ -37,6 +37,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
      */
     @Override
     public void onSuccess(TopStoriesDTO stories) {
+        App.logI("Observer: onSuccess for " + stories.getSection());
         complete.run(stories);
         disposable.dispose();
     }

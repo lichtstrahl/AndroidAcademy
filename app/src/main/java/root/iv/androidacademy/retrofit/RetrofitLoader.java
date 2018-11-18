@@ -19,6 +19,10 @@ public class RetrofitLoader implements DataLoader {
         section = s;
     }
 
+    public void setSection(String section) {
+        this.section = section;
+    }
+
     @Override
     public void stop() {
         observer.dispose();
@@ -30,5 +34,6 @@ public class RetrofitLoader implements DataLoader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
+        App.logI("Load: " + section);
     }
 }

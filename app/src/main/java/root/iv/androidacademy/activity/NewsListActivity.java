@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.SectionIndexer;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +41,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     public static final String TAG = "NewsListActivity";
     private RecyclerView listNews;
     private AlertDialog loadDialog;
-    private DataLoader loader;
+    private RetrofitLoader loader;
     private ListenerEditText inputListener;
 
     @BindView(R.id.spinner)
@@ -57,7 +58,9 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         Toast.makeText(NewsListActivity.this, Section.SECTIONS[position].getName(), Toast.LENGTH_SHORT).show();
+                        App.logI("Spinner selected :" +  Section.SECTIONS[position].getName());
                         ((NewsAdapter)listNews.getAdapter()).setNewSection(Section.SECTIONS[position].getName());
+                        loader.setSection(Section.SECTIONS[position].getName());
                         loader.load();
                     }
 
@@ -95,6 +98,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         loadDialog = builder.create();
         loadDialog.show();
 
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+
         inputListener = new ListenerEditText(input);
     }
 
@@ -129,8 +134,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString(),this::completeLoad, this::errorLoad);
-        loader.load();
+//        loader.setSection(spinner.getSelectedItem().toString());
+//        loader.load();
     }
 
     @Override
@@ -152,6 +157,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void completeLoad(@Nullable TopStoriesDTO stories) {
+        App.logI("Complete load: " + stories.getSection());
         NewsAdapter adapter = (NewsAdapter)listNews.getAdapter();
         if (stories != null) {
             int count = adapter.getItemCount();

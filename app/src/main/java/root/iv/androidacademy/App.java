@@ -73,4 +73,7 @@ public class App extends Application {
     public static void stdLog(String msg) {
         Log.e(TAG_GLOBAL, msg);
     }
+    public static void logI(String msg) {
+        Log.i(TAG_GLOBAL, msg);
+    }
 }
