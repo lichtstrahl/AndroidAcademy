@@ -4,9 +4,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
+import com.google.gson.internal.bind.util.ISO8601Utils;
+
+import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
+import root.iv.androidacademy.retrofit.dto.NewsDTO;
 
 public class NewsItem implements Parcelable {
     private static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
@@ -88,8 +96,24 @@ public class NewsItem implements Parcelable {
         }
     }
 
+    public static NewsItem fromNewsDTO(NewsDTO dto) throws ParseException {
+            String imageURL = findImageURL(dto.getMulimedia());
+            return NewsItem.getBuilder()
+                    .buildTitle(dto.getTitle())
+                    .buildFullText(dto.getFullTextURL())
+                    .buildCategory(dto.getCategoryName())
+                    .buildPreviewText(dto.getPreviewText())
+                    .buildPublishDate(ISO8601Utils.parse(dto.getPublishDate(), new ParsePosition(0)))
+                    .buildImageURL(imageURL)
+                    .build();
+    }
 
-
+    private static String findImageURL(List<MultimediaDTO> multimedia) {
+        for (MultimediaDTO m : multimedia) {
+            if (m.isImage()) return m.getUrl();
+        }
+        return null;
+    }
 
     public String getTitle() {
         return title;

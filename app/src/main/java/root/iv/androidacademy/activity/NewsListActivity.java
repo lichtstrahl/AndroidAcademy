@@ -3,6 +3,7 @@ package root.iv.androidacademy.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,16 +20,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.util.LinkedList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import root.iv.androidacademy.App;
+import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.retrofit.DataLoader;
 import root.iv.androidacademy.Section;
 import root.iv.androidacademy.ListenerEditText;
 import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
+import root.iv.androidacademy.retrofit.dto.NewsDTO;
+import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "NewsListActivity";
@@ -123,7 +129,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new RetrofitLoader((NewsAdapter)listNews.getAdapter(), spinner.getSelectedItem().toString(),this::completeLoad, this::errorLoad);
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString(),this::completeLoad, this::errorLoad);
         loader.load();
     }
 
@@ -145,7 +151,23 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         inputListener.unsubscribe();
     }
 
-    private void completeLoad() {
+    private void completeLoad(@Nullable TopStoriesDTO stories) {
+        NewsAdapter adapter = (NewsAdapter)listNews.getAdapter();
+        if (stories != null) {
+            int count = adapter.getItemCount();
+            adapter.clear();
+            adapter.notifyItemRangeRemoved(0, count);
+
+            for (NewsDTO news : stories.getListNews()) {
+                try {
+                    adapter.append(NewsItem.fromNewsDTO(news));
+                } catch (ParseException e) {
+                    App.stdLog(e);
+                }
+            }
+
+        }
+
         loadDialog.dismiss();
     }
 

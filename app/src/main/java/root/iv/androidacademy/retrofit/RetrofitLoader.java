@@ -3,16 +3,16 @@ package root.iv.androidacademy.retrofit;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
+import root.iv.androidacademy.Action1;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.NewsAdapter;
+import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
 public class RetrofitLoader implements DataLoader {
     private TopStoriesObserver observer;
     private String section;
 
-    public RetrofitLoader(NewsAdapter adapter, String s, Action complete, Action error) {
+    public RetrofitLoader(String s, Action1<TopStoriesDTO> complete, Action error) {
         observer = TopStoriesObserver.getBuilder()
-                .buildAdapter(adapter)
                 .buildComplete(complete)
                 .buildError(error)
                 .build();

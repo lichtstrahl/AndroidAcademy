@@ -12,6 +12,7 @@ import java.util.List;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
+import root.iv.androidacademy.Action1;
 import root.iv.androidacademy.App;
 import root.iv.androidacademy.Section;
 import root.iv.androidacademy.NewsAdapter;
@@ -23,8 +24,7 @@ import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 // TODO Добавить функцию removeAll, чтобы больше не забывать про notify
 public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     private static final String NULL_BODY = "Тело ответа от сервера null (TopStoriesObserver)";
-    private NewsAdapter adapter;
-    private Action complete;
+    private Action1<TopStoriesDTO> complete;
     private Action error;
     private Disposable disposable;
 
@@ -37,29 +37,11 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
      */
     @Override
     public void onSuccess(TopStoriesDTO stories) {
-        if (stories != null) {
-            // ПИЗДЕЦ БЛЯТЬ ОТКУДА Я ДОЛЖЕН БЫЛ ЭТО УЗНАТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // АРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРРР!!!!!!!!
-            int count = adapter.getItemCount();
-            adapter.clear();
-            adapter.notifyItemRangeRemoved(0, count);
-
-            for (NewsDTO news : stories.getListNews()) {
-                try {
-                    adapter.append(buildNewsItem(news));
-                } catch (ParseException e) {
-                    App.stdLog(e);
-                }
-            }
-            complete();
-        } else
-            App.stdLog(NULL_BODY);
-        // Это правильно? Или он тоже сам где-то отпишется при Success
+        complete.run(stories);
         disposable.dispose();
     }
 
     private TopStoriesObserver(Builder builder) {
-        this.adapter = builder.adapter;
         this.complete = builder.complete;
         this.error = builder.error;
     }
@@ -69,16 +51,10 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
     }
 
     public static class Builder {
-        private NewsAdapter adapter = null;
-        private Action complete = null;
+        private Action1<TopStoriesDTO> complete = null;
         private Action error = null;
 
-        public Builder buildAdapter(NewsAdapter a) {
-            this.adapter = a;
-            return this;
-        }
-
-        public Builder buildComplete(Action c) {
+        public Builder buildComplete(Action1<TopStoriesDTO> c) {
             complete = c;
             return this;
         }
@@ -90,7 +66,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
 
         @Nullable
         public TopStoriesObserver build() {
-            boolean done = adapter != null && complete != null && error != null;
+            boolean done = complete != null && error != null;
             if (done) {
                 return new TopStoriesObserver(this);
             }
@@ -100,39 +76,12 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         }
     }
 
-    private void complete() {
-        try {
-            complete.run();
-        } catch (Exception e) {
-            App.stdLog(e);
-        }
-    }
-
     private void error() {
         try {
             error.run();
         } catch (Exception e) {
             App.stdLog(e);
         }
-    }
-
-    private String findImageURL(List<MultimediaDTO> multimedia) {
-        for (MultimediaDTO m : multimedia) {
-            if (m.isImage()) return m.getUrl();
-        }
-        return null;
-    }
-
-    private NewsItem buildNewsItem(NewsDTO dto) throws ParseException {
-        String imageURL = findImageURL(dto.getMulimedia());
-        return NewsItem.getBuilder()
-                .buildTitle(dto.getTitle())
-                .buildFullText(dto.getFullTextURL())
-                .buildCategory(dto.getCategoryName())
-                .buildPreviewText(dto.getPreviewText())
-                .buildPublishDate(ISO8601Utils.parse(dto.getPublishDate(), new ParsePosition(0)))
-                .buildImageURL(imageURL)
-                .build();
     }
 
     @Override
