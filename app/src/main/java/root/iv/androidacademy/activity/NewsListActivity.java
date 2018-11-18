@@ -23,20 +23,18 @@ import java.util.LinkedList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import root.iv.androidacademy.App;
+import root.iv.androidacademy.retrofit.DataLoader;
 import root.iv.androidacademy.Section;
 import root.iv.androidacademy.ListenerEditText;
 import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.retrofit.TopStoriesObserver;
+import root.iv.androidacademy.retrofit.RetrofitLoader;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "NewsListActivity";
     private RecyclerView listNews;
     private AlertDialog loadDialog;
-    private ILoader loader;
+    private DataLoader loader;
     private ListenerEditText inputListener;
 
     @BindView(R.id.spinner)
@@ -125,7 +123,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new LoaderRetrofit();
+        loader = new RetrofitLoader((NewsAdapter)listNews.getAdapter(), spinner.getSelectedItem().toString(),this::completeLoad, this::errorLoad);
         loader.load();
     }
 
@@ -147,51 +145,16 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         inputListener.unsubscribe();
     }
 
-    /**
-     * Содержит поле observer, которое хранит адапетр, а также функции, вызывающиеся в случае успеха/неудаче при загрузке
-     */
-    class LoaderRetrofit implements ILoader {
-        private RetrofitProcessor processor = new RetrofitProcessor();
-        private TopStoriesObserver observer = TopStoriesObserver.getBuilder()
-                .buildAdapter((NewsAdapter)listNews.getAdapter())
-                .buildComplete(processor::completeProcess)
-                .buildError(processor::errorProcess)
-                .build();
-
-        @Override
-        public void stop() {
-            observer.dispose();
-        }
-
-        // TODO Сделать выбор категорий
-        @Override
-        public void load() {
-            App.getApiTopStories().getTopStories(spinner.getSelectedItem().toString())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(observer);
-        }
-
-        class RetrofitProcessor {
-            private void completeProcess() {
-                loadDialog.dismiss();
-            }
-
-            private void errorProcess() {
-                Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
-                loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
-                TextView textView = loadDialog.findViewById(R.id.text);
-                textView.setText(R.string.errorLoading);
-                loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
-                loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener((view) -> {
-                    LoaderRetrofit.this.load();
-                });
-            }
-        }
+    private void completeLoad() {
+        loadDialog.dismiss();
     }
 
-    interface ILoader {
-        void stop();
-        void load();
+    private void errorLoad() {
+        Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
+        loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
+        TextView textView = loadDialog.findViewById(R.id.text);
+        textView.setText(R.string.errorLoading);
+        loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
+        loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
     }
 }

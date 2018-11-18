@@ -31,13 +31,11 @@ public class NewsDetailsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
         ButterKnife.bind(this);
-        // TODO Какая-то магия для Samsung со StackOverflow
-        getIntent().setExtrasClassLoader(NewsItem.class.getClassLoader());
+
         NewsItem newsItem = getIntent().getParcelableExtra(NewsItem.INTENT_TAG);
         setTitle(newsItem.getSection());
-        webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(newsItem.getFullText());
-        webView.setWebViewClient(new WebClient());
+//        webView.setWebViewClient(new WebClient());
     }
 
     class  WebClient extends WebViewClient {
