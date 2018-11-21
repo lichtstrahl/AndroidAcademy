@@ -169,6 +169,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     App.stdLog(e);
                 }
             }
+            // Вроде срабатывает быстро, оставим пока так
             adapter.sort();
         }
 
