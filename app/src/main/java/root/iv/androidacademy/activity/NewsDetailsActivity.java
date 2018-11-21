@@ -18,7 +18,6 @@ public class NewsDetailsActivity extends AppCompatActivity{
     public static void start(Context context, NewsItem item) {
         Intent intent = new Intent(context, NewsDetailsActivity.class);
         intent.putExtra(NewsItem.INTENT_TAG, item);
-        intent.setExtrasClassLoader(NewsItem.class.getClassLoader());
         context.startActivity(intent);
     }
 
