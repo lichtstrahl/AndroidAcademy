@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private LayoutInflater inflater;
     private View.OnClickListener listener;
     private String curSection = Section.SECTIONS[0].getName();
-    private String filter = "";
 
     private NewsAdapter(Builder builder){
         listNews = builder.listNews;
@@ -105,28 +106,37 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         }
     }
 
+    /**
+     * Вызывается каждый раз, когда происходит изменение текста для поиска
+     * @param newFilter - текст для поиска
+     */
     public void setFilter(String newFilter) {
-        filter = newFilter;
+//        String filter = newFilter;
+//
+//        for (NewsItem item : listNews) {
+//            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
+//            if (!fullText.toLowerCase().contains(filter.toLowerCase()))
+//                deletedNews.add(item);
+//        }
+//
+//        LinkedList<NewsItem> reload = new LinkedList<>();
+//        for (NewsItem item : deletedNews) {
+//            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
+//            if (fullText.toLowerCase().contains(filter.toLowerCase())) {
+//                append(item);
+//                reload.add(item);
+//            }
+//        }
+//        deletedNews.removeAll(reload);
+//
+//
+//        for (NewsItem item : deletedNews)
+//            remove(item);
+    }
 
-        for (NewsItem item : listNews) {
-            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
-            if (!fullText.toLowerCase().contains(filter.toLowerCase()))
-                deletedNews.add(item);
-        }
-
-        LinkedList<NewsItem> reload = new LinkedList<>();
-        for (NewsItem item : deletedNews) {
-            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
-            if (fullText.toLowerCase().contains(filter.toLowerCase())) {
-                append(item);
-                reload.add(item);
-            }
-        }
-        deletedNews.removeAll(reload);
-
-
-        for (NewsItem item : deletedNews)
-            remove(item);
+    public void sort() {
+        Collections.sort(listNews, NewsItem.Comparator);
+        notifyDataSetChanged();
     }
 
     class NewsViewHolder extends RecyclerView.ViewHolder {

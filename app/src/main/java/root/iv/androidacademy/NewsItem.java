@@ -9,6 +9,7 @@ import com.google.gson.internal.bind.util.ISO8601Utils;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +18,7 @@ import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 
 public class NewsItem implements Parcelable {
+    public static final Comparator Comparator = new NewsItem.Comparator();
     private static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
     public static final String INTENT_TAG = "NewsItem";
     private String title;
@@ -138,6 +140,23 @@ public class NewsItem implements Parcelable {
     public String getPublishDateString() {
         SimpleDateFormat dFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         return dFormat.format(publishDate);
+    }
+
+    public Date getPublishDate() {
+        return publishDate;
+    }
+
+    public static class Comparator implements java.util.Comparator<NewsItem> {
+        @Override
+        public int compare(NewsItem o1, NewsItem o2) {
+            if (o1.getPublishDate().after(o2.getPublishDate())) {
+                return -1;
+            } else if (o1.getPublishDate().equals(o2.getPublishDate())) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 
     private NewsItem(Parcel source) {
