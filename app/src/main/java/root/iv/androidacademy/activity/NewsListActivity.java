@@ -36,7 +36,6 @@ import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String TAG = "NewsListActivity";
     private RecyclerView listNews;
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
@@ -55,10 +54,11 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(NewsListActivity.this, Section.SECTIONS[position].getName(), Toast.LENGTH_SHORT).show();
-                        App.logI("Spinner selected :" +  Section.SECTIONS[position].getName());
-                        ((NewsAdapter)listNews.getAdapter()).setNewSection(Section.SECTIONS[position].getName());
-                        loader.setSection(Section.SECTIONS[position].getName());
+                        String section = Section.SECTIONS[position].getName();
+                        Toast.makeText(NewsListActivity.this, section, Toast.LENGTH_SHORT).show();
+                        App.logI("Spinner selected :" +  section);
+                        ((NewsAdapter)listNews.getAdapter()).setNewSection(section);
+                        loader.setSection(section);
                         loader.load();
                     }
 
@@ -158,9 +158,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         App.logI("Complete load: " + stories.getSection());
         NewsAdapter adapter = (NewsAdapter)listNews.getAdapter();
         if (stories != null) {
-            int count = adapter.getItemCount();
             adapter.clear();
-            adapter.notifyItemRangeRemoved(0, count);
 
             for (NewsDTO news : stories.getListNews()) {
                 try {

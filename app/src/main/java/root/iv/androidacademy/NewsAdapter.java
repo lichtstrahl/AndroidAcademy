@@ -88,8 +88,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void clear() {
+        int count = listNews.size();
         listNews.clear();
-        notifyItemRangeRemoved(0, listNews.size());
+        notifyItemRangeRemoved(0, count);
     }
 
     public void append(NewsItem item) {
