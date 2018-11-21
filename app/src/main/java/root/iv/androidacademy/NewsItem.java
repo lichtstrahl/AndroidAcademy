@@ -9,7 +9,6 @@ import com.google.gson.internal.bind.util.ISO8601Utils;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -25,13 +24,13 @@ public class NewsItem implements Parcelable {
     private String imageUrl;
     private String previewText;
     private String fullText;
-    private String section;
+    private String subSection;
     private Date publishDate;
 
     private NewsItem(NewsItemBuilder builder) {
         this.title = builder.title;
         this.imageUrl = builder.imageUrl;
-        this.section = builder.section;
+        this.subSection = builder.subSection;
         this.publishDate = builder.publishDate;
         this.previewText = builder.previewText;
         this.fullText = builder.fullText;
@@ -44,7 +43,7 @@ public class NewsItem implements Parcelable {
     public static class NewsItemBuilder {
         private String title = null;
         private String imageUrl = null;
-        private String section = null;
+        private String subSection = null;
         private Date publishDate = null;
         private String previewText = null;
         private String fullText = null;
@@ -59,8 +58,8 @@ public class NewsItem implements Parcelable {
             return this;
         }
 
-        public NewsItemBuilder buildCategory(String c) {
-            section = c;
+        public NewsItemBuilder buildSubSection(String c) {
+            subSection = c;
             return this;
         }
 
@@ -85,7 +84,7 @@ public class NewsItem implements Parcelable {
             boolean done =
                     title != null &&
                     imageUrl != null &&
-                    section != null &&
+                    subSection != null &&
                     publishDate != null &&
                     previewText != null &&
                     fullText != null;
@@ -103,7 +102,7 @@ public class NewsItem implements Parcelable {
             return NewsItem.getBuilder()
                     .buildTitle(dto.getTitle())
                     .buildFullText(dto.getFullTextURL())
-                    .buildCategory(dto.getCategoryName())
+                    .buildSubSection(dto.getCategoryName())
                     .buildPreviewText(dto.getPreviewText())
                     .buildPublishDate(ISO8601Utils.parse(dto.getPublishDate(), new ParsePosition(0)))
                     .buildImageURL(imageURL)
@@ -125,8 +124,8 @@ public class NewsItem implements Parcelable {
         return imageUrl;
     }
 
-    public String getSection() {
-        return section;
+    public String getSubSection() {
+        return subSection;
     }
 
     public String getPreviewText() {
@@ -166,7 +165,7 @@ public class NewsItem implements Parcelable {
         imageUrl = data[1];
         previewText = data[2];
         fullText = data[3];
-        section = data[4];
+        subSection = data[4];
         publishDate = (Date)source.readValue(Date.class.getClassLoader());
     }
 
@@ -177,7 +176,7 @@ public class NewsItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {title, imageUrl, previewText, fullText, section});
+        dest.writeStringArray(new String[] {title, imageUrl, previewText, fullText, subSection});
         dest.writeValue(publishDate);
     }
 

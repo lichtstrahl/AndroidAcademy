@@ -33,7 +33,7 @@ public class NewsDetailsActivity extends AppCompatActivity{
         ButterKnife.bind(this);
 
         NewsItem newsItem = getIntent().getParcelableExtra(NewsItem.INTENT_TAG);
-        setTitle(newsItem.getSection());
+        setTitle(newsItem.getSubSection());
         webView.loadUrl(newsItem.getFullText());
 //        webView.setWebViewClient(new WebClient());
     }

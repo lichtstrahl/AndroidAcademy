@@ -14,8 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-    private List<NewsItem> listNews;
-    private List<NewsItem> deletedNews;
+    private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа
+    private List<NewsItem> originNews;  // Что изначально пришло с сервера
     private LayoutInflater inflater;
     private View.OnClickListener listener;
     private String curSection = Section.SECTIONS[0].getName();
@@ -24,7 +24,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         listNews = builder.listNews;
         inflater = builder.inflater;
         listener = builder.listener;
-        deletedNews = new LinkedList<>();
+        originNews = new LinkedList<>();
     }
 
     public static Builder getBuilderNewsAdapter() {
@@ -98,12 +98,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         notifyItemInserted(listNews.size()-1);
     }
 
-    public void remove(NewsItem item) {
-        int index = listNews.indexOf(item);
-        if (index != -1) {
-            listNews.remove(item);
-            notifyItemRemoved(index);
-        }
+    public void notifyOriginNews() {
+        originNews.clear();
+        originNews.addAll(listNews);
     }
 
     /**
@@ -111,26 +108,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
      * @param filter - текст для поиска
      */
     public void setFilter(String filter) {
-        for (NewsItem item : listNews) {
-            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
-            if (!fullText.toLowerCase().contains(filter.toLowerCase()))
-                deletedNews.add(item);
-        }
-
-        LinkedList<NewsItem> reload = new LinkedList<>();
-        for (NewsItem item : deletedNews) {
-            String fullText = item.getSection() + " " + item.getTitle() + " " + item.getPreviewText();
-            if (fullText.toLowerCase().contains(filter.toLowerCase())) {
+        clear();
+        for (NewsItem item : originNews) {
+            String fullText = item.getTitle() + " " + item.getPreviewText() + " " + item.getFullText();
+            if (fullText.toLowerCase().contains(filter.toLowerCase()))
                 append(item);
-                reload.add(item);
-            }
         }
-        deletedNews.removeAll(reload);
-
-
-        for (NewsItem item : deletedNews)
-            remove(item);
-
         sort();
     }
 
@@ -160,8 +143,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         public void bindNewsItemView(int pos) {
             NewsItem newsItem = listNews.get(pos);
-            viewCategory.setText(newsItem.getSection());
-            viewCategory.setVisibility(newsItem.getSection().isEmpty() ? View.GONE : View.VISIBLE);
+            viewCategory.setText(newsItem.getSubSection());
+            viewCategory.setVisibility(newsItem.getSubSection().isEmpty() ? View.GONE : View.VISIBLE);
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());

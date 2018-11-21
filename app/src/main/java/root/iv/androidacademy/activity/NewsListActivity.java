@@ -154,6 +154,10 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         inputListener.unsubscribe();
     }
 
+    /**
+     * После окончания загрузки данных в адаптер сортируме их и замещаем originNews
+     * @param stories
+     */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
         App.logI("Complete load: " + stories.getSection());
         NewsAdapter adapter = (NewsAdapter)listNews.getAdapter();
@@ -167,7 +171,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     App.stdLog(e);
                 }
             }
-            // Вроде срабатывает быстро, оставим пока так
+            adapter.notifyOriginNews();
             adapter.sort();
         }
 
