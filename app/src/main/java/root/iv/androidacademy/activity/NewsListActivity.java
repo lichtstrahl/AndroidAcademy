@@ -40,6 +40,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
     private ListenerEditText inputListener;
+    private int spinnerCount = 0;
 
     @BindView(R.id.spinner)
     Spinner spinner;
@@ -54,12 +55,14 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        String section = Section.SECTIONS[position].getName();
-                        Toast.makeText(NewsListActivity.this, section, Toast.LENGTH_SHORT).show();
-                        App.logI("Spinner selected :" +  section);
-                        ((NewsAdapter)listNews.getAdapter()).setNewSection(section);
-                        loader.setSection(section);
-                        loader.load();
+                        if (spinnerCount++ > 0) {
+                            String section = Section.SECTIONS[position].getName();
+                            Toast.makeText(NewsListActivity.this, section, Toast.LENGTH_SHORT).show();
+                            App.logI("Spinner selected :" + section);
+                            ((NewsAdapter) listNews.getAdapter()).setNewSection(section);
+                            loader.setSection(section);
+                            loader.load();
+                        }
                     }
 
                     @Override
@@ -132,8 +135,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-//        loader.setSection(spinner.getSelectedItem().toString());
-//        loader.load();
+        loader.setSection(spinner.getSelectedItem().toString());
+        loader.load();
     }
 
     @Override
