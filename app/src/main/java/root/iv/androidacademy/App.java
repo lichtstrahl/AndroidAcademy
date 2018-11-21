@@ -15,9 +15,9 @@ import root.iv.androidacademy.retrofit.TopStoriesAPI;
 
 public class App extends Application {
     private static Retrofit retrofit;
-    private static final String URL = "http://api.nytimes.com";
-    private static final String API_KEY = "94c9d30bd1334f149a0d3028ae662d27";
-    private static final String TAG_GLOBAL = "AndroidAcademy";
+    private static final String URL = BuildConfig.BASE_URL;
+    private static final String TAG_GLOBAL = BuildConfig.TAG_GLOBAL;
+    private static final String API_KEY = BuildConfig.API_KEY;
     private static TopStoriesAPI apiTopStories;
 
     public static TopStoriesAPI getApiTopStories() {
@@ -60,10 +60,6 @@ public class App extends Application {
 
     public static Retrofit getRetrofit() {
         return retrofit;
-    }
-
-    public static String getApiKey() {
-        return API_KEY;
     }
 
     public static void stdLog(Throwable e) {

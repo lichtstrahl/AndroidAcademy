@@ -12,17 +12,17 @@
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="@dimen/spinnerWidth"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/stdMargin"
+            android:layout_height="@dimen/headHeight"
+            android:layout_margin="@dimen/smallMargin"
             android:layout_gravity="center_vertical"/>
 
         <EditText
             android:id="@+id/input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/smallText"
-            android:layout_margin="@dimen/stdMargin"
-            android:inputType="text"/>
+            android:layout_height="@dimen/headHeight"
+            android:textSize="@dimen/bigText"
+            android:layout_margin="@dimen/smallMargin"
+            android:inputType="textPersonName"/>
     </LinearLayout>
 
 
