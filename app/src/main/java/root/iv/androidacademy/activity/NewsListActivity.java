@@ -172,6 +172,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                     App.stdLog(e);
                 }
             }
+
             adapter.notifyOriginNews();
             adapter.sort();
         }
