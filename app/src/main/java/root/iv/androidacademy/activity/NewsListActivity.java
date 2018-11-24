@@ -98,16 +98,15 @@ public class NewsListActivity extends AppCompatActivity {
             recyclerListNews.setLayoutManager(new GridLayoutManager(this, 2));
         }
 
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
-        inputListener = new ListenerEditText(input);
-        adapterListener = new NewsItemClickListener(recyclerListNews);
-        buttonUpdateListener = new ButtonUpdateClickListener(loader, spinner);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog).setCancelable(false);
 
         loadDialog = builder.create();
-        loadDialog.show();
+
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+        inputListener = new ListenerEditText(input);
+        adapterListener = new NewsItemClickListener(recyclerListNews);
+        buttonUpdateListener = new ButtonUpdateClickListener(loader, spinner, loadDialog);
     }
 
     @Override
