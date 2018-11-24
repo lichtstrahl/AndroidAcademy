@@ -1,7 +1,6 @@
 package root.iv.androidacademy;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,49 +19,23 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private View.OnClickListener listener;
     private String curSection = Section.SECTIONS[0].getName();
 
-    private NewsAdapter(Builder builder){
-        listNews = builder.listNews;
-        inflater = builder.inflater;
-        listener = builder.listener;
-        originNews = new LinkedList<>();
-    }
-
-    public static Builder getBuilderNewsAdapter() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private List<NewsItem> listNews = null;
-        private LayoutInflater inflater = null;
-        private View.OnClickListener listener = null;
-
-        public Builder buildListNews(List<NewsItem> items) {
-            listNews = items;
-            return this;
-        }
-
-        public Builder buildInflater(LayoutInflater inf) {
-            inflater = inf;
-            return this;
-        }
-
-        public Builder buildListener(View.OnClickListener l) {
-            listener = l;
-            return  this;
-        }
-
-        @Nullable
-        public NewsAdapter build() {
-            if (listNews != null && inflater != null  && listener != null) {
-                return new NewsAdapter(this);
-            } else {
-                return null;
-            }
-        }
+    public NewsAdapter(List<NewsItem> list, LayoutInflater inf){
+        this.listNews = list;
+        this.inflater = inf;
+        this.listener = null;
+        this.originNews = new LinkedList<>();
     }
 
     public void setNewSection(String section) {
         curSection = section;
+    }
+
+    public void addOnClickListener(View.OnClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void delOnClickListener() {
+        this.listener = null;
     }
 
     @NonNull

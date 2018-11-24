@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +35,8 @@ import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
-    private RecyclerView listNews;
+    private RecyclerView recyclerListNews;
+    private NewsAdapter adapter;
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
     private ListenerEditText inputListener;
@@ -59,7 +59,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
                             String section = Section.SECTIONS[position].getName();
                             Toast.makeText(NewsListActivity.this, section, Toast.LENGTH_SHORT).show();
                             App.logI("Spinner selected :" + section);
-                            ((NewsAdapter) listNews.getAdapter()).setNewSection(section);
+                            ((NewsAdapter) recyclerListNews.getAdapter()).setNewSection(section);
                             loader.setSection(section);
                             loader.load();
                         }
@@ -78,19 +78,15 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         ButterKnife.bind(this);
         loadSpinner();
 
-        listNews = findViewById(R.id.listNews);
-        listNews.setAdapter(
-                NewsAdapter.getBuilderNewsAdapter()
-                .buildListNews(new LinkedList<>())
-                .buildInflater(LayoutInflater.from(this))
-                .buildListener(this)
-                .build()
-        );
+        recyclerListNews = findViewById(R.id.listNews);
+        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
+
+        recyclerListNews.setAdapter(adapter);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            listNews.setLayoutManager(new LinearLayoutManager(this));
+            recyclerListNews.setLayoutManager(new LinearLayoutManager(this));
         }
         else {
-            listNews.setLayoutManager(new GridLayoutManager(this, 2));
+            recyclerListNews.setLayoutManager(new GridLayoutManager(this, 2));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -106,8 +102,8 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        int pos = listNews.getChildAdapterPosition(v);
-        NewsDetailsActivity.start(this, ((NewsAdapter) listNews.getAdapter()).getItem(pos));
+        int pos = recyclerListNews.getChildAdapterPosition(v);
+        NewsDetailsActivity.start(this, ((NewsAdapter) recyclerListNews.getAdapter()).getItem(pos));
     }
 
     @Override
@@ -148,13 +144,15 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        inputListener.subscribe(((NewsAdapter)listNews.getAdapter())::setFilter);
+        inputListener.subscribe(((NewsAdapter) recyclerListNews.getAdapter())::setFilter);
+        adapter.addOnClickListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         inputListener.unsubscribe();
+        adapter.delOnClickListener();
     }
 
     /**
@@ -163,7 +161,7 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
      */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
         App.logI("Complete load: " + stories.getSection());
-        NewsAdapter adapter = (NewsAdapter)listNews.getAdapter();
+        NewsAdapter adapter = (NewsAdapter) recyclerListNews.getAdapter();
         if (stories != null) {
             adapter.clear();
 
