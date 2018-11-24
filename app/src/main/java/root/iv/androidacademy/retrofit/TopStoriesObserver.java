@@ -3,23 +3,11 @@ package root.iv.androidacademy.retrofit;
 
 import android.support.annotation.Nullable;
 
-import com.google.gson.internal.bind.util.ISO8601Utils;
-
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.util.List;
-
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import root.iv.androidacademy.Action1;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.Section;
-import root.iv.androidacademy.NewsAdapter;
-import root.iv.androidacademy.NewsItem;
-import root.iv.androidacademy.R;
-import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
-import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 // TODO Добавить функцию removeAll, чтобы больше не забывать про notify
 public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
@@ -96,7 +84,9 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         error();
     }
 
+    // Теперь здесь проверка на null, т.к. не обязательно будет вызвана загрузка и подписка на событие
     public void dispose() {
-        disposable.dispose();
+        if (disposable != null)
+            disposable.dispose();
     }
 }

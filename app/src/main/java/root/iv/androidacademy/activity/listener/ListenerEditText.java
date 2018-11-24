@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.activity.listener;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
+import root.iv.androidacademy.Action1;
 
 public class ListenerEditText implements TextWatcher {
     private static final String TAG = "ListenerEditText";

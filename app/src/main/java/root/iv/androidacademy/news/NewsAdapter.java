@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.news;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +11,9 @@ import android.widget.TextView;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import root.iv.androidacademy.GlideApp;
+import root.iv.androidacademy.R;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа
@@ -91,7 +94,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void sort() {
-        Collections.sort(listNews, NewsItem.Comparator);
+        Collections.sort(listNews, new NewsItem.Comparator());
         notifyDataSetChanged();
     }
 

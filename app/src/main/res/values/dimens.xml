@@ -38,4 +38,5 @@
     <dimen name="dialogH">100dp</dimen>
     <dimen name="intoWidth">200dp</dimen>
     <dimen name="intoHeight">400dp</dimen>
+    <dimen name="floatingButtonSize">50dp</dimen>
 </resources>

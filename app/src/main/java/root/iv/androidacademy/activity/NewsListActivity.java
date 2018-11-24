@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,21 +26,27 @@ import java.util.LinkedList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.ListenerEditText;
-import root.iv.androidacademy.NewsAdapter;
-import root.iv.androidacademy.NewsItem;
+import root.iv.androidacademy.activity.listener.ListenerEditText;
+import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
+import root.iv.androidacademy.activity.listener.Listener;
+import root.iv.androidacademy.activity.listener.NewsItemClickListener;
+import root.iv.androidacademy.news.NewsAdapter;
+import root.iv.androidacademy.news.NewsItem;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.Section;
+import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
-public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
+public class NewsListActivity extends AppCompatActivity {
     private RecyclerView recyclerListNews;
+    private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
     private ListenerEditText inputListener;
+    private Listener adapterListener;
+    private Listener buttonUpdateListener;
     private int spinnerCount = 0;
 
     @BindView(R.id.spinner)
@@ -79,9 +86,11 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
         loadSpinner();
 
         recyclerListNews = findViewById(R.id.listNews);
-        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
+        buttonUpdate = findViewById(R.id.buttonUpdate);
 
+        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
+
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             recyclerListNews.setLayoutManager(new LinearLayoutManager(this));
         }
@@ -89,21 +98,16 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
             recyclerListNews.setLayoutManager(new GridLayoutManager(this, 2));
         }
 
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+        inputListener = new ListenerEditText(input);
+        adapterListener = new NewsItemClickListener(recyclerListNews);
+        buttonUpdateListener = new ButtonUpdateClickListener(loader, spinner);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog).setCancelable(false);
 
         loadDialog = builder.create();
         loadDialog.show();
-
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
-
-        inputListener = new ListenerEditText(input);
-    }
-
-    @Override
-    public void onClick(View v) {
-        int pos = recyclerListNews.getChildAdapterPosition(v);
-        NewsDetailsActivity.start(this, ((NewsAdapter) recyclerListNews.getAdapter()).getItem(pos));
     }
 
     @Override
@@ -129,13 +133,6 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        loader.setSection(spinner.getSelectedItem().toString());
-        loader.load();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         loader.stop();
@@ -145,13 +142,16 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     protected void onResume() {
         super.onResume();
         inputListener.subscribe(((NewsAdapter) recyclerListNews.getAdapter())::setFilter);
-        adapter.addOnClickListener(this);
+        adapter.addOnClickListener(adapterListener);
+        buttonUpdate.setOnClickListener(buttonUpdateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         inputListener.unsubscribe();
+        buttonUpdateListener.unsubscribe();
+        adapterListener.unsubscribe();
         adapter.delOnClickListener();
     }
 

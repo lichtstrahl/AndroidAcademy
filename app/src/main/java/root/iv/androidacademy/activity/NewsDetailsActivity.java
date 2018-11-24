@@ -8,7 +8,7 @@ import android.webkit.WebView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import root.iv.androidacademy.NewsItem;
+import root.iv.androidacademy.news.NewsItem;
 import root.iv.androidacademy.R;
 
 public class NewsDetailsActivity extends AppCompatActivity{

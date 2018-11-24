@@ -1,6 +1,7 @@
 package root.iv.androidacademy;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
 import android.util.Log;
 
 import okhttp3.HttpUrl;
@@ -15,9 +16,6 @@ import root.iv.androidacademy.retrofit.TopStoriesAPI;
 
 public class App extends Application {
     private static Retrofit retrofit;
-    private static final String URL = BuildConfig.BASE_URL;
-    private static final String TAG_GLOBAL = BuildConfig.TAG_GLOBAL;
-    private static final String API_KEY = BuildConfig.API_KEY;
     private static TopStoriesAPI apiTopStories;
 
     public static TopStoriesAPI getApiTopStories() {
@@ -30,6 +28,10 @@ public class App extends Application {
         OkHttpClient client = createClient();
         configurationRetrofit(client);
         apiTopStories = retrofit.create(TopStoriesAPI.class);
+
+        Room.databaseBuilder(this, NewsDatabase.class, BuildConfig.DATABASE_NAME)
+                .allowMainThreadQueries()
+                .build();
     }
 
     private static OkHttpClient createClient() {
@@ -38,7 +40,7 @@ public class App extends Application {
                     Request oldRequest = chain.request();
                     HttpUrl url = oldRequest.url()
                             .newBuilder()
-                            .addQueryParameter("api-key", API_KEY)
+                            .addQueryParameter("api-key", BuildConfig.API_KEY)
                             .build();
                     Request newRequest = oldRequest.newBuilder()
                             .url(url)
@@ -51,7 +53,7 @@ public class App extends Application {
 
     private static void configurationRetrofit(OkHttpClient client) {
         retrofit = new Retrofit.Builder()
-                .baseUrl(URL)
+                .baseUrl(BuildConfig.BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -63,13 +65,13 @@ public class App extends Application {
     }
 
     public static void stdLog(Throwable e) {
-        Log.e(TAG_GLOBAL, e.getMessage());
+        Log.e(BuildConfig.TAG_GLOBAL, e.getMessage());
     }
 
     public static void stdLog(String msg) {
-        Log.e(TAG_GLOBAL, msg);
+        Log.e(BuildConfig.TAG_GLOBAL, msg);
     }
     public static void logI(String msg) {
-        Log.i(TAG_GLOBAL, msg);
+        Log.i(BuildConfig.TAG_GLOBAL, msg);
     }
 }
