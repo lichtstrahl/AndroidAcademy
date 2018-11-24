@@ -5,25 +5,29 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_new_york_times"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".App">
+        android:theme="@style/AppTheme">
         <activity android:name=".activity.AboutActivity" />
         <activity
             android:name=".activity.NewsListActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            >
+            android:windowSoftInputMode="stateUnchanged">
+
+        </activity>
+        <activity android:name=".activity.NewsDetailsActivity" />
+        <activity android:name=".activity.IntoActivity">
             <intent-filter>
+
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.NewsDetailsActivity" />
     </application>
 
 </manifest>

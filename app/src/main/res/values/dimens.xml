@@ -16,6 +16,7 @@
     <dimen name="bigText">17sp</dimen>
     <dimen name="extraText">21sp</dimen>
     <dimen name="xxText">26sp</dimen>
+    <dimen name="xxxText">32sp</dimen>
 
     <!-- IconSize -->
     <dimen name="smallIcon">28dp</dimen>
@@ -35,4 +36,6 @@
     <!-- Dialog -->
     <dimen name="dialogW">250dp</dimen>
     <dimen name="dialogH">100dp</dimen>
+    <dimen name="intoWidth">200dp</dimen>
+    <dimen name="intoHeight">400dp</dimen>
 </resources>
