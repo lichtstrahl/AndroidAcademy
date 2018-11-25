@@ -56,17 +56,16 @@ public class NewsListActivity extends AppCompatActivity {
     EditText input;
 
     private void loadSpinner() {
-        ArrayAdapter<Section> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
-        spinner.setAdapter(adapter);
+        ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
+        spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         if (spinnerCount++ > 0) {
                             String section = Section.SECTIONS[position].getName();
-                            Toast.makeText(NewsListActivity.this, section, Toast.LENGTH_SHORT).show();
-                            App.logI("Spinner selected :" + section);
-                            ((NewsAdapter) recyclerListNews.getAdapter()).setNewSection(section);
+
+                            adapter.setNewSection(section);
                             loader.setSection(section);
                             loader.load();
                         }
@@ -74,6 +73,7 @@ public class NewsListActivity extends AppCompatActivity {
 
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
+                        // Никогда не вызывается
                     }
                 });
     }
@@ -91,19 +91,32 @@ public class NewsListActivity extends AppCompatActivity {
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            recyclerListNews.setLayoutManager(new LinearLayoutManager(this));
-        }
-        else {
-            recyclerListNews.setLayoutManager(new GridLayoutManager(this, 2));
-        }
+        configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
 
+        loadDialog = buildLoadDialog();
+
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+        initialListener();
+    }
+
+    private void configureLayoutManagerForRecyclerView(int orientation) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerListNews.setLayoutManager(new LinearLayoutManager(this));
+
+        } else {
+            recyclerListNews.setLayoutManager(new GridLayoutManager(this, 2));
+
+        }
+    }
+
+    private AlertDialog buildLoadDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog).setCancelable(false);
 
-        loadDialog = builder.create();
+       return builder.create();
+    }
 
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+    private void initialListener() {
         inputListener = new ListenerEditText(input);
         adapterListener = new NewsItemClickListener(recyclerListNews);
         buttonUpdateListener = new ButtonUpdateClickListener(loader, spinner, loadDialog);
@@ -155,26 +168,23 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     /**
-     * После окончания загрузки данных в адаптер сортируме их и замещаем originNews
+     * После окончания загрузки данных в адаптер сортирум их и замещаем originNews
      * @param stories
      */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
         App.logI("Complete load: " + stories.getSection());
-        NewsAdapter adapter = (NewsAdapter) recyclerListNews.getAdapter();
-        if (stories != null) {
-            adapter.clear();
+        adapter.clear();
 
-            for (NewsDTO news : stories.getListNews()) {
-                try {
-                    adapter.append(NewsItem.fromNewsDTO(news));
-                } catch (ParseException e) {
-                    App.stdLog(e);
-                }
+        for (NewsDTO news : stories.getListNews()) {
+            try {
+                adapter.append(NewsItem.fromNewsDTO(news));
+            } catch (ParseException e) {
+                App.stdLog(e);
             }
-
-            adapter.notifyOriginNews();
-            adapter.sort();
         }
+
+        adapter.notifyOriginNews();
+        adapter.sort();
 
         loadDialog.dismiss();
     }

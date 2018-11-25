@@ -35,7 +35,8 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/stdMargin"
         android:backgroundTint="@color/floatingButtonBG"
-        android:src="@drawable/ic_reconnect"/>
+        android:src="@drawable/ic_reconnect"
+        android:scaleType="centerCrop"/>
 
     <android.support.v7.widget.RecyclerView
         xmlns:toolsList="http://schemas.android.com/tools"
