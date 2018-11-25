@@ -24,8 +24,6 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import root.iv.androidacademy.App;
@@ -50,6 +48,7 @@ import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
  */
 
 public class NewsListActivity extends AppCompatActivity {
+    private static final String INTENT_SECTION = "INTENT_SECTION";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -59,13 +58,8 @@ public class NewsListActivity extends AppCompatActivity {
     private Listener adapterListener;
     private Listener buttonUpdateListener;
     private int spinnerCount = 0;
-    private Disposable subscriptionDatabase;
-
-    @BindView(R.id.spinner)
-    Spinner spinner;
-
-    @BindView(R.id.input)
-    EditText input;
+    private Spinner spinner;
+    private EditText input;
 
     private void loadSpinner() {
         ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
@@ -94,33 +88,46 @@ public class NewsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
-        ButterKnife.bind(this);
-        loadSpinner();
 
         recyclerListNews = findViewById(R.id.listNews);
         buttonUpdate = findViewById(R.id.buttonUpdate);
+        spinner = findViewById(R.id.spinner);
+        input = findViewById(R.id.input);
+
+        loadSpinner();
+
+        String section = savedInstanceState != null ? savedInstanceState.getString(INTENT_SECTION) : spinner.getSelectedItem().toString();
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
+
         recyclerListNews.setAdapter(adapter);
 
         configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
 
         loadDialog = buildLoadDialog();
 
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+        loader = new RetrofitLoader(section ,this::completeLoad, this::errorLoad);
         initialListener();
 
-        subscriptionDatabase = App.getDatabase().getNewsDAO().getAll()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((List<NewsEntity> list) -> {
-                        adapter.clear();
-                        for (NewsEntity entity : list) {
-                            App.logI("ADD: " + entity.getTitle());
-                            adapter.append(entity.toNewsItem());
-                        }
-                        adapter.notifyOriginNews();
-                        adapter.sort();
-                    });
+        loadFromDB(section);
+    }
+
+    private void loadFromDB(String section) {
+        adapter.setNewSection(section);
+        adapter.clear();
+        List<NewsEntity> list = App.getDatabase().getNewsDAO().getAllAsList();
+        for (NewsEntity entity : list) {
+            adapter.append(entity.toNewsItem());
+        }
+        adapter.notifyOriginNews();
+        adapter.sort();
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(INTENT_SECTION, spinner.getSelectedItem().toString());
     }
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
@@ -169,10 +176,15 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         loader.stop();
-        subscriptionDatabase.dispose();
+        adapter.clear();
     }
 
     @Override
@@ -208,6 +220,7 @@ public class NewsListActivity extends AppCompatActivity {
                     App.logE(e.getMessage());
                 }
             }
+            loadFromDB(stories.getSection());
         }
 
         loadDialog.dismiss();

@@ -18,7 +18,6 @@ import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 public class NewsItem implements Parcelable {
     public static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
-    public static final String INTENT_TAG = "NewsItem";
     private String title;
     private String imageUrl;
     private String previewText;

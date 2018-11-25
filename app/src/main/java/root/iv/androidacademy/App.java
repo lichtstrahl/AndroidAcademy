@@ -63,13 +63,13 @@ public class App extends Application {
                 .addMigrations(new Migration(1, 2) {
                                    @Override
                                    public void migrate(@NonNull SupportSQLiteDatabase database) {
-
+                                        App.logI("Used migration 1,2");
                                    }
                                },
                         new Migration(2,1) {
                             @Override
                             public void migrate(@NonNull SupportSQLiteDatabase database) {
-
+                                App.logI("Used migration 2,1");
                             }
                         })
                 .build();

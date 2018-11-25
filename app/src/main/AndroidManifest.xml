@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="root.iv.androidacademy">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,16 +16,12 @@
         <activity android:name=".activity.AboutActivity" />
         <activity
             android:name=".activity.NewsListActivity"
-            android:windowSoftInputMode="stateUnchanged">
-
-        </activity>
+            android:windowSoftInputMode="stateUnchanged" />
         <activity android:name=".activity.NewsDetailsActivity" />
         <activity android:name=".activity.IntoActivity">
             <intent-filter>
-
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

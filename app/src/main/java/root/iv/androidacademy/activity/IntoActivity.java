@@ -18,6 +18,18 @@ public class IntoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (disposable != null)
+            disposable.dispose();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         boolean into = getPreferences(MODE_PRIVATE).getBoolean(KEY_INTO, true);
 
@@ -25,7 +37,7 @@ public class IntoActivity extends AppCompatActivity {
             setContentView(R.layout.activity_into);
 
             disposable = Completable.complete()
-                    .delay(3, TimeUnit.SECONDS)
+                    .delay(1, TimeUnit.SECONDS)
                     .subscribe(this::startNewsListActivity);
         } else {
             startNewsListActivity();
@@ -33,12 +45,6 @@ public class IntoActivity extends AppCompatActivity {
         getPreferences(MODE_PRIVATE).edit()
                 .putBoolean(KEY_INTO, !into)
                 .commit();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        disposable.dispose();
     }
 
     private void startNewsListActivity() {

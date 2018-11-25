@@ -3,8 +3,10 @@ package root.iv.androidacademy.activity.listener;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import root.iv.androidacademy.App;
 import root.iv.androidacademy.activity.NewsDetailsActivity;
 import root.iv.androidacademy.news.NewsAdapter;
+import root.iv.androidacademy.news.NewsItem;
 
 public class NewsItemClickListener implements View.OnClickListener, Listener{
     private RecyclerView recyclerView;
@@ -18,7 +20,9 @@ public class NewsItemClickListener implements View.OnClickListener, Listener{
     @Override
     public void onClick(View v) {
         int pos = recyclerView.getChildAdapterPosition(v);
-        NewsDetailsActivity.start(recyclerView.getContext(), adapter.getItem(pos));
+        NewsItem item = adapter.getItem(pos);
+        int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
+        NewsDetailsActivity.start(recyclerView.getContext(), id);
     }
 
     public void unsubscribe() {

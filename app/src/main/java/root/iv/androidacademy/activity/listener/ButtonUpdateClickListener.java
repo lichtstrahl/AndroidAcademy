@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.Spinner;
 
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 
 public class ButtonUpdateClickListener implements View.OnClickListener, Listener {
@@ -22,8 +21,13 @@ public class ButtonUpdateClickListener implements View.OnClickListener, Listener
     @Override
     public void onClick(View v) {
         loadDialog.show();
-
-        loader.setSection(spinner.getSelectedItem().toString());
+        Object item = spinner.getSelectedItem();
+        if (item == null) {
+            App.logI("Spinner item is NULL");
+        } else {
+            App.logI("Spinner item not NULL");
+        }
+        loader.setSection(item.toString());
         loader.load();
     }
 

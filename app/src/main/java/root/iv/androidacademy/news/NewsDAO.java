@@ -23,11 +23,17 @@ public interface NewsDAO {
     void update(NewsEntity item);
 
     @Query("SELECT * FROM NewsEntity")
-    Flowable<List<NewsEntity>> getAll();
+    Flowable<List<NewsEntity>> getAllAsFlowable();
+
+    @Query("SELECT * FROM NewsEntity")
+    List<NewsEntity> getAllAsList();
 
     @Query("DELETE FROM NewsEntity")
     void deleteAll();
 
     @Query("SELECT * FROM NewsEntity WHERE id = :id")
     NewsEntity getItemById(int id);
+
+    @Query("SELECT id FROM NewsEntity WHERE title = :title AND previewText = :preview AND publishDate = :date")
+    int getId(String title, String preview, String date);
 }
