@@ -79,6 +79,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         originNews.addAll(listNews);
     }
 
+    public void appendAll(List<NewsItem> items) {
+        for (NewsItem item : items)
+            append(item);
+    }
+
     /**
      * Вызывается каждый раз, когда происходит изменение текста для поиска
      * @param filter - текст для поиска

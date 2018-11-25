@@ -4,6 +4,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Spinner;
 
+import root.iv.androidacademy.App;
+import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 
 public class ButtonUpdateClickListener implements View.OnClickListener, Listener {

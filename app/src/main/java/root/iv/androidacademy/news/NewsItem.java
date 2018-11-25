@@ -13,10 +13,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import root.iv.androidacademy.App;
 import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 public class NewsItem implements Parcelable {
-    private static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
+    public static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
     public static final String INTENT_TAG = "NewsItem";
     private String title;
     private String imageUrl;
@@ -136,6 +137,12 @@ public class NewsItem implements Parcelable {
 
     public String getPublishDateString() {
         SimpleDateFormat dFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        Date date;
+        try {
+            date = (Date)dFormat.parseObject(dFormat.format(publishDate), new ParsePosition(0));
+        } catch (Exception e) {
+            App.logE(e.getMessage());
+        }
         return dFormat.format(publishDate);
     }
 

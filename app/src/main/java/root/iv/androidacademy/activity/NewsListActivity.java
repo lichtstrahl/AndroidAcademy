@@ -22,21 +22,32 @@ import android.widget.Toast;
 
 import java.text.ParseException;
 import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import root.iv.androidacademy.App;
-import root.iv.androidacademy.activity.listener.ListenerEditText;
+import root.iv.androidacademy.R;
 import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
 import root.iv.androidacademy.activity.listener.Listener;
+import root.iv.androidacademy.activity.listener.ListenerEditText;
 import root.iv.androidacademy.activity.listener.NewsItemClickListener;
 import root.iv.androidacademy.news.NewsAdapter;
+import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
-import root.iv.androidacademy.R;
 import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
+
+/* TODO План такой:
+            * Нажали на загрузку
+            * Удалили всё, что до этого хранилось в Room
+            * Загрузили в Room новости
+            * Из Базы они сразу же отправляются на экран
+ */
 
 public class NewsListActivity extends AppCompatActivity {
     private RecyclerView recyclerListNews;
@@ -48,6 +59,7 @@ public class NewsListActivity extends AppCompatActivity {
     private Listener adapterListener;
     private Listener buttonUpdateListener;
     private int spinnerCount = 0;
+    private Disposable subscriptionDatabase;
 
     @BindView(R.id.spinner)
     Spinner spinner;
@@ -97,6 +109,18 @@ public class NewsListActivity extends AppCompatActivity {
 
         loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
         initialListener();
+
+        subscriptionDatabase = App.getDatabase().getNewsDAO().getAll()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((List<NewsEntity> list) -> {
+                        adapter.clear();
+                        for (NewsEntity entity : list) {
+                            App.logI("ADD: " + entity.getTitle());
+                            adapter.append(entity.toNewsItem());
+                        }
+                        adapter.notifyOriginNews();
+                        adapter.sort();
+                    });
     }
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
@@ -148,12 +172,13 @@ public class NewsListActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         loader.stop();
+        subscriptionDatabase.dispose();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        inputListener.subscribe(((NewsAdapter) recyclerListNews.getAdapter())::setFilter);
+        inputListener.subscribe(adapter::setFilter);
         adapter.addOnClickListener(adapterListener);
         buttonUpdate.setOnClickListener(buttonUpdateListener);
     }
@@ -172,19 +197,18 @@ public class NewsListActivity extends AppCompatActivity {
      * @param stories
      */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
-        App.logI("Complete load: " + stories.getSection());
-        adapter.clear();
+        if (stories != null) {
+            App.getDatabase().getNewsDAO().deleteAll();
 
-        for (NewsDTO news : stories.getListNews()) {
-            try {
-                adapter.append(NewsItem.fromNewsDTO(news));
-            } catch (ParseException e) {
-                App.stdLog(e);
+            for (NewsDTO news : stories.getListNews()) {
+                try {
+                    NewsItem item = NewsItem.fromNewsDTO(news);
+                    App.getDatabase().getNewsDAO().insert(NewsEntity.fromNewsItem(item));
+                } catch (ParseException e) {
+                    App.logE(e.getMessage());
+                }
             }
         }
-
-        adapter.notifyOriginNews();
-        adapter.sort();
 
         loadDialog.dismiss();
     }

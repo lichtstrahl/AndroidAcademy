@@ -1,8 +1,13 @@
 package root.iv.androidacademy;
 
 import android.app.Application;
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.migration.Migration;
+import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.facebook.stetho.Stetho;
 
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -17,6 +22,9 @@ import root.iv.androidacademy.retrofit.TopStoriesAPI;
 public class App extends Application {
     private static Retrofit retrofit;
     private static TopStoriesAPI apiTopStories;
+    private static NewsDatabase database;
+
+
 
     public static TopStoriesAPI getApiTopStories() {
         return apiTopStories;
@@ -25,12 +33,45 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Create an InitializerBuilder
+        Stetho.InitializerBuilder initializerBuilder =
+                Stetho.newInitializerBuilder(this);
+
+        // Enable Chrome DevTools
+        initializerBuilder.enableWebKitInspector(
+                Stetho.defaultInspectorModulesProvider(this)
+        );
+
+        // Enable command line interface
+        initializerBuilder.enableDumpapp(
+                Stetho.defaultDumperPluginsProvider(this)
+        );
+
+        // Use the InitializerBuilder to generate an Initializer
+        Stetho.Initializer initializer = initializerBuilder.build();
+
+        // Initialize Stetho with the Initializer
+        Stetho.initialize(initializer);
+
         OkHttpClient client = createClient();
         configurationRetrofit(client);
         apiTopStories = retrofit.create(TopStoriesAPI.class);
 
-        Room.databaseBuilder(this, NewsDatabase.class, BuildConfig.DATABASE_NAME)
+        database = Room.databaseBuilder(this, NewsDatabase.class, BuildConfig.DATABASE_NAME)
                 .allowMainThreadQueries()
+                .addMigrations(new Migration(1, 2) {
+                                   @Override
+                                   public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                                   }
+                               },
+                        new Migration(2,1) {
+                            @Override
+                            public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+                            }
+                        })
                 .build();
     }
 
@@ -64,13 +105,14 @@ public class App extends Application {
         return retrofit;
     }
 
-    public static void stdLog(Throwable e) {
-        Log.e(BuildConfig.TAG_GLOBAL, e.getMessage());
+    public static NewsDatabase getDatabase() {
+        return database;
     }
 
-    public static void stdLog(String msg) {
-        Log.e(BuildConfig.TAG_GLOBAL, msg);
+    public static void logE(String e) {
+        Log.e(BuildConfig.TAG_GLOBAL, e);
     }
+
     public static void logI(String msg) {
         Log.i(BuildConfig.TAG_GLOBAL, msg);
     }

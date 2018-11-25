@@ -8,6 +8,8 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface NewsDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,7 +23,10 @@ public interface NewsDAO {
     void update(NewsEntity item);
 
     @Query("SELECT * FROM NewsEntity")
-    List<NewsEntity> getAll();
+    Flowable<List<NewsEntity>> getAll();
+
+    @Query("DELETE FROM NewsEntity")
+    void deleteAll();
 
     @Query("SELECT * FROM NewsEntity WHERE id = :id")
     NewsEntity getItemById(int id);

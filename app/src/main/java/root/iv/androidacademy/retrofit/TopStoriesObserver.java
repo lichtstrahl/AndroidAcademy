@@ -69,7 +69,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         try {
             error.run();
         } catch (Exception e) {
-            App.stdLog(e);
+            App.logE(e.getMessage());
         }
     }
 
@@ -80,7 +80,7 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
 
     @Override
     public void onError(Throwable e) {
-        App.stdLog(e);
+        App.logE(e.getMessage());
         error();
     }
 
