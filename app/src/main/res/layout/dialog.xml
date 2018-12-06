@@ -1,22 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-
-    android:layout_width="@dimen/dialogW"
-    android:layout_height="@dimen/dialogH">
+    android:id="@+id/layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <ProgressBar
         android:id="@+id/progress"
-        android:layout_width="@dimen/dialogH"
-        android:layout_height="@dimen/dialogH"
-        android:layout_alignParentStart="true"/>
-
+        android:layout_width="@dimen/xxIcon"
+        android:layout_height="@dimen/xxIcon"
+        android:layout_margin="@dimen/stdMargin"
+        android:visibility="visible" />
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/text"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_toEndOf="@id/progress"
-        android:layout_centerInParent="true"
+        android:layout_alignTop="@id/progress"
+        android:layout_alignBottom="@id/progress"
+        android:layout_margin="@dimen/stdMargin"
+        android:textSize="@dimen/bigText"
         android:text="@string/loading"/>
+    <ImageButton
+        android:id="@+id/buttonReconnect"
+        android:layout_width="@dimen/bigIcon"
+        android:layout_height="@dimen/bigIcon"
+        android:backgroundTint="@android:color/transparent"
+        android:src="@drawable/ic_reconnect"
+        android:contentDescription="@string/reconnect"
+        android:layout_alignStart="@id/text"
+        android:layout_alignEnd="@id/text"
+        android:layout_below="@id/text"
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -4,8 +4,30 @@
     <color name="colorPrimaryDark">#33691e</color>
     <color name="colorAccent">#81c784</color>
 
-    <color name="criminalColor">#68a1887f</color>
-    <color name="darwinColor">#6ed7a43f</color>
-    <color name="animalColor">#a5d6a7</color>
-    <color name="musicColor">#80deea</color>
+    <color name="colorHome">#FFEBEE</color>
+    <color name="colorOpinion">#EF9A9A</color>
+    <color name="colorWorld">#EF5350</color>
+    <color name="colorNational">#FF8A80</color>
+    <color name="colorPolitics">#F8BBD0</color>
+    <color name="colorUpshot">#F06292</color>
+    <color name="colorNyregion">#FF80AB</color>
+    <color name="colorBusiness">#FF4081</color>
+    <color name="colorTechnology">#F3E5F5</color>
+    <color name="colorScience">#E1BEE7</color>
+    <color name="colorHealth">#CE93D8</color>
+    <color name="colorSports">#EA80FC</color>
+    <color name="colorArts">#E040FB</color>
+    <color name="colorBooks">#EDE7F6</color>
+    <color name="colorMovies">#D1C4E9</color>
+    <color name="colorTheater">#E8F5E9</color>
+    <color name="colorSundayreview">#81C784</color>
+    <color name="colorFashion">#DCEDC8</color>
+    <color name="colorTmagazine">#F4FF81</color>
+    <color name="colorFood">#C0CA33</color>
+    <color name="colorTravel">#C5E1A5</color>
+    <color name="colorMagazine">#F9FBE7</color>
+    <color name="colorRealestate">#FFF8E1</color>
+    <color name="colorAutomobiles">#FFECB3</color>
+    <color name="colorObituaries">#D7CCC8</color>
+    <color name="colorInsider">#A1887F</color>
 </resources>

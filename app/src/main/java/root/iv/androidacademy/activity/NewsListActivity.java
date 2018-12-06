@@ -3,60 +3,85 @@ package root.iv.androidacademy.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import java.text.ParseException;
+import java.util.LinkedList;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
-import root.iv.androidacademy.DataUtils;
+import root.iv.androidacademy.App;
+import root.iv.androidacademy.ListenerEditText;
 import root.iv.androidacademy.NewsAdapter;
 import root.iv.androidacademy.NewsItem;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.dto.ResponseRandomGIF;
+import root.iv.androidacademy.Section;
+import root.iv.androidacademy.retrofit.RetrofitLoader;
+import root.iv.androidacademy.retrofit.dto.NewsDTO;
+import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
 public class NewsListActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String TAG = "NewsListActivity";
-    private final String URL = "http://api.giphy.com";
     private RecyclerView listNews;
     private AlertDialog loadDialog;
-    private ILoader loader;
+    private RetrofitLoader loader;
+    private ListenerEditText inputListener;
+    private int spinnerCount = 0;
+
+    @BindView(R.id.spinner)
+    Spinner spinner;
+
+    @BindView(R.id.input)
+    EditText input;
+
+    private void loadSpinner() {
+        ArrayAdapter<Section> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (spinnerCount++ > 0) {
+                            String section = Section.SECTIONS[position].getName();
+                            Toast.makeText(NewsListActivity.this, section, Toast.LENGTH_SHORT).show();
+                            App.logI("Spinner selected :" + section);
+                            ((NewsAdapter) listNews.getAdapter()).setNewSection(section);
+                            loader.setSection(section);
+                            loader.load();
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
-        setTitle(R.string.news);
         ButterKnife.bind(this);
+        loadSpinner();
+
         listNews = findViewById(R.id.listNews);
         listNews.setAdapter(
                 NewsAdapter.getBuilderNewsAdapter()
+                .buildListNews(new LinkedList<>())
                 .buildInflater(LayoutInflater.from(this))
                 .buildListener(this)
                 .build()
@@ -68,12 +93,15 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
             listNews.setLayoutManager(new GridLayoutManager(this, 2));
         }
 
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(R.layout.dialog).setCancelable(false);
 
         loadDialog = builder.create();
         loadDialog.show();
+
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+
+        inputListener = new ListenerEditText(input);
     }
 
     @Override
@@ -99,44 +127,15 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
             case R.id.itemExit:
                 finish();
                 return true;
-            case R.id.itemTest:
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .build();
-                GifEndpoint gifEndpoint = retrofit.create(GifEndpoint.class);
-                gifEndpoint.random("eXCBWU376PVqBR8tSbhfbjl9d3nveiqQ").enqueue(new Callback<ResponseRandomGIF>() {
-                    @Override
-                    public void onResponse(Call<ResponseRandomGIF> call, Response<ResponseRandomGIF> response) {
-                        ResponseRandomGIF randomGIF = response.body();
-                        if (randomGIF != null) {
-
-                        } else
-                            Log.e(TAG, "Body is null");
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseRandomGIF> call, Throwable t) {
-                        Log.e(TAG, t.getMessage());
-                    }
-                });
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    interface GifEndpoint {
-        @GET("/v1/gifs/random")
-        Call<ResponseRandomGIF> random(@Query("api_key") String apiKey);
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
-        loader = new LoaderCommon();
+        loader.setSection(spinner.getSelectedItem().toString());
         loader.load();
     }
 
@@ -147,156 +146,47 @@ public class NewsListActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.i(TAG, String.valueOf(newConfig.orientation));
+    protected void onResume() {
+        super.onResume();
+        inputListener.subscribe(((NewsAdapter)listNews.getAdapter())::setFilter);
     }
 
-    interface Command {
-        void execute();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        inputListener.unsubscribe();
     }
 
-    // Загружаем все новости за раз в фоновом потоке
-    class LoaderCommon implements ILoader {
-        private Thread th = null;
-        private List<Command> commands = Arrays.asList(
-                new AppendToAdapter(),
-                new NotifyAdapter(),
-                new DismissDialog()
-        );
-        @Override
-        public void stop() {
-            if (th != null) th.interrupt();
-            // Пришлось убрать th = null
-        }
+    /**
+     * После окончания загрузки данных в адаптер сортируме их и замещаем originNews
+     * @param stories
+     */
+    private void completeLoad(@Nullable TopStoriesDTO stories) {
+        App.logI("Complete load: " + stories.getSection());
+        NewsAdapter adapter = (NewsAdapter)listNews.getAdapter();
+        if (stories != null) {
+            adapter.clear();
 
-        @Override
-        public void load() {
-            th = new Thread(() -> {
-                for (Command cmd : commands) {
-                    if (th.isInterrupted())
-                        return;
-                    cmd.execute();
-                }
-            });
-            th.start();
-        }
-
-        class DismissDialog implements Command {
-            @Override
-            public void execute() {
-                loadDialog.dismiss();
-            }
-        }
-        class NotifyAdapter implements Command {
-            @Override
-            public void execute() {
-                runOnUiThread(()->listNews.getAdapter().notifyDataSetChanged());
-            }
-        }
-        class AppendToAdapter implements Command {
-            @Override
-            public void execute() {
-                for (NewsItem item : DataUtils.NEWS) {
-                    if (th.isInterrupted())
-                        return;
-                    ((NewsAdapter) listNews.getAdapter()).append(item);
+            for (NewsDTO news : stories.getListNews()) {
+                try {
+                    adapter.append(NewsItem.fromNewsDTO(news));
+                } catch (ParseException e) {
+                    App.stdLog(e);
                 }
             }
+            adapter.notifyOriginNews();
+            adapter.sort();
         }
+
+        loadDialog.dismiss();
     }
 
-    // Загружаем новости по отдельности
-    class LoaderSplit implements ILoader {
-        private ExecutorService executor = null;
-
-        @Override
-        public void stop() {
-            if (executor != null) executor.shutdownNow();
-        }
-
-        @Override
-        public void load() {
-            int count = DataUtils.NEWS.size();
-            executor = Executors.newFixedThreadPool(count);
-            for (int i = 0; i < count; i++)
-                executor.execute(new RunnableNewsLoad(i, (NewsAdapter)listNews.getAdapter()));
-            executor.submit(() ->
-                    loadDialog.dismiss()
-            );
-        }
-    }
-
-    class LoaderRX implements ILoader {
-        private NewsItemObserver observer = null;
-
-        @Override
-        public void stop() {
-            if (observer != null) observer.dispose();
-        }
-
-        @Override
-        public void load() {
-            observer = new NewsItemObserver((NewsAdapter)listNews.getAdapter());
-            Observable.fromIterable(DataUtils.NEWS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.computation())
-                    .subscribe(observer);
-        }
-    }
-
-    interface ILoader {
-        void stop();
-        void load();
-    }
-
-
-    class NewsItemObserver implements Observer<NewsItem> {
-        private Disposable disposable;
-        private NewsAdapter adapter;
-
-        NewsItemObserver(NewsAdapter a) {
-            adapter = a;
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            disposable = d;
-        }
-
-        @Override
-        public void onNext(NewsItem newsItem) {
-            adapter.append(newsItem);
-            runOnUiThread(() ->adapter.notifyDataSetChanged());
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Log.e(NewsListActivity.TAG, e.getMessage());
-        }
-
-        @Override
-        public void onComplete() {
-            loadDialog.dismiss();
-        }
-
-        void dispose() {
-            disposable.dispose();
-        }
-    }
-
-    class RunnableNewsLoad implements Runnable {
-        private int index;
-        private NewsAdapter adapter;
-
-        RunnableNewsLoad(int i, NewsAdapter adapter) {
-            this.index = i;
-            this.adapter = adapter;
-        }
-        @Override
-        public void run() {
-            adapter.append(DataUtils.NEWS.get(index));
-            runOnUiThread(()->adapter.notifyDataSetChanged());
-        }
+    private void errorLoad() {
+        Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
+        loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
+        TextView textView = loadDialog.findViewById(R.id.text);
+        textView.setText(R.string.errorLoading);
+        loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
+        loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
     }
 }

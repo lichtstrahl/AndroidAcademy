@@ -9,37 +9,44 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static root.iv.androidacademy.Stopper.pause;
-
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-    private List<NewsItem> listNews;
+    private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа
+    private List<NewsItem> originNews;  // Что изначально пришло с сервера
     private LayoutInflater inflater;
     private View.OnClickListener listener;
-    private NewsAdapter(BuilderNewsAdapter builder){
+    private String curSection = Section.SECTIONS[0].getName();
+
+    private NewsAdapter(Builder builder){
         listNews = builder.listNews;
         inflater = builder.inflater;
         listener = builder.listener;
-    }
-    public static BuilderNewsAdapter getBuilderNewsAdapter() {
-        return new NewsAdapter.BuilderNewsAdapter();
+        originNews = new LinkedList<>();
     }
 
-    public static class BuilderNewsAdapter {
-        private List<NewsItem> listNews = new LinkedList<>();
-        private LayoutInflater inflater;
-        private View.OnClickListener listener;
-        public BuilderNewsAdapter buildListNews(List<NewsItem> items) {
+    public static Builder getBuilderNewsAdapter() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private List<NewsItem> listNews = null;
+        private LayoutInflater inflater = null;
+        private View.OnClickListener listener = null;
+
+        public Builder buildListNews(List<NewsItem> items) {
             listNews = items;
             return this;
         }
-        public BuilderNewsAdapter buildInflater(LayoutInflater inf) {
+
+        public Builder buildInflater(LayoutInflater inf) {
             inflater = inf;
             return this;
         }
-        public BuilderNewsAdapter buildListener(View.OnClickListener l) {
+
+        public Builder buildListener(View.OnClickListener l) {
             listener = l;
             return  this;
         }
@@ -54,13 +61,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         }
     }
 
+    public void setNewSection(String section) {
+        curSection = section;
+    }
+
     @NonNull
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new NewsViewHolder(inflater.inflate(R.layout.item_news, viewGroup, false));
+        View view = inflater.inflate(R.layout.item_news, viewGroup, false);
+        if (i != 0) view.setVisibility(View.GONE);
+        return new NewsViewHolder(view);
     }
-
-
 
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder viewHolder, int i) {
@@ -72,19 +83,43 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return listNews.size();
     }
 
-
-
     public NewsItem getItem(int pos) {
         return listNews.get(pos);
     }
 
+    public void clear() {
+        int count = listNews.size();
+        listNews.clear();
+        notifyItemRangeRemoved(0, count);
+    }
+
     public void append(NewsItem item) {
         listNews.add(item);
-        pause(200);
+        notifyItemInserted(listNews.size()-1);
     }
-    public void append(List<NewsItem> items) {
-        for (NewsItem item : items)
-            append(item);
+
+    public void notifyOriginNews() {
+        originNews.clear();
+        originNews.addAll(listNews);
+    }
+
+    /**
+     * Вызывается каждый раз, когда происходит изменение текста для поиска
+     * @param filter - текст для поиска
+     */
+    public void setFilter(String filter) {
+        clear();
+        for (NewsItem item : originNews) {
+            String fullText = item.getTitle() + " " + item.getPreviewText() + " " + item.getFullText();
+            if (fullText.toLowerCase().contains(filter.toLowerCase()))
+                append(item);
+        }
+        sort();
+    }
+
+    public void sort() {
+        Collections.sort(listNews, NewsItem.Comparator);
+        notifyDataSetChanged();
     }
 
     class NewsViewHolder extends RecyclerView.ViewHolder {
@@ -94,6 +129,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         private final TextView viewPreview;
         private final TextView viewDate;
         private final ViewGroup layout;
+
         NewsViewHolder(View item) {
             super(item);
             layout = item.findViewById(R.id.layoutBG);
@@ -105,16 +141,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             item.setOnClickListener(listener);
         }
 
-
-
         public void bindNewsItemView(int pos) {
             NewsItem newsItem = listNews.get(pos);
-            viewCategory.setText(newsItem.getCategory().getName());
+            viewCategory.setText(newsItem.getSubSection());
+            viewCategory.setVisibility(newsItem.getSubSection().isEmpty() ? View.GONE : View.VISIBLE);
             viewTitle.setText(newsItem.getTitle());
             viewPreview.setText(newsItem.getPreviewText());
             viewDate.setText(newsItem.getPublishDateString());
-            GlideApp.with(imageView.getContext()).load(newsItem.getImageUrl()).into(imageView);
-            int color = layout.getContext().getResources().getColor(newsItem.getCategory().getColor());
+            GlideApp.with(imageView.getContext())
+                    .load(newsItem.getImageUrl())
+                    .into(imageView);
+            imageView.setVisibility(newsItem.getImageUrl().isEmpty() ? View.GONE : View.VISIBLE);
+            int colorID = Section.getColorForSection(curSection);
+            int color = layout.getContext().getResources().getColor(colorID);
             layout.setBackgroundColor(color);
         }
     }

@@ -3,7 +3,6 @@ package root.iv.androidacademy;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 
 import io.reactivex.disposables.Disposable;
@@ -14,13 +13,9 @@ public class ListenerEditText implements TextWatcher {
     private PublishSubject<String> subject;
     private Disposable disposable;
 
-    public ListenerEditText(EditText ed, View view) {
+    public ListenerEditText(EditText ed) {
         subject = PublishSubject.create();
         ed.addTextChangedListener(this);
-        disposable = subject.subscribe(
-                x -> view.setVisibility(x.isEmpty() ? View.INVISIBLE : View.VISIBLE),
-                e -> Log.e(TAG, e.getMessage())
-        );
     }
 
     @Override
@@ -36,6 +31,13 @@ public class ListenerEditText implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
         // Не используется
+    }
+
+    public void subscribe(Action1<String> action1) {
+        disposable = subject.subscribe(
+                action1::run,
+                e -> Log.e(TAG, e.getMessage())
+        );
     }
 
     public void unsubscribe() {

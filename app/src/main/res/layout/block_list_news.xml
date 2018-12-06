@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="@dimen/spinnerWidth"
+            android:layout_height="@dimen/headHeight"
+            android:layout_margin="@dimen/smallMargin"
+            android:layout_gravity="center_vertical"/>
+
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/headHeight"
+            android:textSize="@dimen/bigText"
+            android:layout_margin="@dimen/smallMargin"
+            android:inputType="textPersonName"/>
+    </LinearLayout>
+
+
+
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:toolsList="http://schemas.android.com/tools"
+        android:id="@+id/listNews"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/head"
+        android:layout_marginStart="@dimen/stdMargin"
+        android:layout_marginEnd="@dimen/stdMargin"
+        toolsList:listitem="@layout/item_news">
+    </android.support.v7.widget.RecyclerView>
+</RelativeLayout>
