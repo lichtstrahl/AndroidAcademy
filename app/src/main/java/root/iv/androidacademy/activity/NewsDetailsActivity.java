@@ -27,14 +27,6 @@ public class NewsDetailsActivity extends AppCompatActivity{
         context.startActivity(intent);
     }
 
-    @BindView(R.id.viewTitle)
-    TextView viewTitle;
-    @BindView(R.id.viewDate)
-    TextView viewDate;
-    @BindView(R.id.viewImage)
-    ImageView viewImage;
-    @BindView(R.id.layoutBG)
-    ScrollView scrollView;
     @BindView(R.id.webView)
     WebView webView;
 
@@ -47,11 +39,6 @@ public class NewsDetailsActivity extends AppCompatActivity{
         int id = getIntent().getIntExtra(INTENT_ID, -1);
         NewsItem newsItem = App.getDatabase().getNewsDAO().getItemById(id).toNewsItem();
         setTitle(newsItem.getSubSection());
-        viewTitle.setText(newsItem.getTitle());
-        viewDate.setText(newsItem.getPublishDateString());
-        GlideApp.with(this).load(newsItem.getImageUrl()).into(viewImage);
-        int color = Section.getColorForSection(newsItem.getSubSection());
-        scrollView.setBackgroundColor(getResources().getColor(color));
         webView.loadUrl(newsItem.getFullText());
     }
 }
