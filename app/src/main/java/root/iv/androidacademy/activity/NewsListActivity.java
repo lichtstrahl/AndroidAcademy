@@ -115,8 +115,8 @@ public class NewsListActivity extends AppCompatActivity {
             NewsDetailsActivity.start(recyclerListNews.getContext(), id);
         });
 
-        scrollListener.subscribe((dy) -> {
-            if (Math.abs(dy) > 5) {
+        scrollListener.subscribe((state) -> {
+            if (state != 0) {
                 buttonUpdate.hide();
             } else {
                 buttonUpdate.show();
