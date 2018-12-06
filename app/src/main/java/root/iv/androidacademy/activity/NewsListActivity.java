@@ -1,6 +1,7 @@
 package root.iv.androidacademy.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -38,15 +39,9 @@ import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
-/* TODO План такой:
-            * Нажали на загрузку
-            * Удалили всё, что до этого хранилось в Room
-            * Загрузили в Room новости
-            * Из Базы они сразу же отправляются на экран
- */
-
 public class NewsListActivity extends AppCompatActivity {
     private static final String INTENT_SECTION = "INTENT_SECTION";
+    private static final String LAST_SECTION = "LAST_SECTION";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -58,6 +53,7 @@ public class NewsListActivity extends AppCompatActivity {
     private int spinnerCount = 0;
     private Spinner spinner;
     private EditText input;
+    private String section;
 
     private void loadSpinner() {
         ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
@@ -80,6 +76,7 @@ public class NewsListActivity extends AppCompatActivity {
                         // Никогда не вызывается
                     }
                 });
+        spinner.setSelection(getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0));
     }
 
     @Override
@@ -91,10 +88,9 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdate = findViewById(R.id.buttonUpdate);
         spinner = findViewById(R.id.spinner);
         input = findViewById(R.id.input);
-
         loadSpinner();
 
-        String section = savedInstanceState != null ? savedInstanceState.getString(INTENT_SECTION) : spinner.getSelectedItem().toString();
+        section = savedInstanceState != null ? savedInstanceState.getString(INTENT_SECTION) : spinner.getSelectedItem().toString();
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
 
@@ -106,8 +102,6 @@ public class NewsListActivity extends AppCompatActivity {
 
         loader = new RetrofitLoader(section ,this::completeLoad, this::errorLoad);
         initialListener();
-
-        loadFromDB(section);
     }
 
     private void loadFromDB(String section) {
@@ -176,6 +170,8 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        loadFromDB(section);
     }
 
     @Override
@@ -183,6 +179,12 @@ public class NewsListActivity extends AppCompatActivity {
         super.onStop();
         loader.stop();
         adapter.clear();
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        preferences
+                .edit()
+                .putInt(LAST_SECTION, spinner.getSelectedItemPosition())
+                .apply();
     }
 
     @Override
