@@ -27,6 +27,7 @@ import java.util.List;
 
 import io.reactivex.functions.Action;
 import root.iv.androidacademy.activity.listener.ScrollListener;
+import root.iv.androidacademy.activity.listener.SpinnerInteractionListener;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
@@ -54,7 +55,7 @@ public class NewsListActivity extends AppCompatActivity {
     private ClickListener<Action1<View>> adapterListener;
     private ClickListener<Action> buttonUpdateListener;
     private ScrollListener scrollListener;
-    private int spinnerCount = 0;
+    private SpinnerInteractionListener spinnerListener;
     private Spinner spinner;
     private EditText input;
 
@@ -76,7 +77,6 @@ public class NewsListActivity extends AppCompatActivity {
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
         recyclerListNews.addOnScrollListener(new ScrollListener());
-
         configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
 
         loadDialog = buildLoadDialog();
@@ -123,10 +123,20 @@ public class NewsListActivity extends AppCompatActivity {
             }
         });
 
+        spinnerListener.subscribe((position) -> {
+            String section = Section.SECTIONS[position].getName();
+
+            adapter.setNewSection(section);
+            loader.setSection(section);
+            loader.load();
+        });
+
         recyclerListNews.addOnScrollListener(scrollListener);
         inputListener.subscribe(adapter::setFilter);
         adapter.addOnClickListener(adapterListener);
         buttonUpdate.setOnClickListener(buttonUpdateListener);
+        spinner.setOnTouchListener(spinnerListener);
+        spinner.setOnItemSelectedListener(spinnerListener);
     }
 
     @Override
@@ -137,6 +147,7 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdateListener.unsubscribe();
         adapterListener.unsubscribe();
         adapter.delOnClickListener();
+        spinnerListener.unsubscribe();
     }
 
     @Override
@@ -161,24 +172,6 @@ public class NewsListActivity extends AppCompatActivity {
     private void loadSpinner() {
         ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
         spinner.setAdapter(spinnerAdapter);
-        spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (spinnerCount++ > 0) {
-                            String section = Section.SECTIONS[position].getName();
-
-                            adapter.setNewSection(section);
-                            loader.setSection(section);
-                            loader.load();
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // Никогда не вызывается
-                    }
-                });
         spinner.setSelection(getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0));
     }
 
@@ -216,12 +209,13 @@ public class NewsListActivity extends AppCompatActivity {
         adapterListener = new NewsItemClickListener();
         buttonUpdateListener = new ButtonUpdateClickListener();
         scrollListener = new ScrollListener();
+        spinnerListener = new SpinnerInteractionListener();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.option_menu,menu);
+        getMenuInflater().inflate(R.menu.option_menu_list,menu);
         return true;
     }
 

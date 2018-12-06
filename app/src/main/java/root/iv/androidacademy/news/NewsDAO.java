@@ -22,6 +22,9 @@ public interface NewsDAO {
     @Insert
     void update(NewsEntity item);
 
+    @Query("DELETE FROM NewsEntity WHERE id = :id")
+    void delete(int id);
+
     @Query("SELECT * FROM NewsEntity")
     Flowable<List<NewsEntity>> getAllAsFlowable();
 

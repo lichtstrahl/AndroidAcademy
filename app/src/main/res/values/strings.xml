@@ -41,5 +41,6 @@
     <string name="menuItemTest">Test</string>
     <string name="reconnect">Reconnect</string>
     <string name="menuItemSpinner" translatable="false">spinner</string>
-    <string name="welcome">Welcome!</string>
+    <string name="welcome" translatable="false">Welcome!</string>
+    <string name="delete">Delete</string>
 </resources>
