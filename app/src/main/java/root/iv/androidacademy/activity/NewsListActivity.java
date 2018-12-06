@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.reactivex.functions.Action;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
@@ -38,6 +39,7 @@ import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
+import root.iv.androidacademy.util.Action1;
 
 public class NewsListActivity extends AppCompatActivity {
     private static final String INTENT_SECTION = "INTENT_SECTION";
@@ -48,12 +50,101 @@ public class NewsListActivity extends AppCompatActivity {
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
     private ListenerEditText inputListener;
-    private Listener adapterListener;
-    private Listener buttonUpdateListener;
+    private Listener<Action1<View>> adapterListener;
+    private Listener<Action> buttonUpdateListener;
     private int spinnerCount = 0;
     private Spinner spinner;
     private EditText input;
-    private String section;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_news_list);
+
+        recyclerListNews = findViewById(R.id.listNews);
+        buttonUpdate = findViewById(R.id.buttonUpdate);
+        spinner = findViewById(R.id.spinner);
+        input = findViewById(R.id.input);
+        loadSpinner();
+
+        if (savedInstanceState != null) {
+            spinner.setSelection(savedInstanceState.getInt(INTENT_SECTION, 0));
+        }
+
+        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
+        recyclerListNews.setAdapter(adapter);
+
+
+        configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
+
+        loadDialog = buildLoadDialog();
+
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
+        initialListener();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        loadFromDB(spinner.getSelectedItem().toString());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        buttonUpdateListener.subscribe(() -> {
+            loadDialog.show();
+            Object item = spinner.getSelectedItem();
+            if (item == null) {
+                App.logI("Spinner item is NULL");
+            } else {
+                App.logI("Spinner item not NULL");
+            }
+            loader.setSection(item.toString());
+            loader.load();
+        });
+
+        adapterListener.subscribe((view) -> {
+            int pos = recyclerListNews.getChildAdapterPosition(view);
+            NewsItem item = adapter.getItem(pos);
+            int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
+            NewsDetailsActivity.start(recyclerListNews.getContext(), id);
+        });
+
+        inputListener.subscribe(adapter::setFilter);
+        adapter.addOnClickListener(adapterListener);
+        buttonUpdate.setOnClickListener(buttonUpdateListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        inputListener.unsubscribe();
+        buttonUpdateListener.unsubscribe();
+        adapterListener.unsubscribe();
+        adapter.delOnClickListener();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        loader.stop();
+        adapter.clear();
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        preferences
+                .edit()
+                .putInt(LAST_SECTION, spinner.getSelectedItemPosition())
+                .apply();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(INTENT_SECTION, spinner.getSelectedItemPosition());
+    }
 
     private void loadSpinner() {
         ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
@@ -79,31 +170,6 @@ public class NewsListActivity extends AppCompatActivity {
         spinner.setSelection(getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0));
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_list);
-
-        recyclerListNews = findViewById(R.id.listNews);
-        buttonUpdate = findViewById(R.id.buttonUpdate);
-        spinner = findViewById(R.id.spinner);
-        input = findViewById(R.id.input);
-        loadSpinner();
-
-        section = savedInstanceState != null ? savedInstanceState.getString(INTENT_SECTION) : spinner.getSelectedItem().toString();
-
-        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
-
-        recyclerListNews.setAdapter(adapter);
-
-        configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
-
-        loadDialog = buildLoadDialog();
-
-        loader = new RetrofitLoader(section ,this::completeLoad, this::errorLoad);
-        initialListener();
-    }
-
     private void loadFromDB(String section) {
         adapter.setNewSection(section);
         adapter.clear();
@@ -114,12 +180,6 @@ public class NewsListActivity extends AppCompatActivity {
         adapter.notifyOriginNews();
         adapter.sort();
 
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(INTENT_SECTION, spinner.getSelectedItem().toString());
     }
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
@@ -141,8 +201,8 @@ public class NewsListActivity extends AppCompatActivity {
 
     private void initialListener() {
         inputListener = new ListenerEditText(input);
-        adapterListener = new NewsItemClickListener(recyclerListNews);
-        buttonUpdateListener = new ButtonUpdateClickListener(loader, spinner, loadDialog);
+        adapterListener = new NewsItemClickListener();
+        buttonUpdateListener = new ButtonUpdateClickListener();
     }
 
     @Override
@@ -165,43 +225,6 @@ public class NewsListActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        loadFromDB(section);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        loader.stop();
-        adapter.clear();
-
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        preferences
-                .edit()
-                .putInt(LAST_SECTION, spinner.getSelectedItemPosition())
-                .apply();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        inputListener.subscribe(adapter::setFilter);
-        adapter.addOnClickListener(adapterListener);
-        buttonUpdate.setOnClickListener(buttonUpdateListener);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        inputListener.unsubscribe();
-        buttonUpdateListener.unsubscribe();
-        adapterListener.unsubscribe();
-        adapter.delOnClickListener();
     }
 
     /**

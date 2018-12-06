@@ -1,38 +1,31 @@
 package root.iv.androidacademy.activity.listener;
 
-import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.Spinner;
 
+import javax.annotation.Nullable;
+
+import io.reactivex.functions.Action;
 import root.iv.androidacademy.app.App;
-import root.iv.androidacademy.retrofit.RetrofitLoader;
 
-public class ButtonUpdateClickListener implements View.OnClickListener, Listener {
-    private Spinner spinner;
-    private RetrofitLoader loader;
-    private AlertDialog loadDialog;
-
-    public ButtonUpdateClickListener(RetrofitLoader loader, Spinner spinner, AlertDialog dialog) {
-        this.loader = loader;
-        this.spinner = spinner;
-        this.loadDialog = dialog;
-    }
+public class ButtonUpdateClickListener implements View.OnClickListener, Listener<Action> {
+    @Nullable
+    private Action action;
 
     @Override
     public void onClick(View v) {
-        loadDialog.show();
-        Object item = spinner.getSelectedItem();
-        if (item == null) {
-            App.logI("Spinner item is NULL");
-        } else {
-            App.logI("Spinner item not NULL");
+        try {
+            if (action != null) action.run();
+        } catch (Exception e) {
+            App.logE(e.getMessage());
         }
-        loader.setSection(item.toString());
-        loader.load();
     }
 
     public void unsubscribe() {
-        loader = null;
-        spinner = null;
+        action = null;
+    }
+
+    @Override
+    public void subscribe(Action a) {
+        action = a;
     }
 }
