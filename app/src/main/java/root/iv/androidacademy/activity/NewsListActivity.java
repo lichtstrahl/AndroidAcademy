@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.functions.Action;
+import root.iv.androidacademy.activity.listener.NewsItemLongClickListener;
 import root.iv.androidacademy.activity.listener.ScrollListener;
 import root.iv.androidacademy.activity.listener.SpinnerInteractionListener;
 import root.iv.androidacademy.app.App;
@@ -54,6 +55,7 @@ public class NewsListActivity extends AppCompatActivity {
     private ListenerEditText inputListener;
     private ClickListener<Action1<View>> adapterListener;
     private ClickListener<Action> buttonUpdateListener;
+    private NewsItemLongClickListener adapterLongListener;
     private ScrollListener scrollListener;
     private SpinnerInteractionListener spinnerListener;
     private Spinner spinner;
@@ -115,6 +117,13 @@ public class NewsListActivity extends AppCompatActivity {
             NewsDetailsActivity.start(recyclerListNews.getContext(), id);
         });
 
+        adapterLongListener.subscribe((view) -> {
+            int pos = recyclerListNews.getChildAdapterPosition(view);
+            NewsItem item = adapter.getItem(pos);
+            int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
+            EditNewsActivity.start(recyclerListNews.getContext(), id);
+        });
+
         scrollListener.subscribe((state) -> {
             if (state != 0) {
                 buttonUpdate.hide();
@@ -134,6 +143,7 @@ public class NewsListActivity extends AppCompatActivity {
         recyclerListNews.addOnScrollListener(scrollListener);
         inputListener.subscribe(adapter::setFilter);
         adapter.addOnClickListener(adapterListener);
+        adapter.addOnLongClickListener(adapterLongListener);
         buttonUpdate.setOnClickListener(buttonUpdateListener);
         spinner.setOnTouchListener(spinnerListener);
         spinner.setOnItemSelectedListener(spinnerListener);
@@ -147,6 +157,7 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdateListener.unsubscribe();
         adapterListener.unsubscribe();
         adapter.delOnClickListener();
+        adapter.delOnLongClickListener();
         spinnerListener.unsubscribe();
     }
 
@@ -207,6 +218,7 @@ public class NewsListActivity extends AppCompatActivity {
     private void initialListener() {
         inputListener = new ListenerEditText(input);
         adapterListener = new NewsItemClickListener();
+        adapterLongListener = new NewsItemLongClickListener();
         buttonUpdateListener = new ButtonUpdateClickListener();
         scrollListener = new ScrollListener();
         spinnerListener = new SpinnerInteractionListener();

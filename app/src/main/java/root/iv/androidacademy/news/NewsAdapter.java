@@ -20,12 +20,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private List<NewsItem> originNews;  // Что изначально пришло с сервера
     private LayoutInflater inflater;
     private View.OnClickListener listener;
+    private View.OnLongClickListener longListener;
     private String curSection = Section.SECTIONS[0].getName();
 
     public NewsAdapter(List<NewsItem> list, LayoutInflater inf){
         this.listNews = list;
         this.inflater = inf;
         this.listener = null;
+        this.longListener = null;
         this.originNews = new LinkedList<>();
     }
 
@@ -37,8 +39,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         this.listener = listener;
     }
 
+    public void addOnLongClickListener(View.OnLongClickListener listener) {
+        this.longListener = listener;
+    }
+
     public void delOnClickListener() {
         this.listener = null;
+    }
+
+    public void delOnLongClickListener() {
+        this.longListener = null;
     }
 
     @NonNull
@@ -79,11 +89,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         originNews.addAll(listNews);
     }
 
-    public void appendAll(List<NewsItem> items) {
-        for (NewsItem item : items)
-            append(item);
-    }
-
     /**
      * Вызывается каждый раз, когда происходит изменение текста для поиска
      * @param filter - текст для поиска
@@ -120,6 +125,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             viewPreview = item.findViewById(R.id.viewPreview);
             viewDate = item.findViewById(R.id.viewDate);
             item.setOnClickListener(listener);
+            item.setOnLongClickListener(longListener);
         }
 
         public void bindNewsItemView(int pos) {
