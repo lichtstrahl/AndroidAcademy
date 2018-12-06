@@ -24,9 +24,7 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import root.iv.androidacademy.App;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
 import root.iv.androidacademy.activity.listener.Listener;

@@ -3,7 +3,7 @@ package root.iv.androidacademy.activity.listener;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import root.iv.androidacademy.App;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.activity.NewsDetailsActivity;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsItem;

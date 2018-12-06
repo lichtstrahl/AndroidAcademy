@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.app;
 
 import android.app.Application;
 import android.arch.persistence.db.SupportSQLiteDatabase;
@@ -17,7 +17,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import root.iv.androidacademy.BuildConfig;
+import root.iv.androidacademy.db.NewsDatabase;
 import root.iv.androidacademy.retrofit.TopStoriesAPI;
+import root.iv.androidacademy.util.InterceptorAPIKey;
 
 public class App extends Application {
     private static Retrofit retrofit;
@@ -77,17 +80,7 @@ public class App extends Application {
 
     private static OkHttpClient createClient() {
         return new OkHttpClient.Builder()
-                .addInterceptor((Interceptor.Chain chain) -> {
-                    Request oldRequest = chain.request();
-                    HttpUrl url = oldRequest.url()
-                            .newBuilder()
-                            .addQueryParameter("api-key", BuildConfig.API_KEY)
-                            .build();
-                    Request newRequest = oldRequest.newBuilder()
-                            .url(url)
-                            .build();
-                    return chain.proceed(newRequest);
-                })
+                .addInterceptor(new InterceptorAPIKey())
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .build();
     }

@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

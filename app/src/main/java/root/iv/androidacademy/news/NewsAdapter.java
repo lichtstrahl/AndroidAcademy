@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import root.iv.androidacademy.GlideApp;
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.util.GlideApp;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа

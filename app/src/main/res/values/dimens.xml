@@ -9,6 +9,8 @@
     <dimen name="buttonTextSize">20sp</dimen>
     <dimen name="stdBorderWidth">2dp</dimen>
     <dimen name="stdButtonSize">40dp</dimen>
+    <dimen name="stdElevation">10dp</dimen>
+    <dimen name="stdCornerRadius">15dp</dimen>
 
     <!-- TextSize -->
     <dimen name="smallText">11sp</dimen>

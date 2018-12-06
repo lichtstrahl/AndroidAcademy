@@ -5,17 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
-import android.widget.ImageView;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import root.iv.androidacademy.App;
-import root.iv.androidacademy.GlideApp;
-import root.iv.androidacademy.news.NewsItem;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.news.Section;
+import root.iv.androidacademy.news.NewsItem;
 
 public class NewsDetailsActivity extends AppCompatActivity{
 

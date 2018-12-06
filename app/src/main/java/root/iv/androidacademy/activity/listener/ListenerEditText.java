@@ -7,7 +7,7 @@ import android.widget.EditText;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
-import root.iv.androidacademy.Action1;
+import root.iv.androidacademy.util.Action1;
 
 public class ListenerEditText implements TextWatcher {
     private static final String TAG = "ListenerEditText";

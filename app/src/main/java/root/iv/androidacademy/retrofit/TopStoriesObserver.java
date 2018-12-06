@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
-import root.iv.androidacademy.Action1;
-import root.iv.androidacademy.App;
+import root.iv.androidacademy.util.Action1;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 // TODO Добавить функцию removeAll, чтобы больше не забывать про notify
 public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {

@@ -3,8 +3,8 @@ package root.iv.androidacademy.retrofit;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
-import root.iv.androidacademy.Action1;
-import root.iv.androidacademy.App;
+import root.iv.androidacademy.util.Action1;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 
 public class RetrofitLoader implements DataLoader {
