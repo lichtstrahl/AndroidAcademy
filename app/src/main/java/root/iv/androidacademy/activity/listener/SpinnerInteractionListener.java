@@ -7,7 +7,6 @@ import android.widget.AdapterView;
 
 import root.iv.androidacademy.util.Action1;
 
-
 public class SpinnerInteractionListener implements AdapterView.OnItemSelectedListener, View.OnTouchListener, Signed<Action1<Integer>> {
     private boolean user = false;
     @Nullable
@@ -29,6 +28,7 @@ public class SpinnerInteractionListener implements AdapterView.OnItemSelectedLis
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+        // Не используется
     }
 
     @Override

@@ -125,7 +125,7 @@ public class NewsListActivity extends AppCompatActivity {
 
         spinnerListener.subscribe((position) -> {
             String section = Section.SECTIONS[position].getName();
-
+            loadDialog.show();
             adapter.setNewSection(section);
             loader.setSection(section);
             loader.load();
