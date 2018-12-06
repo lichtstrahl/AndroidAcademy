@@ -26,10 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.functions.Action;
+import root.iv.androidacademy.activity.listener.ScrollListener;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
-import root.iv.androidacademy.activity.listener.Listener;
+import root.iv.androidacademy.activity.listener.ClickListener;
 import root.iv.androidacademy.activity.listener.ListenerEditText;
 import root.iv.androidacademy.activity.listener.NewsItemClickListener;
 import root.iv.androidacademy.news.NewsAdapter;
@@ -50,8 +51,9 @@ public class NewsListActivity extends AppCompatActivity {
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
     private ListenerEditText inputListener;
-    private Listener<Action1<View>> adapterListener;
-    private Listener<Action> buttonUpdateListener;
+    private ClickListener<Action1<View>> adapterListener;
+    private ClickListener<Action> buttonUpdateListener;
+    private ScrollListener scrollListener;
     private int spinnerCount = 0;
     private Spinner spinner;
     private EditText input;
@@ -73,7 +75,7 @@ public class NewsListActivity extends AppCompatActivity {
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
-
+        recyclerListNews.addOnScrollListener(new ScrollListener());
 
         configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
 
@@ -113,6 +115,15 @@ public class NewsListActivity extends AppCompatActivity {
             NewsDetailsActivity.start(recyclerListNews.getContext(), id);
         });
 
+        scrollListener.subscribe((dy) -> {
+            if (Math.abs(dy) > 5) {
+                buttonUpdate.hide();
+            } else {
+                buttonUpdate.show();
+            }
+        });
+
+        recyclerListNews.addOnScrollListener(scrollListener);
         inputListener.subscribe(adapter::setFilter);
         adapter.addOnClickListener(adapterListener);
         buttonUpdate.setOnClickListener(buttonUpdateListener);
@@ -121,6 +132,7 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        scrollListener.unsubscribe();
         inputListener.unsubscribe();
         buttonUpdateListener.unsubscribe();
         adapterListener.unsubscribe();
@@ -203,6 +215,7 @@ public class NewsListActivity extends AppCompatActivity {
         inputListener = new ListenerEditText(input);
         adapterListener = new NewsItemClickListener();
         buttonUpdateListener = new ButtonUpdateClickListener();
+        scrollListener = new ScrollListener();
     }
 
     @Override

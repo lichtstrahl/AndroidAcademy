@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import io.reactivex.functions.Action;
 import root.iv.androidacademy.app.App;
 
-public class ButtonUpdateClickListener implements View.OnClickListener, Listener<Action> {
+public class ButtonUpdateClickListener implements ClickListener<Action> {
     @Nullable
     private Action action;
 
