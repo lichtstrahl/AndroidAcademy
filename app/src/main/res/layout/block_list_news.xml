@@ -31,12 +31,11 @@
         android:id="@+id/buttonUpdate"
         android:layout_width="@dimen/floatingButtonSize"
         android:layout_height="@dimen/floatingButtonSize"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/stdMargin"
         android:backgroundTint="@color/floatingButtonBG"
-        android:src="@drawable/ic_reconnect"
-        android:scaleType="centerCrop"/>
+        android:src="@drawable/ic_reconnect"/>
 
     <android.support.v7.widget.RecyclerView
         xmlns:toolsList="http://schemas.android.com/tools"
