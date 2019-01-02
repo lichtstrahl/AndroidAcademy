@@ -1,4 +1,4 @@
-package root.iv.androidacademy.activity;
+package root.iv.androidacademy.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;

@@ -6,20 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryLight"
-    tools:context=".activity.IntoActivity">
+    tools:context=".ui.activity.IntoActivity">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="@dimen/intoWidth"
-        android:layout_height="@dimen/intoHeight"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/screen"/>
+        android:layout_width="@dimen/intro_view_pager_width"
+        android:layout_height="@dimen/intro_view_pager_height"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/image"
+        android:layout_below="@id/viewPager"
         android:textColor="@android:color/white"
         android:textSize="@dimen/xxxText"
         android:text="@string/welcome"/>

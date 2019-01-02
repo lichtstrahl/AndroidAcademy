@@ -1,4 +1,4 @@
-package root.iv.androidacademy.activity;
+package root.iv.androidacademy.ui.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,15 +25,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.functions.Action;
-import root.iv.androidacademy.activity.listener.NewsItemLongClickListener;
-import root.iv.androidacademy.activity.listener.ScrollListener;
-import root.iv.androidacademy.activity.listener.SpinnerInteractionListener;
+import root.iv.androidacademy.ui.activity.listener.NewsItemLongClickListener;
+import root.iv.androidacademy.ui.activity.listener.ScrollListener;
+import root.iv.androidacademy.ui.activity.listener.SpinnerInteractionListener;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
-import root.iv.androidacademy.activity.listener.ClickListener;
-import root.iv.androidacademy.activity.listener.ListenerEditText;
-import root.iv.androidacademy.activity.listener.NewsItemClickListener;
+import root.iv.androidacademy.ui.activity.listener.ButtonUpdateClickListener;
+import root.iv.androidacademy.ui.activity.listener.ClickListener;
+import root.iv.androidacademy.ui.activity.listener.ListenerEditText;
+import root.iv.androidacademy.ui.activity.listener.NewsItemClickListener;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;

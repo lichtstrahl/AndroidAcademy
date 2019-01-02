@@ -1,4 +1,4 @@
-package root.iv.androidacademy.activity.listener;
+package root.iv.androidacademy.ui.activity.listener;
 
 public interface Signed<A> {
     void subscribe(A a);
