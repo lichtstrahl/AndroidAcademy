@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.news;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,13 +13,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
-
 public class NewsItem implements Parcelable {
-    public static final Comparator Comparator = new NewsItem.Comparator();
-    private static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
-    public static final String INTENT_TAG = "NewsItem";
+    public static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
     private String title;
     private String imageUrl;
     private String previewText;
@@ -48,39 +46,39 @@ public class NewsItem implements Parcelable {
         private String previewText = null;
         private String fullText = null;
 
-        public NewsItemBuilder buildTitle(String t) {
+        NewsItemBuilder buildTitle(String t) {
             title = t;
             return this;
         }
 
-        public NewsItemBuilder buildImageURL(@Nullable String url) {
+        NewsItemBuilder buildImageURL(@Nullable String url) {
             imageUrl = (url != null) ? url : "";
             return this;
         }
 
-        public NewsItemBuilder buildSubSection(String c) {
+        NewsItemBuilder buildSubSection(String c) {
             subSection = c;
             return this;
         }
 
 
-        public NewsItemBuilder buildPublishDate(Date date) {
+        NewsItemBuilder buildPublishDate(Date date) {
             publishDate = date;
             return this;
         }
 
-        public NewsItemBuilder buildPreviewText(String text) {
+        NewsItemBuilder buildPreviewText(String text) {
             previewText = text;
             return this;
         }
 
-        public NewsItemBuilder buildFullText(String text) {
+        NewsItemBuilder buildFullText(String text) {
             fullText = text;
             return this;
         }
 
         @Nullable
-        public NewsItem build() {
+        NewsItem build() {
             boolean done =
                     title != null &&
                     imageUrl != null &&
@@ -138,7 +136,17 @@ public class NewsItem implements Parcelable {
 
     public String getPublishDateString() {
         SimpleDateFormat dFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        Date date;
+        try {
+            date = (Date)dFormat.parseObject(dFormat.format(publishDate), new ParsePosition(0));
+        } catch (Exception e) {
+            App.logE(e.getMessage());
+        }
         return dFormat.format(publishDate);
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Date getPublishDate() {

@@ -9,6 +9,8 @@
     <dimen name="buttonTextSize">20sp</dimen>
     <dimen name="stdBorderWidth">2dp</dimen>
     <dimen name="stdButtonSize">40dp</dimen>
+    <dimen name="stdElevation">10dp</dimen>
+    <dimen name="stdCornerRadius">15dp</dimen>
 
     <!-- TextSize -->
     <dimen name="smallText">11sp</dimen>
@@ -16,6 +18,7 @@
     <dimen name="bigText">17sp</dimen>
     <dimen name="extraText">21sp</dimen>
     <dimen name="xxText">26sp</dimen>
+    <dimen name="xxxText">32sp</dimen>
 
     <!-- IconSize -->
     <dimen name="smallIcon">28dp</dimen>
@@ -35,4 +38,7 @@
     <!-- Dialog -->
     <dimen name="dialogW">250dp</dimen>
     <dimen name="dialogH">100dp</dimen>
+    <dimen name="intoWidth">200dp</dimen>
+    <dimen name="intoHeight">400dp</dimen>
+    <dimen name="floatingButtonSize">80dp</dimen>
 </resources>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,8 +26,22 @@
 
 
 
+    <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/buttonUpdate"
+        android:layout_width="@dimen/floatingButtonSize"
+        android:layout_height="@dimen/floatingButtonSize"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/stdMargin"
+        android:backgroundTint="@color/floatingButtonBG"
+        android:src="@drawable/ic_reconnect"
+        app:elevation="@dimen/stdElevation"
+        app:pressedTranslationZ="20dp"
+        />
 
     <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:toolsList="http://schemas.android.com/tools"
         android:id="@+id/listNews"
         android:layout_width="match_parent"
@@ -36,6 +49,7 @@
         android:layout_below="@id/head"
         android:layout_marginStart="@dimen/stdMargin"
         android:layout_marginEnd="@dimen/stdMargin"
-        toolsList:listitem="@layout/item_news">
+        toolsList:listitem="@layout/item_news"
+        >
     </android.support.v7.widget.RecyclerView>
 </RelativeLayout>

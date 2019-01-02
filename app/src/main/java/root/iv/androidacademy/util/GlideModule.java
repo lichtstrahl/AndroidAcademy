@@ -1,4 +1,4 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.util;
 
 import com.bumptech.glide.module.AppGlideModule;
 

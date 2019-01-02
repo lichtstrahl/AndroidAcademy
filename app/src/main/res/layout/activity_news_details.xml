@@ -4,13 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/layoutBG"
     tools:context=".activity.NewsDetailsActivity">
-
-
     <WebView
-        android:id="@+id/web"
+        android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
     </WebView>
 </ScrollView>

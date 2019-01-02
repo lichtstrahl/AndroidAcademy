@@ -1,7 +1,8 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.news;
 
-import android.support.annotation.Nullable;
 import java.io.Serializable;
+
+import root.iv.androidacademy.R;
 
 public class Section implements Serializable {
     private final String name;

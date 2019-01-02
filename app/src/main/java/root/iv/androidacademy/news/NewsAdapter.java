@@ -1,7 +1,6 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.news;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,56 +12,43 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import root.iv.androidacademy.R;
+import root.iv.androidacademy.util.GlideApp;
+
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа
     private List<NewsItem> originNews;  // Что изначально пришло с сервера
     private LayoutInflater inflater;
     private View.OnClickListener listener;
+    private View.OnLongClickListener longListener;
     private String curSection = Section.SECTIONS[0].getName();
 
-    private NewsAdapter(Builder builder){
-        listNews = builder.listNews;
-        inflater = builder.inflater;
-        listener = builder.listener;
-        originNews = new LinkedList<>();
-    }
-
-    public static Builder getBuilderNewsAdapter() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private List<NewsItem> listNews = null;
-        private LayoutInflater inflater = null;
-        private View.OnClickListener listener = null;
-
-        public Builder buildListNews(List<NewsItem> items) {
-            listNews = items;
-            return this;
-        }
-
-        public Builder buildInflater(LayoutInflater inf) {
-            inflater = inf;
-            return this;
-        }
-
-        public Builder buildListener(View.OnClickListener l) {
-            listener = l;
-            return  this;
-        }
-
-        @Nullable
-        public NewsAdapter build() {
-            if (listNews != null && inflater != null  && listener != null) {
-                return new NewsAdapter(this);
-            } else {
-                return null;
-            }
-        }
+    public NewsAdapter(List<NewsItem> list, LayoutInflater inf){
+        this.listNews = list;
+        this.inflater = inf;
+        this.listener = null;
+        this.longListener = null;
+        this.originNews = new LinkedList<>();
     }
 
     public void setNewSection(String section) {
         curSection = section;
+    }
+
+    public void addOnClickListener(View.OnClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void addOnLongClickListener(View.OnLongClickListener listener) {
+        this.longListener = listener;
+    }
+
+    public void delOnClickListener() {
+        this.listener = null;
+    }
+
+    public void delOnLongClickListener() {
+        this.longListener = null;
     }
 
     @NonNull
@@ -118,7 +104,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void sort() {
-        Collections.sort(listNews, NewsItem.Comparator);
+        Collections.sort(listNews, new NewsItem.Comparator());
         notifyDataSetChanged();
     }
 
@@ -139,6 +125,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             viewPreview = item.findViewById(R.id.viewPreview);
             viewDate = item.findViewById(R.id.viewDate);
             item.setOnClickListener(listener);
+            item.setOnLongClickListener(longListener);
         }
 
         public void bindNewsItemView(int pos) {

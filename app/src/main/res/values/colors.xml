@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimaryLight">#81c784</color>
     <color name="colorPrimary">#388e3c</color>
     <color name="colorPrimaryDark">#33691e</color>
     <color name="colorAccent">#81c784</color>
@@ -30,4 +31,5 @@
     <color name="colorAutomobiles">#FFECB3</color>
     <color name="colorObituaries">#D7CCC8</color>
     <color name="colorInsider">#A1887F</color>
+    <color name="floatingButtonBG">#e0f2f1</color>
 </resources>
