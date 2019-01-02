@@ -14,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -45,7 +44,8 @@ import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 import root.iv.androidacademy.util.Action1;
 
 public class NewsListActivity extends AppCompatActivity {
-    private static final String INTENT_SECTION = "INTENT_SECTION";
+    private static final String SAVE_SECTION = "SAVE_SECTION";
+    private static final String SAVE_FILTER = "SAVE_FILTER";
     private static final String LAST_SECTION = "LAST_SECTION";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
@@ -59,7 +59,7 @@ public class NewsListActivity extends AppCompatActivity {
     private ScrollListener scrollListener;
     private SpinnerInteractionListener spinnerListener;
     private Spinner spinner;
-    private EditText input;
+    private EditText inputFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +69,12 @@ public class NewsListActivity extends AppCompatActivity {
         recyclerListNews = findViewById(R.id.listNews);
         buttonUpdate = findViewById(R.id.buttonUpdate);
         spinner = findViewById(R.id.spinner);
-        input = findViewById(R.id.input);
+        inputFilter = findViewById(R.id.input);
         loadSpinner();
 
         if (savedInstanceState != null) {
-            spinner.setSelection(savedInstanceState.getInt(INTENT_SECTION, 0));
+            spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
+            inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
         }
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
@@ -90,7 +91,6 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         loadFromDB(spinner.getSelectedItem().toString());
     }
 
@@ -101,11 +101,6 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdateListener.subscribe(() -> {
             loadDialog.show();
             Object item = spinner.getSelectedItem();
-            if (item == null) {
-                App.logI("Spinner item is NULL");
-            } else {
-                App.logI("Spinner item not NULL");
-            }
             loader.setSection(item.toString());
             loader.load();
         });
@@ -177,7 +172,8 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(INTENT_SECTION, spinner.getSelectedItemPosition());
+        outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
+        outState.putString(SAVE_FILTER, inputFilter.getText().toString());
     }
 
     private void loadSpinner() {
@@ -195,8 +191,9 @@ public class NewsListActivity extends AppCompatActivity {
         }
         adapter.notifyOriginNews();
         adapter.sort();
-
+        adapter.setFilter(inputFilter.getText().toString());
     }
+
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -216,7 +213,7 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     private void initialListener() {
-        inputListener = new ListenerEditText(input);
+        inputListener = new ListenerEditText(inputFilter);
         adapterListener = new NewsItemClickListener();
         adapterLongListener = new NewsItemLongClickListener();
         buttonUpdateListener = new ButtonUpdateClickListener();
