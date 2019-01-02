@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.relex.circleindicator.CircleIndicator;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.ui.fragment.IntroFragment;
 
@@ -17,6 +18,8 @@ public class IntoActivity extends FragmentActivity {
     private static final int COUNT_PAGE = 3;
     @BindView(R.id.viewPager)
     ViewPager pager;
+    @BindView(R.id.indicator)
+    CircleIndicator indicator;
     private PagerAdapter pagerAdapter;
 
     @Override
@@ -37,5 +40,7 @@ public class IntoActivity extends FragmentActivity {
             }
         };
         pager.setAdapter(pagerAdapter);
+
+        indicator.setViewPager(pager);
     }
 }

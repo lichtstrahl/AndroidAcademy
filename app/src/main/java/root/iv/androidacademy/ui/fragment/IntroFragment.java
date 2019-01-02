@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.util.GlideApp;
 
 public class IntroFragment extends Fragment {
     private static final String ARG_PAGE_NUM = "args:page-num";
@@ -25,7 +26,8 @@ public class IntroFragment extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            image.setImageResource(INTRO_SCREENS[bundle.getInt(ARG_PAGE_NUM, 0)]);
+            int drawRes = INTRO_SCREENS[bundle.getInt(ARG_PAGE_NUM, 0)];
+            GlideApp.with(view).load(drawRes).into(image);
         }
 
         return view;
