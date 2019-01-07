@@ -8,8 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.ui.fragment.NewsDetailsFragment;
+import root.iv.androidacademy.ui.fragment.NewsListFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NewsListFragment.Listener {
+    private static final String TRANSACTION_START_DETAILS_FRAGMENT = "transaction:start-details-fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void clickItemNews(int id) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.frame_list, NewsDetailsFragment.newInstance(id))
+                .addToBackStack(TRANSACTION_START_DETAILS_FRAGMENT)
+                .commit();
+    }
 
     public static void start(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);

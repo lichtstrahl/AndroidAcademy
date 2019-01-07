@@ -1,7 +1,6 @@
-package root.iv.androidacademy.ui.activity;
+package root.iv.androidacademy.ui.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -27,15 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.functions.Action;
-import root.iv.androidacademy.ui.activity.listener.NewsItemLongClickListener;
-import root.iv.androidacademy.ui.activity.listener.ScrollListener;
-import root.iv.androidacademy.ui.activity.listener.SpinnerInteractionListener;
-import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.ui.activity.listener.ButtonUpdateClickListener;
-import root.iv.androidacademy.ui.activity.listener.ClickListener;
-import root.iv.androidacademy.ui.activity.listener.ListenerEditText;
-import root.iv.androidacademy.ui.activity.listener.NewsItemClickListener;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
@@ -43,6 +35,14 @@ import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
+import root.iv.androidacademy.ui.activity.EditNewsActivity;
+import root.iv.androidacademy.ui.activity.listener.ButtonUpdateClickListener;
+import root.iv.androidacademy.ui.activity.listener.ClickListener;
+import root.iv.androidacademy.ui.activity.listener.ListenerEditText;
+import root.iv.androidacademy.ui.activity.listener.NewsItemClickListener;
+import root.iv.androidacademy.ui.activity.listener.NewsItemLongClickListener;
+import root.iv.androidacademy.ui.activity.listener.ScrollListener;
+import root.iv.androidacademy.ui.activity.listener.SpinnerInteractionListener;
 import root.iv.androidacademy.util.Action1;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -64,6 +64,7 @@ public class NewsListFragment extends Fragment {
     private SpinnerInteractionListener spinnerListener;
     private Spinner spinner;
     private EditText inputFilter;
+    private Listener listenerActivity;
 
 
     @Nullable
@@ -116,8 +117,7 @@ public class NewsListFragment extends Fragment {
             int pos = recyclerListNews.getChildAdapterPosition(view);
             NewsItem item = adapter.getItem(pos);
             int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
-//            NewsDetailsFragment.start(recyclerListNews.getContext(), id);
-            App.logW("Здесь должен запускаться детальный просмотр");
+            if (listenerActivity != null) listenerActivity.clickItemNews(id);
         });
 
         adapterLongListener.subscribe((view) -> {
@@ -178,6 +178,18 @@ public class NewsListFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        listenerActivity = (Listener)context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerActivity = null;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
@@ -201,7 +213,6 @@ public class NewsListFragment extends Fragment {
         adapter.sort();
         adapter.setFilter(inputFilter.getText().toString());
     }
-
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -257,5 +268,14 @@ public class NewsListFragment extends Fragment {
         textView.setText(R.string.errorLoading);
         loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
         loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
+    }
+
+    public static NewsListFragment newInstance() {
+        NewsListFragment fragment = new NewsListFragment();
+        return fragment;
+    }
+
+    public interface Listener {
+        void clickItemNews(int id);
     }
 }
