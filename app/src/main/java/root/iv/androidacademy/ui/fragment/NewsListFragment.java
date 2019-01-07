@@ -68,6 +68,7 @@ public class NewsListFragment extends Fragment {
     private Spinner spinner;
     private EditText inputFilter;
     private Listener listenerActivity;
+    private boolean isLandTabletOrientation;
 
 
     @Nullable
@@ -84,6 +85,8 @@ public class NewsListFragment extends Fragment {
         if (savedInstanceState != null) {
             spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
+        } else {
+            isLandTabletOrientation = getArguments().getBoolean(ARGUMENT_ORIENTATION);
         }
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());

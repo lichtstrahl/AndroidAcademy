@@ -3,6 +3,7 @@ package root.iv.androidacademy.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,9 +15,9 @@ import root.iv.androidacademy.ui.fragment.NewsDetailsFragment;
 import root.iv.androidacademy.ui.fragment.NewsListFragment;
 
 public class MainActivity extends AppCompatActivity implements NewsListFragment.Listener, NewsDetailsFragment.Listener {
-    private static final String TRANSACTION_START_DETAILS_FRAGMENT = "transaction:start-details-fragment";
-    private static final String TRANSACTION_START_LIST_FRAGMENT = "transaction:start-list-fragment";
+    private static final String TRANSACTION_INIT = "transaction:init";
     private static final String TAG_LIST_FRAGMENT = "fragment:list";
+    private static final String TAG_DETAILS_FRAGMENT = "fragment:details";
     private boolean isLandTabletOrientation;
 
     @Override
@@ -29,18 +30,32 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.frame_list, NewsListFragment.newInstance(isLandTabletOrientation), TAG_LIST_FRAGMENT)
-                    .addToBackStack(TRANSACTION_START_LIST_FRAGMENT)
+                    .replace(R.id.frame_list, NewsListFragment.newInstance(isLandTabletOrientation), TAG_LIST_FRAGMENT)
+                    .addToBackStack(TRANSACTION_INIT)
                     .commit();
             App.logI("Count fragments: " + getSupportFragmentManager().getFragments().size());
-        }
+        } else {
+            Fragment detailsFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
+            if (detailsFragment != null) {
+                int frameID = isLandTabletOrientation ? R.id.frame_detail : R.id.frame_list;
+                getSupportFragmentManager().popBackStackImmediate();
 
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(frameID, detailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+            App.logI("Поворот экрана");
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() <= 1) {
+        super.onBackPressed();
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        App.logI("Transaction count: " + count);
+        if (count == 0 || isLandTabletOrientation) {
             finish();
         }
     }
@@ -66,9 +81,8 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(frameID, NewsDetailsFragment.newInstance(id))
-                .setCustomAnimations(FragmentTransaction.TRANSIT_FRAGMENT_OPEN, FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                .addToBackStack(TRANSACTION_START_DETAILS_FRAGMENT)
+                .replace(frameID, NewsDetailsFragment.newInstance(id), TAG_DETAILS_FRAGMENT)
+                .addToBackStack(null)
                 .commit();
     }
 
@@ -85,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     @Override
     public void menuItemDeleteSelected(int itemID) {
         App.getDatabase().getNewsDAO().delete(itemID);
+        getSupportFragmentManager().popBackStackImmediate();
         NewsListFragment fragment = (NewsListFragment)getSupportFragmentManager().findFragmentByTag(TAG_LIST_FRAGMENT);
         if (fragment != null) fragment.onStart();
     }

@@ -64,10 +64,10 @@ public class NewsDetailsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.itemDelete:
                 listenerActivity.menuItemDeleteSelected(itemID);
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .remove(this)
-                        .commit();
+//                getActivity().getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .remove(this)
+//                        .commit();
 
             default:
                 return super.onOptionsItemSelected(item);
