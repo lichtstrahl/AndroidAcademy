@@ -39,6 +39,13 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     }
 
     @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() <= 1) {
+            finish();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.option_menu_main, menu);
         return super.onCreateOptionsMenu(menu);

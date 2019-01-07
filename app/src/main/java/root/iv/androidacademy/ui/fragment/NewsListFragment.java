@@ -297,6 +297,8 @@ public class NewsListFragment extends Fragment {
         }
     }
 
+
+
     public interface Listener {
         void clickItemNews(int id);
         void menuItemAboutSelected();
