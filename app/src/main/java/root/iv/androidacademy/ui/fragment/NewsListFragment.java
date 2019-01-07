@@ -13,6 +13,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -93,6 +95,7 @@ public class NewsListFragment extends Fragment {
         loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
         initialListener();
 
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -275,7 +278,33 @@ public class NewsListFragment extends Fragment {
         return fragment;
     }
 
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.itemAbout).setVisible(true);
+        menu.findItem(R.id.itemExit).setVisible(true);
+        menu.findItem(R.id.itemDelete).setVisible(false);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.itemAbout:
+                listenerActivity.menuItemAboutSelected();
+                return true;
+            case R.id.itemExit:
+                listenerActivity.menuItemExitSelected();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public interface Listener {
         void clickItemNews(int id);
+        void menuItemAboutSelected();
+        void menuItemExitSelected();
     }
 }
