@@ -22,7 +22,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.EditNewsActivity" />
-        <activity android:name=".ui.activity.MainActivity"></activity>
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:windowSoftInputMode="stateUnchanged"/>
     </application>
 
 </manifest>

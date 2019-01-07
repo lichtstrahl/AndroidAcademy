@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.ui.fragment.NewsDetailsFragment;
 import root.iv.androidacademy.ui.fragment.NewsListFragment;
 
@@ -19,14 +20,15 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NewsListFragment listFragment = new NewsListFragment();
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.frame_list, listFragment)
-                .commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.frame_list, NewsListFragment.newInstance())
+                    .commit();
+            App.logI("Count fragments: " + getSupportFragmentManager().getFragments().size());
+        }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
