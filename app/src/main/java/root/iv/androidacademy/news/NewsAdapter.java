@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.GlideApp;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {

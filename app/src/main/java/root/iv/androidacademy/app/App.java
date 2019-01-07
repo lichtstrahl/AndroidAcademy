@@ -106,6 +106,10 @@ public class App extends Application {
         Log.e(BuildConfig.TAG_GLOBAL, e);
     }
 
+    public static void logW(String msg) {
+        Log.w(BuildConfig.TAG_GLOBAL, msg);
+    }
+
     public static void logI(String msg) {
         Log.i(BuildConfig.TAG_GLOBAL, msg);
     }

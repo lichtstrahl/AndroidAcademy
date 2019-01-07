@@ -1,19 +1,21 @@
 package root.iv.androidacademy.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -43,7 +45,9 @@ import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 import root.iv.androidacademy.util.Action1;
 
-public class NewsListActivity extends AppCompatActivity {
+import static android.content.Context.MODE_PRIVATE;
+
+public class NewsListFragment extends Fragment {
     private static final String SAVE_SECTION = "SAVE_SECTION";
     private static final String SAVE_FILTER = "SAVE_FILTER";
     private static final String LAST_SECTION = "LAST_SECTION";
@@ -61,15 +65,16 @@ public class NewsListActivity extends AppCompatActivity {
     private Spinner spinner;
     private EditText inputFilter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_list);
 
-        recyclerListNews = findViewById(R.id.listNews);
-        buttonUpdate = findViewById(R.id.buttonUpdate);
-        spinner = findViewById(R.id.spinner);
-        inputFilter = findViewById(R.id.input);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_news_list, container, false);
+
+        recyclerListNews = view.findViewById(R.id.listNews);
+        buttonUpdate = view.findViewById(R.id.buttonUpdate);
+        spinner = view.findViewById(R.id.spinner);
+        inputFilter = view.findViewById(R.id.input);
         loadSpinner();
 
         if (savedInstanceState != null) {
@@ -86,16 +91,18 @@ public class NewsListActivity extends AppCompatActivity {
 
         loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
         initialListener();
+
+        return view;
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         loadFromDB(spinner.getSelectedItem().toString());
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         buttonUpdateListener.subscribe(() -> {
@@ -109,7 +116,8 @@ public class NewsListActivity extends AppCompatActivity {
             int pos = recyclerListNews.getChildAdapterPosition(view);
             NewsItem item = adapter.getItem(pos);
             int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
-            NewsDetailsActivity.start(recyclerListNews.getContext(), id);
+//            NewsDetailsFragment.start(recyclerListNews.getContext(), id);
+            App.logW("Здесь должен запускаться детальный просмотр");
         });
 
         adapterLongListener.subscribe((view) -> {
@@ -145,7 +153,7 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         scrollListener.unsubscribe();
         inputListener.unsubscribe();
@@ -157,12 +165,12 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         loader.stop();
         adapter.clear();
 
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = this.getActivity().getPreferences(MODE_PRIVATE);
         preferences
                 .edit()
                 .putInt(LAST_SECTION, spinner.getSelectedItemPosition())
@@ -170,16 +178,16 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
     }
 
     private void loadSpinner() {
-        ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
+        ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
         spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0));
+        spinner.setSelection(this.getActivity().getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0));
     }
 
     private void loadFromDB(String section) {
@@ -197,16 +205,15 @@ public class NewsListActivity extends AppCompatActivity {
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            recyclerListNews.setLayoutManager(new LinearLayoutManager(this));
+            recyclerListNews.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         } else {
-            recyclerListNews.setLayoutManager(new GridLayoutManager(this, 2));
-
+            recyclerListNews.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
         }
     }
 
     private AlertDialog buildLoadDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext())
                 .setView(R.layout.dialog).setCancelable(false);
 
        return builder.create();
@@ -219,28 +226,6 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdateListener = new ButtonUpdateClickListener();
         scrollListener = new ScrollListener();
         spinnerListener = new SpinnerInteractionListener();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.option_menu_list,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.itemAbout:
-                Intent intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.itemExit:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     /**
@@ -266,7 +251,7 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     private void errorLoad() {
-        Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this.getContext(), R.string.errorLoading, Toast.LENGTH_SHORT).show();
         loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
         TextView textView = loadDialog.findViewById(R.id.text);
         textView.setText(R.string.errorLoading);
