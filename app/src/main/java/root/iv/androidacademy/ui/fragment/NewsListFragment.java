@@ -53,6 +53,7 @@ public class NewsListFragment extends Fragment {
     private static final String SAVE_SECTION = "SAVE_SECTION";
     private static final String SAVE_FILTER = "SAVE_FILTER";
     private static final String LAST_SECTION = "LAST_SECTION";
+    private static final String ARGUMENT_ORIENTATION = "args:orientation";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -88,7 +89,7 @@ public class NewsListFragment extends Fragment {
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
         recyclerListNews.addOnScrollListener(new ScrollListener());
-        configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
+        recyclerListNews.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         loadDialog = buildLoadDialog();
 
@@ -217,15 +218,6 @@ public class NewsListFragment extends Fragment {
         adapter.setFilter(inputFilter.getText().toString());
     }
 
-    private void configureLayoutManagerForRecyclerView(int orientation) {
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            recyclerListNews.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
-        } else {
-            recyclerListNews.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
-        }
-    }
-
     private AlertDialog buildLoadDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext())
                 .setView(R.layout.dialog).setCancelable(false);
@@ -273,8 +265,11 @@ public class NewsListFragment extends Fragment {
         loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
     }
 
-    public static NewsListFragment newInstance() {
+    public static NewsListFragment newInstance(boolean isLandTabletOrientation) {
         NewsListFragment fragment = new NewsListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ARGUMENT_ORIENTATION, isLandTabletOrientation);
+        fragment.setArguments(bundle);
         return fragment;
     }
 

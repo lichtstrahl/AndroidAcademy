@@ -17,18 +17,20 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     private static final String TRANSACTION_START_DETAILS_FRAGMENT = "transaction:start-details-fragment";
     private static final String TRANSACTION_START_LIST_FRAGMENT = "transaction:start-list-fragment";
     private static final String TAG_LIST_FRAGMENT = "fragment:list";
+    private boolean isLandTabletOrientation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        isLandTabletOrientation = findViewById(R.id.frame_detail) != null;
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.frame_list, NewsListFragment.newInstance(), TAG_LIST_FRAGMENT)
+                    .add(R.id.frame_list, NewsListFragment.newInstance(isLandTabletOrientation), TAG_LIST_FRAGMENT)
                     .addToBackStack(TRANSACTION_START_LIST_FRAGMENT)
                     .commit();
             App.logI("Count fragments: " + getSupportFragmentManager().getFragments().size());
@@ -53,9 +55,11 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     public void clickItemNews(int id) {
+        int frameID = isLandTabletOrientation ? R.id.frame_detail : R.id.frame_list;
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.frame_list, NewsDetailsFragment.newInstance(id))
+                .add(frameID, NewsDetailsFragment.newInstance(id))
                 .setCustomAnimations(FragmentTransaction.TRANSIT_FRAGMENT_OPEN, FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                 .addToBackStack(TRANSACTION_START_DETAILS_FRAGMENT)
                 .commit();
