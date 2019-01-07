@@ -74,6 +74,10 @@ public class NewsDetailsFragment extends Fragment {
         }
     }
 
+    public int getItemID() {
+        return itemID;
+    }
+
     public static NewsDetailsFragment newInstance(int id) {
         NewsDetailsFragment fragment = new NewsDetailsFragment();
         Bundle bundle = new Bundle();

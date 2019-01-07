@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     private static final String TRANSACTION_INIT = "transaction:init";
     private static final String TAG_LIST_FRAGMENT = "fragment:list";
     private static final String TAG_DETAILS_FRAGMENT = "fragment:details";
+    private static final String TAG_REPLACE_DETAILS_FRAGMENT = "fragment:details-replace";
     private boolean isLandTabletOrientation;
 
     @Override
@@ -37,25 +38,36 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         } else {
             Fragment detailsFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
             if (detailsFragment != null) {
+                App.logI("Поворот экрана и отображение details");
                 int frameID = isLandTabletOrientation ? R.id.frame_detail : R.id.frame_list;
-                getSupportFragmentManager().popBackStackImmediate();
+                getSupportFragmentManager().popBackStackImmediate();    // Чтобы в колонке справа не накладывать Details на List
 
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(frameID, detailsFragment)
+                        .add(frameID, detailsFragment, TAG_DETAILS_FRAGMENT)
                         .addToBackStack(null)
                         .commit();
             }
-            App.logI("Поворот экрана");
+
+//            detailsFragment = getSupportFragmentManager().findFragmentByTag(TAG_REPLACE_DETAILS_FRAGMENT);
+//            if (detailsFragment != null) {
+//                // Сейчас 100% портрет
+//                App.logI("Поворот экрана, после details в Land-scape");
+//                getSupportFragmentManager().popBackStackImmediate();
+//
+//                getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .add(R.id.frame_list, detailsFragment, TAG_DETAILS_FRAGMENT)
+//                        .addToBackStack(null)
+//                        .commit();
+//            }
         }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        int count = getSupportFragmentManager().getBackStackEntryCount();
-        App.logI("Transaction count: " + count);
-        if (count == 0 || isLandTabletOrientation) {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0 || isLandTabletOrientation) {
             finish();
         }
     }
@@ -81,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(frameID, NewsDetailsFragment.newInstance(id), TAG_DETAILS_FRAGMENT)
+                .add(frameID, NewsDetailsFragment.newInstance(id), TAG_DETAILS_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
     }
