@@ -24,16 +24,23 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
-import root.iv.androidacademy.activity.listener.NewsItemLongClickListener;
-import root.iv.androidacademy.activity.listener.ScrollListener;
-import root.iv.androidacademy.activity.listener.SpinnerInteractionListener;
-import root.iv.androidacademy.app.App;
+import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
 import root.iv.androidacademy.activity.listener.ClickListener;
 import root.iv.androidacademy.activity.listener.ListenerEditText;
 import root.iv.androidacademy.activity.listener.NewsItemClickListener;
+import root.iv.androidacademy.activity.listener.NewsItemLongClickListener;
+import root.iv.androidacademy.activity.listener.ScrollListener;
+import root.iv.androidacademy.activity.listener.SpinnerInteractionListener;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
@@ -42,11 +49,12 @@ import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 import root.iv.androidacademy.util.Action1;
+import root.iv.androidacademy.util.DBObserver;
 
 public class NewsListActivity extends AppCompatActivity {
-    private static final String SAVE_SECTION = "SAVE_SECTION";
-    private static final String SAVE_FILTER = "SAVE_FILTER";
     private static final String LAST_SECTION = "LAST_SECTION";
+    private static final String SAVE_SECTION = "save:section";
+    private static final String SAVE_FILTER = "save:filter";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -59,7 +67,17 @@ public class NewsListActivity extends AppCompatActivity {
     private ScrollListener scrollListener;
     private SpinnerInteractionListener spinnerListener;
     private Spinner spinner;
+    @Nullable
+    private DBObserver<List<NewsEntity>> loadDBObserver;
+    @Nullable
+    private DBObserver<Integer> itemClickObserver;
+    @Nullable
+    private DBObserver<Integer> itemLongClickObserver;
+    @Nullable
+    private DBObserver<TopStoriesDTO> deleteAllObserver;
     private EditText inputFilter;
+    @Nullable
+    private Disposable completeLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,15 +126,24 @@ public class NewsListActivity extends AppCompatActivity {
         adapterListener.subscribe((view) -> {
             int pos = recyclerListNews.getChildAdapterPosition(view);
             NewsItem item = adapter.getItem(pos);
-            int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
-            NewsDetailsActivity.start(recyclerListNews.getContext(), id);
+            // Аналогично loadFromDB. Single создаём там же, где и используем
+            itemClickObserver = new DBObserver<>(this::startDetailsActivity, this::errorLoadFromDB);
+
+            App.getDatabase().getNewsDAO().getIdAsSingle(item.getTitle(), item.getPreviewText(), item.getPublishDateString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(itemClickObserver);
         });
 
         adapterLongListener.subscribe((view) -> {
             int pos = recyclerListNews.getChildAdapterPosition(view);
             NewsItem item = adapter.getItem(pos);
-            int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
-            EditNewsActivity.start(recyclerListNews.getContext(), id);
+            itemLongClickObserver = new DBObserver<>(this::startEditActivity, this::errorLoadFromDB);
+
+            App.getDatabase().getNewsDAO().getIdAsSingle(item.getTitle(), item.getPreviewText(), item.getPublishDateString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(itemLongClickObserver);
         });
 
         scrollListener.subscribe((state) -> {
@@ -160,13 +187,19 @@ public class NewsListActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         loader.stop();
-        adapter.clear();
+        adapter.clear();    // Зачем это здесь!?!?!??!
 
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         preferences
                 .edit()
                 .putInt(LAST_SECTION, spinner.getSelectedItemPosition())
                 .apply();
+
+        if (loadDBObserver != null) loadDBObserver.unsubscribe();
+        if (itemClickObserver != null) itemClickObserver.unsubscribe();
+        if (itemLongClickObserver != null) itemLongClickObserver.unsubscribe();
+        if (deleteAllObserver != null) deleteAllObserver.unsubscribe();
+        if (completeLoad != null) completeLoad.dispose();   // Возможно обновление не вызывалось
     }
 
     @Override
@@ -185,15 +218,14 @@ public class NewsListActivity extends AppCompatActivity {
     private void loadFromDB(String section) {
         adapter.setNewSection(section);
         adapter.clear();
-        List<NewsEntity> list = App.getDatabase().getNewsDAO().getAllAsList();
-        for (NewsEntity entity : list) {
-            adapter.append(entity.toNewsItem());
-        }
-        adapter.notifyOriginNews();
-        adapter.sort();
-        adapter.setFilter(inputFilter.getText().toString());
-    }
 
+        // Наблюдателя создаём именно здесь, а не в onCreate, иначе Single больше не отреагирует
+        loadDBObserver = new DBObserver<>(this::successfulLoadFromDB, this::errorLoadFromDB);
+        App.getDatabase().getNewsDAO().getAllAsSingle()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadDBObserver);
+    }
 
     private void configureLayoutManagerForRecyclerView(int orientation) {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -244,26 +276,58 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     /**
-     * После окончания загрузки данных в адаптер сортирум их и замещаем originNews
+     * Если истории получены и все впорядке, тогда сначала наблюдаем за их удалением. Ждем, параллельно наблюдая просто за stories.
+     * Как только удаление завершилось, реагируем на это, получив наши stories благодаря "storiesDTO"
      * @param stories
      */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
         if (stories != null) {
-            App.getDatabase().getNewsDAO().deleteAll();
+            Single<Integer> deleteAll = Single.fromCallable(() -> App.getDatabase().getNewsDAO().deleteAll());
+            Single<TopStoriesDTO> storiesDTO = Single.fromCallable(() -> stories);
 
-            for (NewsDTO news : stories.getListNews()) {
-                try {
-                    NewsItem item = NewsItem.fromNewsDTO(news);
-                    App.getDatabase().getNewsDAO().insert(NewsEntity.fromNewsItem(item));
-                } catch (ParseException e) {
-                    App.logE(e.getMessage());
-                }
+            deleteAllObserver = new DBObserver<>(this::insertAllToDB, this::errorLoadFromDB);
+            deleteAll.zipWith(storiesDTO, (integer, st) -> st)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(deleteAllObserver);
+        } else {
+            loadDialog.dismiss();
+        }
+    }
+
+    /**
+     * Реакция на удаление старых данных из БД. Её очистки.
+     * Теперь каждую новость нужно вставить в БД.
+     * Для этого мы будем наблюдать за КАЖДОЙ вставкой, создавая массив Single
+     * После того как они все завершатся, а мы объединили их завершение в zip
+     * Мы обновляем содержимое UI и убираем диалог загрузки.
+     * При ошибке мы также скрываем диалог и выводим в лог сообщение.
+     * @param stories
+     */
+    private void insertAllToDB(TopStoriesDTO stories) {
+        List<Single<Long>> singles = new LinkedList<>();
+
+        for (NewsDTO news : stories.getListNews()) {
+            try {
+                NewsItem item = NewsItem.fromNewsDTO(news);
+                singles.add(Single.fromCallable(() -> App.getDatabase().getNewsDAO().insert(NewsEntity.fromNewsItem(item))));
+            } catch (ParseException e) {
+                App.logE(e.getMessage());
             }
-            loadFromDB(stories.getSection());
         }
 
-        loadDialog.dismiss();
+         completeLoad = Single.zip(singles, (args) -> 0)
+                 .subscribeOn(Schedulers.io())
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .subscribe((i) -> {
+                     loadFromDB(stories.getSection());
+                     loadDialog.dismiss();
+                 }, (t) -> {
+                     loadDialog.dismiss();
+                     errorLoadFromDB(t);
+                 });
     }
+
 
     private void errorLoad() {
         Toast.makeText(NewsListActivity.this, R.string.errorLoading, Toast.LENGTH_SHORT).show();
@@ -272,5 +336,25 @@ public class NewsListActivity extends AppCompatActivity {
         textView.setText(R.string.errorLoading);
         loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
         loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
+    }
+
+    private void successfulLoadFromDB(List<NewsEntity> list) {
+        for (NewsEntity entity : list) {
+            adapter.append(entity.toNewsItem());
+        }
+        adapter.notifyOriginNews();
+        adapter.sort();
+    }
+
+    private void startDetailsActivity(Integer id) {
+        NewsDetailsActivity.start(recyclerListNews.getContext(), id);
+    }
+
+    private void startEditActivity(Integer id) {
+        EditNewsActivity.start(recyclerListNews.getContext(), id);
+    }
+
+    private void errorLoadFromDB(Throwable t) {
+        App.logE(t.getMessage());
     }
 }
