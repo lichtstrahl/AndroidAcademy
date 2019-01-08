@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -24,10 +25,7 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -55,6 +53,7 @@ public class NewsListActivity extends AppCompatActivity {
     private static final String LAST_SECTION = "LAST_SECTION";
     private static final String SAVE_SECTION = "save:section";
     private static final String SAVE_FILTER = "save:filter";
+    private static final String SAVE_LOAD = "save:load";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -90,20 +89,28 @@ public class NewsListActivity extends AppCompatActivity {
         inputFilter = findViewById(R.id.input);
         loadSpinner();
 
-        if (savedInstanceState != null) {
-            spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
-            inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
-        }
-
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
         recyclerListNews.addOnScrollListener(new ScrollListener());
         configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
 
         loadDialog = buildLoadDialog();
-
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString() ,this::completeLoad, this::errorLoad);
         initialListener();
+
+        // Если при повороте была загрузка, значит она была уже остановлена. Поэтому нужно начать всё заново.
+        if (savedInstanceState != null) {
+            spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
+            inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
+        }
+
+        loader = new RetrofitLoader(spinner.getSelectedItem().toString(), this::completeLoad, this::errorLoad);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        boolean isLoading = savedInstanceState.getBoolean(SAVE_LOAD, false);
+        if (isLoading) loader.load();
     }
 
     @Override
@@ -202,11 +209,13 @@ public class NewsListActivity extends AppCompatActivity {
         if (completeLoad != null) completeLoad.dispose();   // Возможно обновление не вызывалось
     }
 
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
+        outState.putBoolean(SAVE_LOAD, loadDialog.isShowing());
     }
 
     private void loadSpinner() {

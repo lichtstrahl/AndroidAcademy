@@ -11,7 +11,6 @@ import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 // TODO Добавить функцию removeAll, чтобы больше не забывать про notify
 public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
-    private static final String NULL_BODY = "Тело ответа от сервера null (TopStoriesObserver)";
     private Action1<TopStoriesDTO> complete;
     private Action error;
     private Disposable disposable;
@@ -65,6 +64,12 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         }
     }
 
+
+    public void subscribe(Action1<TopStoriesDTO> complete, Action error) {
+        this.complete = complete;
+        this.error = error;
+    }
+
     private void error() {
         try {
             error.run();
@@ -84,7 +89,6 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         error();
     }
 
-    // Теперь здесь проверка на null, т.к. не обязательно будет вызвана загрузка и подписка на событие
     public void dispose() {
         if (disposable != null)
             disposable.dispose();
