@@ -11,6 +11,7 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/stdMargin"
         android:layout_width="@dimen/intro_view_pager_width"
         android:layout_height="@dimen/intro_view_pager_height"/>
 

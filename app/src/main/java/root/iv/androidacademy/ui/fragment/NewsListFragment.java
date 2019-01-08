@@ -2,14 +2,12 @@ package root.iv.androidacademy.ui.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,10 +48,9 @@ import root.iv.androidacademy.util.Action1;
 import static android.content.Context.MODE_PRIVATE;
 
 public class NewsListFragment extends Fragment {
-    private static final String SAVE_SECTION = "SAVE_SECTION";
-    private static final String SAVE_FILTER = "SAVE_FILTER";
+    private static final String SAVE_SECTION = "save:section";
+    private static final String SAVE_FILTER = "save:filter";
     private static final String LAST_SECTION = "LAST_SECTION";
-    private static final String ARGUMENT_ORIENTATION = "args:orientation";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -68,7 +65,6 @@ public class NewsListFragment extends Fragment {
     private Spinner spinner;
     private EditText inputFilter;
     private Listener listenerActivity;
-    private boolean isLandTabletOrientation;
 
 
     @Nullable
@@ -85,8 +81,6 @@ public class NewsListFragment extends Fragment {
         if (savedInstanceState != null) {
             spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
-        } else {
-            isLandTabletOrientation = getArguments().getBoolean(ARGUMENT_ORIENTATION);
         }
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
@@ -120,21 +114,21 @@ public class NewsListFragment extends Fragment {
             loader.load();
         });
 
-        adapterListener.subscribe((view) -> {
+        adapterListener.subscribe(view -> {
             int pos = recyclerListNews.getChildAdapterPosition(view);
             NewsItem item = adapter.getItem(pos);
             int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
             if (listenerActivity != null) listenerActivity.clickItemNews(id);
         });
 
-        adapterLongListener.subscribe((view) -> {
+        adapterLongListener.subscribe(view -> {
             int pos = recyclerListNews.getChildAdapterPosition(view);
             NewsItem item = adapter.getItem(pos);
             int id = App.getDatabase().getNewsDAO().getId(item.getTitle(), item.getPreviewText(), item.getPublishDateString());
             EditNewsActivity.start(recyclerListNews.getContext(), id);
         });
 
-        scrollListener.subscribe((state) -> {
+        scrollListener.subscribe(state -> {
             if (state != 0) {
                 buttonUpdate.hide();
             } else {
@@ -142,7 +136,7 @@ public class NewsListFragment extends Fragment {
             }
         });
 
-        spinnerListener.subscribe((position) -> {
+        spinnerListener.subscribe(position -> {
             String section = Section.SECTIONS[position].getName();
             loadDialog.show();
             adapter.setNewSection(section);
@@ -197,7 +191,7 @@ public class NewsListFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
@@ -239,7 +233,7 @@ public class NewsListFragment extends Fragment {
 
     /**
      * После окончания загрузки данных в адаптер сортирум их и замещаем originNews
-     * @param stories
+     * @param stories - загруженные новости
      */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
         if (stories != null) {
@@ -268,12 +262,8 @@ public class NewsListFragment extends Fragment {
         loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
     }
 
-    public static NewsListFragment newInstance(boolean isLandTabletOrientation) {
-        NewsListFragment fragment = new NewsListFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(ARGUMENT_ORIENTATION, isLandTabletOrientation);
-        fragment.setArguments(bundle);
-        return fragment;
+    public static NewsListFragment newInstance() {
+        return new NewsListFragment();
     }
 
 

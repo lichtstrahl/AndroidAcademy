@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     private static final String TRANSACTION_INIT = "transaction:init";
     private static final String TAG_LIST_FRAGMENT = "fragment:list";
     private static final String TAG_DETAILS_FRAGMENT = "fragment:details";
-    private static final String TAG_REPLACE_DETAILS_FRAGMENT = "fragment:details-replace";
     private boolean isLandTabletOrientation;
 
     @Override
@@ -31,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.frame_list, NewsListFragment.newInstance(isLandTabletOrientation), TAG_LIST_FRAGMENT)
+                    .replace(R.id.frame_list, NewsListFragment.newInstance(), TAG_LIST_FRAGMENT)
                     .addToBackStack(TRANSACTION_INIT)
                     .commit();
             App.logI("Count fragments: " + getSupportFragmentManager().getFragments().size());
@@ -48,19 +46,6 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
                         .addToBackStack(null)
                         .commit();
             }
-
-//            detailsFragment = getSupportFragmentManager().findFragmentByTag(TAG_REPLACE_DETAILS_FRAGMENT);
-//            if (detailsFragment != null) {
-//                // Сейчас 100% портрет
-//                App.logI("Поворот экрана, после details в Land-scape");
-//                getSupportFragmentManager().popBackStackImmediate();
-//
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .add(R.id.frame_list, detailsFragment, TAG_DETAILS_FRAGMENT)
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
         }
     }
 
