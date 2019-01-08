@@ -28,11 +28,6 @@ public class RetrofitLoader implements DataLoader {
         observer.dispose();
     }
 
-
-    public void subscribe(Action1<TopStoriesDTO> complete, Action error) {
-        observer.subscribe(complete, error);
-    }
-
     @Override
     public void load() {
         App.getApiTopStories().getTopStories(section)

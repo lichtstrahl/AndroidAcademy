@@ -64,12 +64,6 @@ public class TopStoriesObserver implements SingleObserver<TopStoriesDTO> {
         }
     }
 
-
-    public void subscribe(Action1<TopStoriesDTO> complete, Action error) {
-        this.complete = complete;
-        this.error = error;
-    }
-
     private void error() {
         try {
             error.run();

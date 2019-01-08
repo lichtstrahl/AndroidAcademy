@@ -97,7 +97,7 @@ public class NewsListActivity extends AppCompatActivity {
         loadDialog = buildLoadDialog();
         initialListener();
 
-        // Если при повороте была загрузка, значит она была уже остановлена. Поэтому нужно начать всё заново.
+
         if (savedInstanceState != null) {
             spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
@@ -109,6 +109,7 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        // Если при повороте была загрузка, значит она была уже остановлена. Поэтому нужно начать всё заново.
         boolean isLoading = savedInstanceState.getBoolean(SAVE_LOAD, false);
         if (isLoading) loader.load();
     }
