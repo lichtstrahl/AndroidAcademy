@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.chip.Chip;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,17 +81,21 @@ public class NewsListActivity extends AppCompatActivity {
     private ivEditText inputFilter;
     @Nullable
     private Disposable completeLoad;
+    private LinearLayout layoutSections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
 
+        layoutSections = findViewById(R.id.layoutSections);
         recyclerListNews = findViewById(R.id.listNews);
         buttonUpdate = findViewById(R.id.buttonUpdate);
         spinner = findViewById(R.id.spinner);
         inputFilter = findViewById(R.id.input);
         loadSpinner();
+        loadSections();
+
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
@@ -113,19 +120,6 @@ public class NewsListActivity extends AppCompatActivity {
         }
 
         loader = new RetrofitLoader(spinner.getSelectedItem().toString(), this::completeLoad, this::errorLoad);
-    }
-
-    private void releaseInputFilterFull() {
-        if (inputFilter.isFocused()) {
-            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            manager.hideSoftInputFromWindow(inputFilter.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            inputFilter.clearFocus();
-            App.logI("Release Input Filter");
-        }
-    }
-
-    private void releaseInputFilterLite() {
-        inputFilter.clearFocus();
     }
 
     @Override
@@ -243,13 +237,35 @@ public class NewsListActivity extends AppCompatActivity {
         if (completeLoad != null) completeLoad.dispose();   // Возможно обновление не вызывалось
     }
 
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
         outState.putBoolean(SAVE_LOAD, loadDialog.isShowing());
+    }
+
+    private void releaseInputFilterFull() {
+        if (inputFilter.isFocused()) {
+            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(inputFilter.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            inputFilter.clearFocus();
+            App.logI("Release Input Filter");
+        }
+    }
+
+    private void releaseInputFilterLite() {
+        inputFilter.clearFocus();
+    }
+
+    private void loadSections() {
+        for (Section s : Section.SECTIONS) {
+            Chip chip = new Chip(this);
+//            TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
+            chip.setText(s.getName());
+
+            layoutSections.addView(chip);
+        }
     }
 
     private void loadSpinner() {
