@@ -129,6 +129,12 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        releaseInputFilterFull();
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         // Если при повороте была загрузка, значит она была уже остановлена. Поэтому нужно начать всё заново.
