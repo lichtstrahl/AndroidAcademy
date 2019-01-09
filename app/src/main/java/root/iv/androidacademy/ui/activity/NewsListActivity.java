@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
@@ -18,9 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,14 +33,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.ui.ivEditText;
-import root.iv.androidacademy.util.listener.ButtonUpdateClickListener;
-import root.iv.androidacademy.util.listener.ClickListener;
-import root.iv.androidacademy.util.listener.ListenerEditText;
-import root.iv.androidacademy.util.listener.NewsItemClickListener;
-import root.iv.androidacademy.util.listener.NewsItemLongClickListener;
-import root.iv.androidacademy.util.listener.ScrollListener;
-import root.iv.androidacademy.util.listener.SpinnerInteractionListener;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
@@ -50,8 +41,16 @@ import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
+import root.iv.androidacademy.ui.ivEditText;
 import root.iv.androidacademy.util.Action1;
 import root.iv.androidacademy.util.DBObserver;
+import root.iv.androidacademy.util.listener.ButtonUpdateClickListener;
+import root.iv.androidacademy.util.listener.ClickListener;
+import root.iv.androidacademy.util.listener.ListenerEditText;
+import root.iv.androidacademy.util.listener.NewsItemClickListener;
+import root.iv.androidacademy.util.listener.NewsItemLongClickListener;
+import root.iv.androidacademy.util.listener.ScrollListener;
+import root.iv.androidacademy.util.listener.SpinnerInteractionListener;
 
 public class NewsListActivity extends AppCompatActivity {
     private static final String LAST_SECTION = "LAST_SECTION";
@@ -68,8 +67,7 @@ public class NewsListActivity extends AppCompatActivity {
     private ClickListener<Action> buttonUpdateListener;
     private NewsItemLongClickListener adapterLongListener;
     private ScrollListener scrollListener;
-    private SpinnerInteractionListener spinnerListener;
-    private Spinner spinner;
+    private int section;    // Индекс текущей секции
     @Nullable
     private DBObserver<List<NewsEntity>> loadDBObserver;
     @Nullable
@@ -91,9 +89,8 @@ public class NewsListActivity extends AppCompatActivity {
         layoutSections = findViewById(R.id.layoutSections);
         recyclerListNews = findViewById(R.id.listNews);
         buttonUpdate = findViewById(R.id.buttonUpdate);
-        spinner = findViewById(R.id.spinner);
         inputFilter = findViewById(R.id.input);
-        loadSpinner();
+        section = getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0);
         loadSections();
 
 
@@ -115,11 +112,11 @@ public class NewsListActivity extends AppCompatActivity {
 
 
         if (savedInstanceState != null) {
-            spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
+            section = savedInstanceState.getInt(SAVE_SECTION);
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
         }
 
-        loader = new RetrofitLoader(spinner.getSelectedItem().toString(), this::completeLoad, this::errorLoad);
+        loader = new RetrofitLoader(Section.SECTIONS[section].getName(), this::completeLoad, this::errorLoad);
     }
 
     @Override
@@ -139,7 +136,7 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        loadFromDB(spinner.getSelectedItem().toString());
+        loadFromDB(Section.SECTIONS[section].getName());
     }
 
     @Override
@@ -150,8 +147,7 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdateListener.subscribe(() -> {
             loadDialog.show();
             releaseInputFilterFull();
-            Object item = spinner.getSelectedItem();
-            loader.setSection(item.toString());
+            loader.setSection(Section.SECTIONS[section].getName());
             loader.load();
         });
 
@@ -187,21 +183,11 @@ public class NewsListActivity extends AppCompatActivity {
             }
         });
 
-        spinnerListener.subscribe((position) -> {
-            String section = Section.SECTIONS[position].getName();
-            loadDialog.show();
-            adapter.setNewSection(section);
-            loader.setSection(section);
-            loader.load();
-        }, this::releaseInputFilterFull);
-
         recyclerListNews.addOnScrollListener(scrollListener);
         inputListener.subscribe(adapter::setFilter);
         adapter.addOnClickListener(adapterListener);
         adapter.addOnLongClickListener(adapterLongListener);
         buttonUpdate.setOnClickListener(buttonUpdateListener);
-        spinner.setOnTouchListener(spinnerListener);
-        spinner.setOnItemSelectedListener(spinnerListener);
         inputFilter.subscribe(this::releaseInputFilterLite);
     }
 
@@ -214,7 +200,6 @@ public class NewsListActivity extends AppCompatActivity {
         adapterListener.unsubscribe();
         adapter.delOnClickListener();
         adapter.delOnLongClickListener();
-        spinnerListener.unsubscribe();
         inputFilter.unsubscribe();
     }
 
@@ -227,7 +212,7 @@ public class NewsListActivity extends AppCompatActivity {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         preferences
                 .edit()
-                .putInt(LAST_SECTION, spinner.getSelectedItemPosition())
+                .putInt(LAST_SECTION, section)
                 .apply();
 
         if (loadDBObserver != null) loadDBObserver.unsubscribe();
@@ -240,7 +225,7 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(SAVE_SECTION, spinner.getSelectedItemPosition());
+        outState.putInt(SAVE_SECTION, section);
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
         outState.putBoolean(SAVE_LOAD, loadDialog.isShowing());
     }
@@ -259,19 +244,24 @@ public class NewsListActivity extends AppCompatActivity {
     }
 
     private void loadSections() {
-        for (Section s : Section.SECTIONS) {
+        for (int i = 0; i < Section.SECTIONS.length; i++) {
             Chip chip = new Chip(this);
-//            TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
-            chip.setText(s.getName());
-
+            TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
+            chip.setChipBackgroundColorResource(R.color.colorPrimary);
+            chip.setText(Section.SECTIONS[i].getName());
+            int finalI = i;
+            chip.setOnClickListener(view -> clickSection(finalI));
             layoutSections.addView(chip);
         }
     }
 
-    private void loadSpinner() {
-        ArrayAdapter<Section> spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.spinnerListItem));
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0));
+    private void clickSection(int index) {
+        releaseInputFilterFull();
+        section = index;
+        loadDialog.show();
+        adapter.setNewSection(Section.SECTIONS[index].getName());
+        loader.setSection(Section.SECTIONS[index].getName());
+        loader.load();
     }
 
     private void loadFromDB(String section) {
@@ -309,7 +299,6 @@ public class NewsListActivity extends AppCompatActivity {
         adapterLongListener = new NewsItemLongClickListener();
         buttonUpdateListener = new ButtonUpdateClickListener();
         scrollListener = new ScrollListener();
-        spinnerListener = new SpinnerInteractionListener();
     }
 
     @Override

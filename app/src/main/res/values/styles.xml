@@ -8,4 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SectionTheme" parent="TextAppearance.AppCompat.Widget.Button.Colored">
+        <!--<item name="android:textColor">@color/colorPrimaryDark</item>-->
+        <!--<item name="android:textColorHint">?android:attr/textColorHintInverse</item>-->
+        <!--<item name="android:textColorHighlight">?android:attr/textColorHighlightInverse</item>-->
+        <!--<item name="android:textColorLink">?android:attr/textColorLinkInverse</item>-->
+    </style>
+
 </resources>
