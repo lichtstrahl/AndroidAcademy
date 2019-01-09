@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/editCategory"
-            android:text="@string/editCategory"/>
+            android:text="@string/editTitle"/>
 
         <EditText
             android:id="@+id/editTitle"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/editTitle"
-            android:text="@string/editCategory"/>
+            android:text="@string/editPreview"/>
 
         <EditText
             android:id="@+id/editPreview"

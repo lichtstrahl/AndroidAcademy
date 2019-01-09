@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.widget.FloatingActionButton;
@@ -18,8 +19,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +53,6 @@ import root.iv.androidacademy.util.listener.ListenerEditText;
 import root.iv.androidacademy.util.listener.NewsItemClickListener;
 import root.iv.androidacademy.util.listener.NewsItemLongClickListener;
 import root.iv.androidacademy.util.listener.ScrollListener;
-import root.iv.androidacademy.util.listener.SpinnerInteractionListener;
 
 public class NewsListActivity extends AppCompatActivity {
     private static final String LAST_SECTION = "LAST_SECTION";
@@ -69,6 +69,8 @@ public class NewsListActivity extends AppCompatActivity {
     private ClickListener<Action> buttonUpdateListener;
     private NewsItemLongClickListener adapterLongListener;
     private ScrollListener scrollListener;
+    @Nullable
+    private Parcelable listState;
     private int section;    // Индекс текущей секции
     @Nullable
     private DBObserver<List<NewsEntity>> loadDBObserver;
@@ -100,9 +102,7 @@ public class NewsListActivity extends AppCompatActivity {
 
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
         recyclerListNews.setAdapter(adapter);
-        recyclerListNews.addOnScrollListener(new ScrollListener());
         configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
-
 
         loadDialog = buildLoadDialog();
         initialListener();
@@ -141,6 +141,7 @@ public class NewsListActivity extends AppCompatActivity {
         super.onStart();
         loadFromDB(Section.SECTIONS[section].getName());
     }
+
 
     @Override
     protected void onResume() {
@@ -220,6 +221,8 @@ public class NewsListActivity extends AppCompatActivity {
                 .putInt(LAST_SECTION, section)
                 .apply();
 
+        listState = recyclerListNews.getLayoutManager().onSaveInstanceState();
+
         if (loadDBObserver != null) loadDBObserver.unsubscribe();
         if (itemClickObserver != null) itemClickObserver.unsubscribe();
         if (itemLongClickObserver != null) itemLongClickObserver.unsubscribe();
@@ -258,6 +261,13 @@ public class NewsListActivity extends AppCompatActivity {
         for (int i = 0; i < Section.SECTIONS.length; i++) {
             Chip chip = new Chip(this);
             TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            int space = getResources().getDimensionPixelSize(R.dimen.stdMargin);
+            params.setMarginStart(space);
+            params.setMarginEnd(space);
+
+            chip.setLayoutParams(params);
             chip.setChipBackgroundColorResource(R.color.colorPrimary);
             chip.setText(Section.SECTIONS[i].getName());
             int finalI = i;
@@ -404,14 +414,15 @@ public class NewsListActivity extends AppCompatActivity {
         adapter.notifyOriginNews();
         adapter.sort();
         adapter.setFilter(inputFilter.getText().toString());
+        if (listState != null) recyclerListNews.getLayoutManager().onRestoreInstanceState(listState);
     }
 
     private void startDetailsActivity(Integer id) {
-        NewsDetailsActivity.start(recyclerListNews.getContext(), id);
+        NewsDetailsActivity.start(this, id);
     }
 
     private void startEditActivity(Integer id) {
-        EditNewsActivity.start(recyclerListNews.getContext(), id);
+        EditNewsActivity.start(this, id);
     }
 
     private void errorLoadFromDB(Throwable t) {
