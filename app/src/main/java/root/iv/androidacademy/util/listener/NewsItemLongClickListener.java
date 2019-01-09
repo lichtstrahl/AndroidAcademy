@@ -1,11 +1,11 @@
-package root.iv.androidacademy.activity.listener;
+package root.iv.androidacademy.util.listener;
 
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import root.iv.androidacademy.util.Action1;
 
-public class NewsItemLongClickListener implements Signed<Action1<View>>, View.OnLongClickListener {
+public class NewsItemLongClickListener implements Subscribed<Action1<View>>, View.OnLongClickListener {
     @Nullable
     private Action1<View> action;
 

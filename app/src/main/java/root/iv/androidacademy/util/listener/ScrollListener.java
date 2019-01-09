@@ -1,4 +1,4 @@
-package root.iv.androidacademy.activity.listener;
+package root.iv.androidacademy.util.listener;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.Action1;
 
-public class ScrollListener extends RecyclerView.OnScrollListener implements Signed<Action1<Integer>> {
+public class ScrollListener extends RecyclerView.OnScrollListener implements Subscribed<Action1<Integer>> {
     @Nullable
     private Action1<Integer> action;
 

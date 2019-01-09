@@ -1,29 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:id="@+id/head"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/headHeight"
+        >
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="@dimen/spinnerWidth"
-            android:layout_height="@dimen/headHeight"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/smallMargin"
             android:layout_gravity="center_vertical"/>
-
-        <EditText
-            android:id="@+id/input"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/inputLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/headHeight"
-            android:textSize="@dimen/bigText"
-            android:layout_margin="@dimen/smallMargin"
-            android:inputType="textPersonName"/>
+            android:layout_gravity="center_vertical"
+            android:focusable="true"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
+            >
+            <root.iv.androidacademy.ui.ivEditText
+                android:id="@+id/input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/bigText"
+                android:layout_margin="@dimen/smallMargin"
+                android:inputType="textPersonName"
+                android:hint="@string/search_hint"/>
+        </android.support.design.widget.TextInputLayout>
+
     </LinearLayout>
 
+    <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:toolsList="http://schemas.android.com/tools"
+        android:id="@+id/listNews"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/stdMargin"
+        android:layout_marginEnd="@dimen/stdMargin"
+        android:layout_below="@id/head"
+        toolsList:listitem="@layout/item_news" />
 
 
     <android.support.design.widget.FloatingActionButton
@@ -40,16 +62,4 @@
         app:pressedTranslationZ="20dp"
         />
 
-    <android.support.v7.widget.RecyclerView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:toolsList="http://schemas.android.com/tools"
-        android:id="@+id/listNews"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/head"
-        android:layout_marginStart="@dimen/stdMargin"
-        android:layout_marginEnd="@dimen/stdMargin"
-        toolsList:listitem="@layout/item_news"
-        >
-    </android.support.v7.widget.RecyclerView>
 </RelativeLayout>

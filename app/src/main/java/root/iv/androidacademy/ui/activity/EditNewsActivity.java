@@ -1,4 +1,4 @@
-package root.iv.androidacademy.activity;
+package root.iv.androidacademy.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,19 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
 
-import java.util.concurrent.Callable;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsEntity;
-import root.iv.androidacademy.util.Action1;
 import root.iv.androidacademy.util.DBObserver;
 
 public class EditNewsActivity extends AppCompatActivity {

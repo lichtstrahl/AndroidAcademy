@@ -45,4 +45,5 @@
     <string name="delete">Delete</string>
     <string name="editCategory">Edit category</string>
     <string name="update">Update</string>
+    <string name="search_hint">Поиск</string>
 </resources>

@@ -1,10 +1,10 @@
-package root.iv.androidacademy.activity;
+package root.iv.androidacademy.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -15,8 +15,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,13 +31,14 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.activity.listener.ButtonUpdateClickListener;
-import root.iv.androidacademy.activity.listener.ClickListener;
-import root.iv.androidacademy.activity.listener.ListenerEditText;
-import root.iv.androidacademy.activity.listener.NewsItemClickListener;
-import root.iv.androidacademy.activity.listener.NewsItemLongClickListener;
-import root.iv.androidacademy.activity.listener.ScrollListener;
-import root.iv.androidacademy.activity.listener.SpinnerInteractionListener;
+import root.iv.androidacademy.ui.ivEditText;
+import root.iv.androidacademy.util.listener.ButtonUpdateClickListener;
+import root.iv.androidacademy.util.listener.ClickListener;
+import root.iv.androidacademy.util.listener.ListenerEditText;
+import root.iv.androidacademy.util.listener.NewsItemClickListener;
+import root.iv.androidacademy.util.listener.NewsItemLongClickListener;
+import root.iv.androidacademy.util.listener.ScrollListener;
+import root.iv.androidacademy.util.listener.SpinnerInteractionListener;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
@@ -74,7 +75,7 @@ public class NewsListActivity extends AppCompatActivity {
     private DBObserver<Integer> itemLongClickObserver;
     @Nullable
     private DBObserver<TopStoriesDTO> deleteAllObserver;
-    private EditText inputFilter;
+    private ivEditText inputFilter;
     @Nullable
     private Disposable completeLoad;
 
@@ -98,12 +99,33 @@ public class NewsListActivity extends AppCompatActivity {
         initialListener();
 
 
+
+        inputFilter.setOnEditorActionListener((view, action, event) -> {
+            App.logI("Событие: " + action);
+            releaseInputFilterFull();
+            return false;
+        });
+
+
         if (savedInstanceState != null) {
             spinner.setSelection(savedInstanceState.getInt(SAVE_SECTION, 0));
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
         }
 
         loader = new RetrofitLoader(spinner.getSelectedItem().toString(), this::completeLoad, this::errorLoad);
+    }
+
+    private void releaseInputFilterFull() {
+        if (inputFilter.isFocused()) {
+            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(inputFilter.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            inputFilter.clearFocus();
+            App.logI("Release Input Filter");
+        }
+    }
+
+    private void releaseInputFilterLite() {
+        inputFilter.clearFocus();
     }
 
     @Override
@@ -123,9 +145,11 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        inputFilter.clearFocus();
 
         buttonUpdateListener.subscribe(() -> {
             loadDialog.show();
+            releaseInputFilterFull();
             Object item = spinner.getSelectedItem();
             loader.setSection(item.toString());
             loader.load();
@@ -157,6 +181,7 @@ public class NewsListActivity extends AppCompatActivity {
         scrollListener.subscribe((state) -> {
             if (state != 0) {
                 buttonUpdate.hide();
+                releaseInputFilterFull();
             } else {
                 buttonUpdate.show();
             }
@@ -168,7 +193,7 @@ public class NewsListActivity extends AppCompatActivity {
             adapter.setNewSection(section);
             loader.setSection(section);
             loader.load();
-        });
+        }, this::releaseInputFilterFull);
 
         recyclerListNews.addOnScrollListener(scrollListener);
         inputListener.subscribe(adapter::setFilter);
@@ -177,6 +202,7 @@ public class NewsListActivity extends AppCompatActivity {
         buttonUpdate.setOnClickListener(buttonUpdateListener);
         spinner.setOnTouchListener(spinnerListener);
         spinner.setOnItemSelectedListener(spinnerListener);
+        inputFilter.subscribe(this::releaseInputFilterLite);
     }
 
     @Override
@@ -189,6 +215,7 @@ public class NewsListActivity extends AppCompatActivity {
         adapter.delOnClickListener();
         adapter.delOnLongClickListener();
         spinnerListener.unsubscribe();
+        inputFilter.unsubscribe();
     }
 
     @Override
