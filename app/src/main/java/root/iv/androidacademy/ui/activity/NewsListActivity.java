@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 import root.iv.androidacademy.ui.ivEditText;
+import root.iv.androidacademy.ui.ivHorizontalScrollView;
 import root.iv.androidacademy.util.Action1;
 import root.iv.androidacademy.util.DBObserver;
 import root.iv.androidacademy.util.listener.ButtonUpdateClickListener;
@@ -80,12 +82,14 @@ public class NewsListActivity extends AppCompatActivity {
     @Nullable
     private Disposable completeLoad;
     private LinearLayout layoutSections;
+    private ivHorizontalScrollView viewSections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
 
+        viewSections = findViewById(R.id.viewSections);
         layoutSections = findViewById(R.id.layoutSections);
         recyclerListNews = findViewById(R.id.listNews);
         buttonUpdate = findViewById(R.id.buttonUpdate);
@@ -99,10 +103,9 @@ public class NewsListActivity extends AppCompatActivity {
         recyclerListNews.addOnScrollListener(new ScrollListener());
         configureLayoutManagerForRecyclerView(getResources().getConfiguration().orientation);
 
+
         loadDialog = buildLoadDialog();
         initialListener();
-
-
 
         inputFilter.setOnEditorActionListener((view, action, event) -> {
             App.logI("Событие: " + action);
@@ -189,6 +192,7 @@ public class NewsListActivity extends AppCompatActivity {
         adapter.addOnLongClickListener(adapterLongListener);
         buttonUpdate.setOnClickListener(buttonUpdateListener);
         inputFilter.subscribe(this::releaseInputFilterLite);
+        viewSections.subscribe(this::scrollSections);
     }
 
     @Override
@@ -201,6 +205,7 @@ public class NewsListActivity extends AppCompatActivity {
         adapter.delOnClickListener();
         adapter.delOnLongClickListener();
         inputFilter.unsubscribe();
+        viewSections.unsubscribe();
     }
 
     @Override
@@ -228,6 +233,12 @@ public class NewsListActivity extends AppCompatActivity {
         outState.putInt(SAVE_SECTION, section);
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
         outState.putBoolean(SAVE_LOAD, loadDialog.isShowing());
+    }
+
+    private void scrollSections(int dx) {
+        if (Math.abs(dx) > 2) {
+            releaseInputFilterFull();
+        }
     }
 
     private void releaseInputFilterFull() {
@@ -392,6 +403,7 @@ public class NewsListActivity extends AppCompatActivity {
         }
         adapter.notifyOriginNews();
         adapter.sort();
+        adapter.setFilter(inputFilter.getText().toString());
     }
 
     private void startDetailsActivity(Integer id) {
