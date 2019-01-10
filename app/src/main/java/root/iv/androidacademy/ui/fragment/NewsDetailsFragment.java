@@ -1,11 +1,12 @@
 package root.iv.androidacademy.ui.fragment;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,6 +63,8 @@ public class NewsDetailsFragment extends Fragment {
         return view;
     }
 
+
+
     @Override
     public void onStop() {
         super.onStop();
@@ -73,11 +76,13 @@ public class NewsDetailsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         listenerActivity = (Listener) context;
+        navigateUpEnable(context, true);
     }
 
     @Override
     public void onDetach() {
         listenerActivity = null;
+        navigateUpEnable(getContext(), false);
         getActivity().setTitle(R.string.app_name);
         super.onDetach();
     }
@@ -111,6 +116,11 @@ public class NewsDetailsFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void navigateUpEnable(Context context, boolean flag) {
+        final ActionBar bar = ((AppCompatActivity) context).getSupportActionBar();
+        if (bar != null) bar.setDisplayHomeAsUpEnabled(flag);
     }
 
     private void successfulFindNewsItem(NewsEntity entity) {

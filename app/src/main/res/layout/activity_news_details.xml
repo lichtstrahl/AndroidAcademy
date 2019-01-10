@@ -13,12 +13,12 @@
         <FrameLayout
             android:id="@+id/frameWeb"
             android:layout_width="match_parent"
-            android:layout_height="1000dp">
+            android:layout_height="1000dp"
+            android:background="@android:color/white">
             <WebView
                 android:id="@+id/webView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/white">
+                android:layout_height="wrap_content">
             </WebView>
         </FrameLayout>
     </RelativeLayout>

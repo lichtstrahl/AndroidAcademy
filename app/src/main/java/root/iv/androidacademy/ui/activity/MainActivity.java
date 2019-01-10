@@ -50,6 +50,12 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         if (getSupportFragmentManager().getBackStackEntryCount() == 0 || isLandTabletOrientation) {
