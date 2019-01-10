@@ -17,7 +17,7 @@
             android:name="root.iv.androidacademy.ui.activity.NewsListActivity"
             android:windowSoftInputMode="stateUnchanged" />
         <activity android:name="root.iv.androidacademy.ui.activity.NewsDetailsActivity" />
-        <activity android:name="root.iv.androidacademy.ui.activity.IntoActivity">
+        <activity android:name=".ui.activity.IntoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
