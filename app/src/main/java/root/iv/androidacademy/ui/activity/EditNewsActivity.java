@@ -4,18 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsEntity;
-import root.iv.androidacademy.util.DBObserver;
+import root.iv.androidacademy.news.NewsItem;
 
 public class EditNewsActivity extends AppCompatActivity {
     private static final String INTENT_ID = "INTENT_ID";
@@ -49,6 +47,7 @@ public class EditNewsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_news);
         ButterKnife.bind(this);
+
 
         updateNewsItemObserver = new DBObserver<>(this::fillNewsItem, this::errorLoadFromDB);
         updateNewsEntityObserver = new DBObserver<>(this::updateNewsEntity, this::errorLoadFromDB);

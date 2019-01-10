@@ -1,55 +1,78 @@
 package root.iv.androidacademy.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
+import me.relex.circleindicator.CircleIndicator;
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.util.intro.IntroAdapter;
+import root.iv.androidacademy.util.intro.IntroOnPageChangeListener;
 
-public class IntoActivity extends AppCompatActivity {
-    private static final String KEY_INTO = "KEY_INTO";
-
+public class IntoActivity extends FragmentActivity {
+    private static final String INTENT_INTRO_SHOW = "intent:intro-flag";
+    private static final int COUNT_PAGE = 3;
+    @BindView(R.id.viewPager)
+    ViewPager pager;
+    @BindView(R.id.indicator)
+    CircleIndicator indicator;
+    private PagerAdapter pagerAdapter;
+    private IntroOnPageChangeListener introListener;
+    @Nullable
     private Disposable disposable;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        boolean showIntro = getPreferences(MODE_PRIVATE).getBoolean(INTENT_INTRO_SHOW, true);
+        getPreferences(MODE_PRIVATE).edit().putBoolean(INTENT_INTRO_SHOW, !showIntro).apply();
+        introListener = new IntroOnPageChangeListener();
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (disposable != null)
-            disposable.dispose();
+        if (showIntro) {
+            setContentView(R.layout.activity_into);
+            ButterKnife.bind(this);
+
+            pagerAdapter = new IntroAdapter(getSupportFragmentManager(), COUNT_PAGE);
+            pager.setAdapter(pagerAdapter);
+            pager.addOnPageChangeListener(introListener);
+            indicator.setViewPager(pager);
+            return;
+        }
+
+        startMainActivity();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        boolean into = getPreferences(MODE_PRIVATE).getBoolean(KEY_INTO, true);
-
-        if (into) {
-            setContentView(R.layout.activity_into);
-
-            disposable = Completable.complete()
-                    .delay(1, TimeUnit.SECONDS)
-                    .subscribe(this::startNewsListActivity);
-        } else {
-            startNewsListActivity();
-        }
-        getPreferences(MODE_PRIVATE).edit()
-                .putBoolean(KEY_INTO, !into)
-                .commit();
+        introListener.subscribe(page -> {
+            if (page == (COUNT_PAGE-1)) {
+                disposable = Completable.complete()
+                    .delay(1500, TimeUnit.MILLISECONDS)
+                    .subscribe(this::startMainActivity);
+            }
+        });
     }
 
-    private void startNewsListActivity() {
-        Intent intent = new Intent(this, NewsListActivity.class);
-        startActivity(intent);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        introListener.unsubscribe();
+        if (disposable != null) disposable.dispose();
+    }
+
+    private void startMainActivity() {
+        MainActivity.start(this);
         finish();
     }
 }
+
