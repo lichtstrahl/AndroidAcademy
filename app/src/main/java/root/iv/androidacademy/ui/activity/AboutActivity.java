@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import root.iv.androidacademy.ui.activity.listener.ListenerEditText;
+import root.iv.androidacademy.util.listener.ListenerEditText;
 import root.iv.androidacademy.R;
 
 

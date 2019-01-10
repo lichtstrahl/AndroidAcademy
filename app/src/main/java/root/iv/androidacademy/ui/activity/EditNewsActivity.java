@@ -24,15 +24,16 @@ public class EditNewsActivity extends AppCompatActivity {
     EditText editTitle;
     @BindView(R.id.editPreview)
     EditText editPreview;
+    private DBObserver<NewsEntity> updateNewsItemObserver;
+    private DBObserver<Integer> updateNewsEntityObserver;
+    private DBObserver<NewsEntity> findNewsItemObserver;
 
     @OnClick(R.id.buttonUpdate)
     public void clickUpdate() {
-        NewsEntity item = App.getDatabase().getNewsDAO().getItemById(itemID);
-        item.setSubSection(editCategory.getText().toString());
-        item.setTitle(editTitle.getText().toString());
-        item.setPreviewText(editPreview.getText().toString());
-        App.getDatabase().getNewsDAO().update(item);
-        finish();
+        App.getDatabase().getNewsDAO().getItemByIdAsSingle(itemID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(updateNewsItemObserver);
     }
 
     public static void start(Context context, int id) {
@@ -47,10 +48,48 @@ public class EditNewsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_news);
         ButterKnife.bind(this);
 
+
+        updateNewsItemObserver = new DBObserver<>(this::fillNewsItem, this::errorLoadFromDB);
+        updateNewsEntityObserver = new DBObserver<>(this::updateNewsEntity, this::errorLoadFromDB);
+        findNewsItemObserver = new DBObserver<>(this::bindUI, this::errorLoadFromDB);
+
+
         itemID = getIntent().getIntExtra(INTENT_ID, -1);
-        NewsItem item = App.getDatabase().getNewsDAO().getItemById(itemID).toNewsItem();
+
+        App.getDatabase().getNewsDAO().getItemByIdAsSingle(itemID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(findNewsItemObserver);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        updateNewsItemObserver.unsubscribe();
+    }
+
+    private void fillNewsItem(NewsEntity item) {
+        item.setSubSection(editCategory.getText().toString());
+        item.setTitle(editTitle.getText().toString());
+        item.setPreviewText(editPreview.getText().toString());
+
+        Single.fromCallable(() -> App.getDatabase().getNewsDAO().update(item))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(updateNewsEntityObserver);
+    }
+
+    private void updateNewsEntity(Integer id) {
+        finish();
+    }
+
+    private void bindUI(NewsEntity item) {
         editCategory.setText(item.getSubSection());
         editTitle.setText(item.getTitle());
         editPreview.setText(item.getPreviewText());
+    }
+
+    private void errorLoadFromDB(Throwable t) {
+        App.logE(t.getMessage());
     }
 }

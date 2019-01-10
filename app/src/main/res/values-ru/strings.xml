@@ -23,4 +23,9 @@
     <string name="errorLoading">Ошибка при загрузке :(</string>
     <string name="reconnect">Переподключиться</string>
     <string name="delete">Удалить</string>
+    <string name="editCategory">Редактирование категории</string>
+    <string name="update">Обновить</string>
+    <string name="search_hint">Поиск</string>
+    <string name="editTitle">Редактирование названия</string>
+    <string name="editPreview">Редактирование preview</string>
 </resources>

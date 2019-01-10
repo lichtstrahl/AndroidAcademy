@@ -48,6 +48,7 @@ public class IntoActivity extends FragmentActivity {
         }
 
         startMainActivity();
+
     }
 
     @Override

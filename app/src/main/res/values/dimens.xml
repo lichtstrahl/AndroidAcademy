@@ -33,7 +33,7 @@
 
     <!-- ListNewsActivity -->
     <dimen name="spinnerWidth">120dp</dimen>
-    <dimen name="headHeight">45dp</dimen>
+    <dimen name="headHeight">60dp</dimen>
 
     <!-- Dialog -->
     <dimen name="dialogW">250dp</dimen>
