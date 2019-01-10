@@ -5,21 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/layoutBG"
-    tools:context=".ui.fragment.NewsDetailsFragment">
+    tools:context=".ui.fragment.NewsDetailsFragment"
+    android:background="@android:color/white">
 
-    <RelativeLayout
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <FrameLayout
-            android:id="@+id/frameWeb"
-            android:layout_width="match_parent"
-            android:layout_height="1000dp"
-            android:background="@android:color/white">
-            <WebView
-                android:id="@+id/webView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </WebView>
-        </FrameLayout>
-    </RelativeLayout>
+        android:layout_height="wrap_content"/>
 </ScrollView>

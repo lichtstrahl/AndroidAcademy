@@ -60,6 +60,7 @@ public class NewsDetailsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(findNewsItemObserver);
 
+        setHasOptionsMenu(true);
         return view;
     }
 
