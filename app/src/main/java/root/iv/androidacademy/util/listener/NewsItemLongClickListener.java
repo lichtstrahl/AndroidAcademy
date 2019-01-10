@@ -1,25 +1,27 @@
-package root.iv.androidacademy.activity.listener;
+package root.iv.androidacademy.util.listener;
 
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import root.iv.androidacademy.util.Action1;
 
-public class NewsItemClickListener implements ClickListener<Action1<View>> {
+public class NewsItemLongClickListener implements Subscribed<Action1<View>>, View.OnLongClickListener {
     @Nullable
     private Action1<View> action;
 
     @Override
-    public void onClick(View v) {
+    public boolean onLongClick(View v) {
         if (action != null) action.run(v);
-    }
-
-    public void unsubscribe() {
-        action = null;
+        return false;
     }
 
     @Override
     public void subscribe(Action1<View> a) {
         action = a;
+    }
+
+    @Override
+    public void unsubscribe() {
+        action = null;
     }
 }

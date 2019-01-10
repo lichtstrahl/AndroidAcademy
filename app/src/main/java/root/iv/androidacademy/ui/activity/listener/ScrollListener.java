@@ -1,4 +1,4 @@
-package root.iv.androidacademy.activity.listener;
+package root.iv.androidacademy.ui.activity.listener;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

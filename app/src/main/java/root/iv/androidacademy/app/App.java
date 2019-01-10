@@ -62,7 +62,6 @@ public class App extends Application {
         apiTopStories = retrofit.create(TopStoriesAPI.class);
 
         database = Room.databaseBuilder(this, NewsDatabase.class, BuildConfig.DATABASE_NAME)
-                .allowMainThreadQueries()
                 .addMigrations(new Migration(1, 2) {
                                    @Override
                                    public void migrate(@NonNull SupportSQLiteDatabase database) {
@@ -104,6 +103,10 @@ public class App extends Application {
 
     public static void logE(String e) {
         Log.e(BuildConfig.TAG_GLOBAL, e);
+    }
+
+    public static void logW(String msg) {
+        Log.w(BuildConfig.TAG_GLOBAL, msg);
     }
 
     public static void logI(String msg) {

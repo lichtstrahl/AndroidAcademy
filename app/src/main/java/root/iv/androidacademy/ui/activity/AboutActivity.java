@@ -1,5 +1,6 @@
-package root.iv.androidacademy.activity;
+package root.iv.androidacademy.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,7 +16,7 @@ import com.bumptech.glide.Glide;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import root.iv.androidacademy.activity.listener.ListenerEditText;
+import root.iv.androidacademy.util.listener.ListenerEditText;
 import root.iv.androidacademy.R;
 
 
@@ -93,5 +94,10 @@ public class AboutActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         listenerEditText.unsubscribe();
+    }
+
+    public static void start(Activity activity) {
+        Intent intent = new Intent(activity, AboutActivity.class);
+        activity.startActivity(intent);
     }
 }

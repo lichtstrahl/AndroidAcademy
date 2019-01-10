@@ -1,20 +1,30 @@
-package root.iv.androidacademy.activity.listener;
+package root.iv.androidacademy.util.listener;
 
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 
+import io.reactivex.functions.Action;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.Action1;
 
-public class SpinnerInteractionListener implements AdapterView.OnItemSelectedListener, View.OnTouchListener, Signed<Action1<Integer>> {
+public class SpinnerInteractionListener implements AdapterView.OnItemSelectedListener, View.OnTouchListener, Subscribed<Action1<Integer>> {
     private boolean user = false;
     @Nullable
     private Action1<Integer> action;
+    @Nullable
+    private Action release;
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         user = true;
+        try {
+            if (release != null) release.run();
+        }
+        catch (Exception e) {
+            App.logE(e.getMessage());
+        }
         return false;
     }
 
@@ -36,8 +46,14 @@ public class SpinnerInteractionListener implements AdapterView.OnItemSelectedLis
         action = a;
     }
 
+    public void subscribe(Action1<Integer> a, Action r) {
+        action = a;
+        release = r;
+    }
+
     @Override
     public void unsubscribe() {
         action = null;
+        release = null;
     }
 }

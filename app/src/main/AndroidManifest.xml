@@ -12,12 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.AboutActivity" />
-        <activity
-            android:name=".activity.NewsListActivity"
-            android:windowSoftInputMode="stateUnchanged" />
-        <activity android:name=".activity.NewsDetailsActivity" />
-        <activity android:name=".activity.IntoActivity">
+        <activity android:name=".ui.activity.AboutActivity" />
+
+        <activity android:name=".ui.activity.IntoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.EditNewsActivity"></activity>
+        <activity android:name=".ui.activity.EditNewsActivity" />
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:windowSoftInputMode="stateUnchanged"/>
     </application>
 
 </manifest>
