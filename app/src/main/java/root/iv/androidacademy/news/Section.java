@@ -1,5 +1,7 @@
 package root.iv.androidacademy.news;
 
+import android.support.annotation.Nullable;
+
 import java.io.Serializable;
 
 import root.iv.androidacademy.R;
@@ -63,6 +65,7 @@ public class Section implements Serializable {
     }
 
     @Deprecated
+    @Nullable
     public static Section valueOf(String name, int colorRes) {
         for (Section section : SECTIONS)
             if (section.getName().equals(name) && section.getColor() == colorRes)
