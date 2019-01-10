@@ -10,10 +10,14 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
+import root.iv.androidacademy.util.DBObserver;
 
 public class EditNewsActivity extends AppCompatActivity {
     private static final String INTENT_ID = "INTENT_ID";

@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                 .add(frameID, NewsDetailsFragment.newInstance(id), TAG_DETAILS_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     public void menuItemDeleteSelected(int itemID) {
-        App.getDatabase().getNewsDAO().delete(itemID);
         getSupportFragmentManager().popBackStackImmediate();
         NewsListFragment fragment = (NewsListFragment)getSupportFragmentManager().findFragmentByTag(TAG_LIST_FRAGMENT);
         if (fragment != null) fragment.onStart();

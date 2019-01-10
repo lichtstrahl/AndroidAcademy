@@ -6,9 +6,20 @@
     android:layout_height="match_parent"
     android:id="@+id/layoutBG"
     tools:context=".ui.fragment.NewsDetailsFragment">
-    <WebView
-        android:id="@+id/webView"
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    </WebView>
+        <FrameLayout
+            android:id="@+id/frameWeb"
+            android:layout_width="match_parent"
+            android:layout_height="1000dp">
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white">
+            </WebView>
+        </FrameLayout>
+    </RelativeLayout>
 </ScrollView>
