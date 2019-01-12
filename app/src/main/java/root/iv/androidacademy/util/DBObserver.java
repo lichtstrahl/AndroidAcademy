@@ -13,7 +13,7 @@ public class DBObserver<T> implements SingleObserver<T> {
     @Nullable
     private Action1<Throwable> error;
 
-    public DBObserver(Action1<T> a, Action1<Throwable> e) {
+    public DBObserver(@Nullable Action1<T> a, @Nullable Action1<Throwable> e) {
         action = a;
         error = e;
     }

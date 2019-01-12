@@ -46,39 +46,38 @@ public class NewsItem implements Parcelable {
         private String previewText = null;
         private String fullText = null;
 
-        NewsItemBuilder buildTitle(String t) {
+        public NewsItemBuilder buildTitle(String t) {
             title = t;
             return this;
         }
-
-        NewsItemBuilder buildImageURL(@Nullable String url) {
+        public NewsItemBuilder buildImageURL(@Nullable String url) {
             imageUrl = (url != null) ? url : "";
             return this;
         }
 
-        NewsItemBuilder buildSubSection(String c) {
+        public NewsItemBuilder buildSubSection(String c) {
             subSection = c;
             return this;
         }
 
 
-        NewsItemBuilder buildPublishDate(Date date) {
+        public NewsItemBuilder buildPublishDate(Date date) {
             publishDate = date;
             return this;
         }
 
-        NewsItemBuilder buildPreviewText(String text) {
+        public NewsItemBuilder buildPreviewText(String text) {
             previewText = text;
             return this;
         }
 
-        NewsItemBuilder buildFullText(String text) {
+        public NewsItemBuilder buildFullText(String text) {
             fullText = text;
             return this;
         }
 
         @Nullable
-        NewsItem build() {
+        public NewsItem build() {
             boolean done =
                     title != null &&
                     imageUrl != null &&

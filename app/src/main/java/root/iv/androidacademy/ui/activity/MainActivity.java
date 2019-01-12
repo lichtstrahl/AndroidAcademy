@@ -15,8 +15,6 @@ import root.iv.androidacademy.ui.fragment.NewsListFragment;
 
 public class MainActivity extends AppCompatActivity implements NewsListFragment.Listener, NewsDetailsFragment.Listener {
     private static final String TRANSACTION_INIT = "transaction:init";
-    private static final String TAG_LIST_FRAGMENT = "fragment:list";
-    private static final String TAG_DETAILS_FRAGMENT = "fragment:details";
     private boolean isLandTabletOrientation;
 
     @Override
@@ -29,12 +27,12 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.frame_list, NewsListFragment.newInstance(), TAG_LIST_FRAGMENT)
+                    .replace(R.id.frame_list, NewsListFragment.newInstance(), NewsListFragment.TAG)
                     .addToBackStack(TRANSACTION_INIT)
                     .commit();
             App.logI("Count fragments: " + getSupportFragmentManager().getFragments().size());
         } else {
-            Fragment detailsFragment = getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
+            Fragment detailsFragment = getSupportFragmentManager().findFragmentByTag(NewsDetailsFragment.TAG);
             if (detailsFragment != null) {
                 App.logI("Поворот экрана и отображение details");
                 int frameID = isLandTabletOrientation ? R.id.frame_detail : R.id.frame_list;
@@ -42,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .add(frameID, detailsFragment, TAG_DETAILS_FRAGMENT)
+                        .add(frameID, detailsFragment, NewsDetailsFragment.TAG)
                         .addToBackStack(null)
                         .commit();
             }
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-                .add(frameID, NewsDetailsFragment.newInstance(id), TAG_DETAILS_FRAGMENT)
+                .add(frameID, NewsDetailsFragment.newInstance(id), NewsDetailsFragment.TAG)
                 .addToBackStack(null)
                 .commit();
     }
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     @Override
     public void menuItemDeleteSelected(int itemID) {
         getSupportFragmentManager().popBackStackImmediate();
-        NewsListFragment fragment = (NewsListFragment)getSupportFragmentManager().findFragmentByTag(TAG_LIST_FRAGMENT);
+        NewsListFragment fragment = (NewsListFragment)getSupportFragmentManager().findFragmentByTag(NewsListFragment.TAG);
         if (fragment != null) fragment.onStart();
     }
 

@@ -60,7 +60,7 @@ public class NewsListFragment extends Fragment {
     private static final String SAVE_SECTION = "save:section";
     private static final String SAVE_FILTER = "save:filter";
     private static final String SAVE_LOAD = "save:load";
-    private static final String SAVE_LIST_STATE = "save:list-state";
+    public static final String TAG = "fragment:list";
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
@@ -438,5 +438,12 @@ public class NewsListFragment extends Fragment {
 
     public static NewsListFragment newInstance() {
         return new NewsListFragment();
+    }
+
+    public void performClickItem(int id) {
+        RecyclerView.ViewHolder viewHolder = recyclerListNews.findViewHolderForAdapterPosition(id);
+        if (viewHolder != null) {
+            viewHolder.itemView.performClick();
+        }
     }
 }

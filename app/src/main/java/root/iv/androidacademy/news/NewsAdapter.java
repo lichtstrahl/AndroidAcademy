@@ -1,6 +1,7 @@
 package root.iv.androidacademy.news;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import root.iv.androidacademy.R;
-import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.GlideApp;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
@@ -30,6 +30,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         this.listener = null;
         this.longListener = null;
         this.originNews = new LinkedList<>();
+        notifyOriginNews();
     }
 
     public void setNewSection(String section) {
@@ -77,12 +78,22 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public void clear() {
         int count = listNews.size();
         listNews.clear();
-        notifyItemRangeRemoved(0, count);
+        wrapNotifyItemRemoved(0, count);
     }
 
-    public void append(NewsItem item) {
-        listNews.add(item);
-        notifyItemInserted(listNews.size()-1);
+    public void wrapNotifyItemRemoved(int pos, int count) {
+        notifyItemRangeRemoved(pos, count);
+    }
+
+    public void append(@Nullable NewsItem item) {
+        if (item != null) {
+            listNews.add(item);
+            wrapNotifyItemInserted(listNews.size() - 1);
+        }
+    }
+
+    public void wrapNotifyItemInserted(int pos) {
+        notifyItemInserted(pos);
     }
 
     public void notifyOriginNews() {
@@ -102,11 +113,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 append(item);
         }
         sort();
-//        App.logI("set filter: \""+filter+"\"");
     }
 
     public void sort() {
         Collections.sort(listNews, new NewsItem.Comparator());
+        wrapNotifyDataSetChanged();
+    }
+
+    public void wrapNotifyDataSetChanged() {
         notifyDataSetChanged();
     }
 

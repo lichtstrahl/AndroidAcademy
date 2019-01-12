@@ -26,6 +26,7 @@ import root.iv.androidacademy.util.DBObserver;
 
 public class NewsDetailsFragment extends Fragment {
     private static final String INTENT_ID = "INTENT_ID";
+    public static final String TAG = "fragment:details";
     private int itemID;
     private DBObserver<NewsEntity> findNewsItemObserver;
     private DBObserver<Integer> deleteNewsItemObserver;
