@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,7 +89,7 @@ public class MainActivityTest {
         await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
 
         // Переворот экрана.
-        activity.setRequestedOrientation(Configuration.ORIENTATION_PORTRAIT);
+        device.setOrientationNatural();
         // Должен быть виден только детальный просмотр
         await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentInvisible);
         await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
@@ -97,8 +98,13 @@ public class MainActivityTest {
         // Нажатие "back"
         device.pressBack();
         // Должен закрыться детальный просмотр и открыться список новостей
-        await().atMost(1, TimeUnit.SECONDS).until(App::listFragmentVisible);
-        await().atMost(1, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
+        await().atMost(10, TimeUnit.SECONDS).until(App::listFragmentVisible);
+        await().atMost(10, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
+
+    }
+
+    @After
+    public void onStop() throws Exception {
         device.unfreezeRotation();
     }
 }
