@@ -27,6 +27,7 @@ public class App extends Application {
     private static Retrofit retrofit;
     private static TopStoriesAPI apiTopStories;
     protected static NewsDatabase database;
+    private static boolean espressTest = false;
 
     public static TopStoriesAPI getApiTopStories() {
         return apiTopStories;
@@ -36,6 +37,13 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // Проверяем, является ли данный запуск тестовым
+        try {
+            Class.forName("android.support.test.espresso.Espresso");
+            espressTest = true;
+        } catch (ClassNotFoundException e) {
+            espressTest = false;
+        }
 
         if (!isRoboUnitTest()) {
             // Create an InitializerBuilder
@@ -122,5 +130,9 @@ public class App extends Application {
 
     public static boolean isRoboUnitTest() {
         return ROBO_UNIT_TEST.equals(Build.FINGERPRINT);
+    }
+
+    public static boolean isEspressoTest() {
+        return espressTest;
     }
 }

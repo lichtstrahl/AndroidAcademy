@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.widget.AdapterView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +15,7 @@ import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
 import me.relex.circleindicator.CircleIndicator;
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.intro.IntroAdapter;
 import root.iv.androidacademy.util.intro.IntroOnPageChangeListener;
 
@@ -24,16 +26,22 @@ public class IntoActivity extends FragmentActivity {
     ViewPager pager;
     @BindView(R.id.indicator)
     CircleIndicator indicator;
-    private PagerAdapter pagerAdapter;
+    private IntroAdapter pagerAdapter;
     private IntroOnPageChangeListener introListener;
     @Nullable
     private Disposable disposable;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         boolean showIntro = getPreferences(MODE_PRIVATE).getBoolean(INTENT_INTRO_SHOW, true);
-        getPreferences(MODE_PRIVATE).edit().putBoolean(INTENT_INTRO_SHOW, !showIntro).apply();
+        if (!App.isEspressoTest()) {
+            getPreferences(MODE_PRIVATE).edit().putBoolean(INTENT_INTRO_SHOW, !showIntro).apply();
+        } else {
+            showIntro = true;
+        }
         introListener = new IntroOnPageChangeListener();
 
         if (showIntro) {
