@@ -38,11 +38,19 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
                 int frameID = isLandTabletOrientation ? R.id.frame_detail : R.id.frame_list;
                 getSupportFragmentManager().popBackStackImmediate();    // Чтобы в колонке справа не накладывать Details на List
 
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .add(frameID, detailsFragment, NewsDetailsFragment.TAG)
-                        .addToBackStack(null)
-                        .commit();
+                if (isLandTabletOrientation) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(frameID, detailsFragment, NewsDetailsFragment.TAG)
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(frameID, detailsFragment, NewsDetailsFragment.TAG)
+                            .addToBackStack(null)
+                            .commit();
+                }
             }
         }
     }
@@ -79,13 +87,21 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
     @Override
     public void clickItemNews(int id) {
         int frameID = isLandTabletOrientation ? R.id.frame_detail : R.id.frame_list;
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-                .add(frameID, NewsDetailsFragment.newInstance(id), NewsDetailsFragment.TAG)
-                .addToBackStack(null)
-                .commit();
+        if (isLandTabletOrientation) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                    .add(frameID, NewsDetailsFragment.newInstance(id), NewsDetailsFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                    .replace(frameID, NewsDetailsFragment.newInstance(id), NewsDetailsFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     @Override
