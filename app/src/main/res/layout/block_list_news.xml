@@ -39,7 +39,7 @@
             android:focusableInTouchMode="true"
             >
             <root.iv.androidacademy.ui.ivEditText
-                android:id="@+id/input"
+                android:id="@+id/inputFilter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/bigText"

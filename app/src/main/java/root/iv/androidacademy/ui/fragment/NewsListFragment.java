@@ -103,7 +103,7 @@ public class NewsListFragment extends Fragment {
         layoutSections = view.findViewById(R.id.layoutSections);
         recyclerListNews = view.findViewById(R.id.listNews);
         buttonUpdate = view.findViewById(R.id.buttonUpdate);
-        inputFilter = view.findViewById(R.id.input);
+        inputFilter = view.findViewById(R.id.inputFilter);
         section = getActivity().getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0);
         loadSections();
 
