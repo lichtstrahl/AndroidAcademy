@@ -201,6 +201,7 @@ public class NewsListFragment extends Fragment {
         buttonUpdate.setOnClickListener(buttonUpdateListener);
         inputFilter.subscribe(this::releaseInputFilterLite);
         viewSections.subscribe(this::scrollSections);
+        App.setListFragmentVisibled(true);
     }
 
     @Override
@@ -214,6 +215,8 @@ public class NewsListFragment extends Fragment {
         adapter.delOnLongClickListener();
         inputFilter.unsubscribe();
         viewSections.unsubscribe();
+
+        App.setListFragmentVisibled(false);
     }
 
     @Override

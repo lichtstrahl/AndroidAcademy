@@ -28,6 +28,8 @@ public class App extends Application {
     private static TopStoriesAPI apiTopStories;
     protected static NewsDatabase database;
     private static boolean espressTest = false;
+    private static boolean listFragmentVisible;
+    private static boolean detailsFragmentVisible;
 
     public static TopStoriesAPI getApiTopStories() {
         return apiTopStories;
@@ -134,5 +136,29 @@ public class App extends Application {
 
     public static boolean isEspressoTest() {
         return espressTest;
+    }
+
+    public static void setListFragmentVisibled(boolean v) {
+        listFragmentVisible = v;
+    }
+
+    public static void setDetailsFragmentVisible(boolean v) {
+        listFragmentVisible = v;
+    }
+
+    public static boolean listFragmentVisible() {
+        return listFragmentVisible;
+    }
+
+    public static boolean listFragmentInvisible() {
+        return !listFragmentVisible;
+    }
+
+    public static boolean detailsFragmentVisible() {
+        return detailsFragmentVisible;
+    }
+
+    public static boolean detailsFragmentInvisible() {
+        return !detailsFragmentVisible;
     }
 }

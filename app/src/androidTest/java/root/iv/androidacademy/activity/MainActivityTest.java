@@ -25,6 +25,7 @@ import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.ui.activity.MainActivity;
 import root.iv.androidacademy.ui.fragment.NewsDetailsFragment;
 import root.iv.androidacademy.ui.fragment.NewsListFragment;
@@ -51,6 +52,7 @@ public class MainActivityTest {
         activity = mainRule.getActivity();
         fragmentManager = activity.getSupportFragmentManager();
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        App.getDatabase();
     }
 
     // Запуск MainActivity с ListFragment

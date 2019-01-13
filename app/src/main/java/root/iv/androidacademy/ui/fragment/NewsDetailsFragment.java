@@ -62,6 +62,7 @@ public class NewsDetailsFragment extends Fragment {
                 .subscribe(findNewsItemObserver);
 
         setHasOptionsMenu(true);
+        App.setDetailsFragmentVisible(true);
         return view;
     }
 
@@ -72,6 +73,7 @@ public class NewsDetailsFragment extends Fragment {
         super.onStop();
         findNewsItemObserver.unsubscribe();
         deleteNewsItemObserver.unsubscribe();
+        App.setDetailsFragmentVisible(false);
     }
 
     @Override
