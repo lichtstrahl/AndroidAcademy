@@ -48,22 +48,23 @@ public class MainActivityTest {
     private static final String LIST_TAG = NewsListFragment.TAG;
 
     @Before
-    public void onStart() {
+    public void onStart() throws Exception {
         activity = mainRule.getActivity();
         fragmentManager = activity.getSupportFragmentManager();
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        App.getDatabase();
+        device.setOrientationNatural();
     }
 
     // Запуск MainActivity с ListFragment
     // Проверяем, что мы в портретной ориентации
     @Test
-    public void testCase1() {
+    public void testCase1() throws Exception {
         Awaitility.await().atMost(1, TimeUnit.SECONDS).until(activity::hasWindowFocus);
         Assert.assertEquals(activity.getResources().getConfiguration().orientation, Configuration.ORIENTATION_PORTRAIT);
 
         // Наодим RecyclerView
         ViewInteraction listNews = onView(Matchers.allOf(withId(R.id.listNews), isDisplayed()));
+        // Виден только список, без детального просмора
         await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
         await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
 
@@ -75,7 +76,7 @@ public class MainActivityTest {
         await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
 
         // Переворот экрана
-        activity.setRequestedOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        device.setOrientationLeft();
         // Должен быть виден и детальный просмотр и список
         await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
         await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
@@ -98,5 +99,6 @@ public class MainActivityTest {
         // Должен закрыться детальный просмотр и открыться список новостей
         await().atMost(1, TimeUnit.SECONDS).until(App::listFragmentVisible);
         await().atMost(1, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
+        device.unfreezeRotation();
     }
 }
