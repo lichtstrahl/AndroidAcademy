@@ -28,8 +28,8 @@ public class App extends Application {
     private static TopStoriesAPI apiTopStories;
     protected static NewsDatabase database;
     private static boolean espressTest = false;
-    private static boolean listFragmentVisible;
-    private static boolean detailsFragmentVisible;
+    private static boolean listFragmentVisible = false;
+    private static boolean detailsFragmentVisible = false;
 
     public static TopStoriesAPI getApiTopStories() {
         return apiTopStories;
@@ -138,12 +138,12 @@ public class App extends Application {
         return espressTest;
     }
 
-    public static void setListFragmentVisibled(boolean v) {
+    public static void setListFragmentVisible(boolean v) {
         listFragmentVisible = v;
     }
 
     public static void setDetailsFragmentVisible(boolean v) {
-        listFragmentVisible = v;
+        detailsFragmentVisible = v;
     }
 
     public static boolean listFragmentVisible() {

@@ -64,39 +64,39 @@ public class MainActivityTest {
 
         // Наодим RecyclerView
         ViewInteraction listNews = onView(Matchers.allOf(withId(R.id.listNews), isDisplayed()));
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(LIST_TAG)::isVisible);
-        await().atMost(2, TimeUnit.SECONDS).until(() -> fragmentManager.findFragmentByTag(DETAILS_TAG) == null);
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
 
 
         // Нажимаем на первую новость
         listNews.perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         // Должен появиться детальный просмотр первой новости
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(DETAILS_TAG)::isVisible);
-        await().atMost(2, TimeUnit.SECONDS).until(() -> !fragmentManager.findFragmentByTag(LIST_TAG).isVisible());
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentInvisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
 
         // Переворот экрана
         activity.setRequestedOrientation(Configuration.ORIENTATION_LANDSCAPE);
         // Должен быть виден и детальный просмотр и список
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(LIST_TAG)::isVisible);
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(DETAILS_TAG)::isVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
 
         // Выбор второй новости
         listNews.perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         // Должен обновиться детальный просмотр
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(LIST_TAG)::isVisible);
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(DETAILS_TAG)::isVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
 
         // Переворот экрана.
         activity.setRequestedOrientation(Configuration.ORIENTATION_PORTRAIT);
         // Должен быть виден только детальный просмотр
-        await().atMost(2, TimeUnit.SECONDS).until(() -> !fragmentManager.findFragmentByTag(NewsListFragment.TAG).isVisible());
-        await().atMost(2, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(NewsDetailsFragment.TAG)::isVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentInvisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
 
 
         // Нажатие "back"
         device.pressBack();
         // Должен закрыться детальный просмотр и открыться список новостей
-        await().atMost(1, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(NewsDetailsFragment.TAG)::isDetached);
-        await().atMost(1, TimeUnit.SECONDS).until(fragmentManager.findFragmentByTag(NewsListFragment.TAG)::isVisible);
+        await().atMost(1, TimeUnit.SECONDS).until(App::listFragmentVisible);
+        await().atMost(1, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
     }
 }
