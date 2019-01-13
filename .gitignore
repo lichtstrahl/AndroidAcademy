@@ -7,7 +7,6 @@
 /captures
 .externalNativeBuild
 app/libs/
-app/src/androidTest/
 app/src/main/res/dimen/
 app/src/main/res/dimens/
 app/src/main/res/value/
