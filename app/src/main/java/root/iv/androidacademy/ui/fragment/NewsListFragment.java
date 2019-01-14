@@ -138,7 +138,10 @@ public class NewsListFragment extends Fragment {
         if (savedInstanceState != null) {
             // Если при повороте была загрузка, значит она была уже остановлена. Поэтому нужно начать всё заново.
             boolean isLoading = savedInstanceState.getBoolean(SAVE_LOAD, false);
-            if (isLoading) loader.load();
+            if (isLoading) {
+                loadDialog.show();
+                loader.load();
+            }
 
             recyclerListNews.getLayoutManager().onRestoreInstanceState(listState);
         }
@@ -448,5 +451,9 @@ public class NewsListFragment extends Fragment {
         if (viewHolder != null) {
             viewHolder.itemView.performClick();
         }
+    }
+
+    public boolean isShowingDialog() {
+        return loadDialog.isShowing();
     }
 }

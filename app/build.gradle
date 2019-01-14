@@ -110,4 +110,7 @@ dependencies {
 
     // UI Automator
     androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:2.1.2"
+
+    // Test-Builder (for WiFi, GSM)
+    androidTestImplementation "com.linkedin.testbutler:test-butler-library:2.0.0"
 }

@@ -30,6 +30,7 @@ public class RetrofitLoader implements DataLoader {
 
     @Override
     public void load() {
+
         App.getApiTopStories().getTopStories(section)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

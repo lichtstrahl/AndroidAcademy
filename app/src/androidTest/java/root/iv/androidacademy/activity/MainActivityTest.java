@@ -1,29 +1,49 @@
 package root.iv.androidacademy.activity;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiSelector;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.TelephonyManager;
 import android.widget.ScrollView;
+
+import com.linkedin.android.testbutler.TestButler;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.ui.activity.MainActivity;
@@ -34,9 +54,14 @@ import root.iv.androidacademy.ui.ivHorizontalScrollView;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.RootMatchers.isSystemAlertWindow;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.waitAtMost;
+import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -99,16 +124,25 @@ public class MainActivityTest {
         // Должен закрыться детальный просмотр и открыться список новостей
         await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
         await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentInvisible);
-    }
 
-    /*
-        Запустили активти
-        Вводим в EditText что-то
-        Нажимаем "back"
-        Изменяем EditText
-        Нажимаем обновить
-        Изменяем EditText
-     */
+        // Выбираем третью новость
+        listNews.perform(RecyclerViewActions.actionOnItemAtPosition(2, click()));
+        // Только детальный просмотр третьей новости
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentInvisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
+
+        // Переворот экрана
+        device.setOrientationLeft();
+        // Виден и список новостей и детальный просмотр третьей новости
+        await().atMost(2, TimeUnit.SECONDS).until(App::listFragmentVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(App::detailsFragmentVisible);
+
+        // Нажатие "Back"
+        device.pressBack();
+        // Выход из приложения
+        await().atMost(3, TimeUnit.SECONDS).until(() -> !activity.hasWindowFocus());
+
+    }
 
     @Test
     public void testCaseKeyBoard() throws Exception {
@@ -118,11 +152,10 @@ public class MainActivityTest {
         // Находим inputFilter
         ViewInteraction editFilter = onView(Matchers.allOf(withId(R.id.inputFilter), isDisplayed()));
         // Активируем поле и вводим туда что-нибудь
-        editFilter.perform(click(), replaceText("i"));
+        editFilter.perform(click(), replaceText("1"));
         // Должна появиться клавиатура и активироваться поле
         await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
-
 
         // Нажимаем "Back"
         device.pressBack();
@@ -130,24 +163,8 @@ public class MainActivityTest {
         await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
 
-
-        // Активируем поле и стираем оттуда все
-        editFilter.perform(click(), replaceText(""));
-        // Должна снова появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
-        editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
-
-        // Находим кнопку "обновить"
-        ViewInteraction buttonUpdate = onView(Matchers.allOf(withId(R.id.buttonUpdate), isDisplayed()));
-        // Нажимаем кнопку обновить
-        buttonUpdate.perform(click());
-        // Должна пропасть клавиатура и деактивироваться поле
-        await().atMost(5, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
-        editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
-
-
         // Активируем поле и добавляем текст
-        editFilter.perform(click(), replaceText("1"));
+        editFilter.perform(click(), replaceText(""));
         // Должна появиться клавиатура и активироваться поле
         await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
@@ -162,7 +179,7 @@ public class MainActivityTest {
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
 
         // Активируем поле и удаляем текст
-        editFilter.perform(click(), replaceText(""));
+        editFilter.perform(click(), replaceText("2"));
         // Должна появиться клавиатура и активироваться поле
         await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
@@ -171,9 +188,71 @@ public class MainActivityTest {
         ivHorizontalScrollView scrollSections = activity.findViewById(R.id.viewSections);
         count = scrollSections.getChildCount();
         scrollSections.smoothScrollBy(100, 0);
-        // Должна пропастьклавиатура и деактивироваться поле
+        // Должна пропасть клавиатура и деактивироваться поле
         await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
+
+        // Активируем поле и вводим текст
+        editFilter.perform(click(), replaceText(""));
+        // Должна появиться клавиатура и активироваться поле
+        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
+
+        // Кликаем по категории
+        activity.runOnUiThread(scrollSections.getTouchables().get(0)::performClick);
+        // Должнапоявиться загрузка и пропасть клавиатура, деактивируется поле
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
+        editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
+
+        // Активируем поле и вводим текст
+        editFilter.perform(click(), replaceText("3"));
+        // Должна появиться клавиатура и активироваться поле
+        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
+
+        // Находим кнопку "обновить"
+        ViewInteraction buttonUpdate = onView(Matchers.allOf(withId(R.id.buttonUpdate), isDisplayed()));
+        // Нажимаем кнопку обновить
+        buttonUpdate.perform(click());
+        // Должна пропасть клавиатура и деактивироваться поле
+        await().atMost(5, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
+        editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
+
+        // Активируем поле и вводим текст
+        editFilter.perform(click(), replaceText(""));
+        // Должна появиться клавиатура и активироваться поле
+        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
+
+        // Вызываем OptionsMenu
+        Espresso.openActionBarOverflowOrOptionsMenu(activity);
+        device.pressBack();
+        // Должна пропасть клавиатура и деактивироваться поле
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
+        editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
+
+    }
+
+//    @Ignore
+    @Test
+    public void testDownload() throws Exception {
+        await().atMost(2, TimeUnit.SECONDS).until(activity::hasWindowFocus);
+        Assert.assertEquals(Configuration.ORIENTATION_PORTRAIT, activity.getResources().getConfiguration().orientation);
+
+        toggleAirplaneMode(false);
+
+        // Кликаем по кнопке обновить
+        onView(Matchers.allOf(withId(R.id.buttonUpdate), isDisplayed())).perform(click());
+        // Появление диалога загрузки
+        onView(withId(R.id.layout)).check(ViewAssertions.matches(isDisplayed()));
+
+        // Поворот экрана, продолжение загрузки
+        device.setOrientationLeft();
+        // Продолжение попытки загрузиться. Появление кнопки "Перезагрузка"
+        onView(withId(R.id.layout)).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.buttonReconnect))
+                .check(ViewAssertions.matches(isDisplayed()))
+                .check(ViewAssertions.matches(isEnabled()));
 
     }
 
@@ -188,6 +267,25 @@ public class MainActivityTest {
 
     private boolean keyBoardIsInvisible() {
         return !keyBoardIsVisible();
+    }
+
+    private void updateActivity() {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(()->{
+            Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+            if (!resumedActivities.isEmpty()) {
+                activity = (MainActivity) resumedActivities.iterator().next();
+            }
+        });
+    }
+
+    @SuppressWarnings("deprecation")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void toggleAirplaneMode(boolean state) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Settings.System.putInt(activity.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, state ? 0 : 1);
+        } else {
+            Settings.System.putInt(activity.getContentResolver(), Settings.System.AIRPLANE_MODE_ON, state ? 0 : 1);
+        }
     }
 
     @After
