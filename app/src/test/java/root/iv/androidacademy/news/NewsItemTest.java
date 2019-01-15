@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 
 import root.iv.androidacademy.AppTests;
@@ -16,7 +15,7 @@ public class NewsItemTest extends AppTests {
     private NewsItem.NewsItemBuilder builder;
 
     @Before
-    public void onStart() throws Exception {
+    public void onStart() {
         constructorNewsItems = findItemsConstructor();
         builder = NewsItem.getBuilder()
                 .buildSubSection(EXAMPLE_TXT)
@@ -27,7 +26,6 @@ public class NewsItemTest extends AppTests {
                 .buildPublishDate(Calendar.getInstance().getTime());
     }
 
-    // Создаём абсолютно корректный объект
     @Test
     public void testStdCorrect() throws Exception {
         // Action
@@ -147,12 +145,6 @@ public class NewsItemTest extends AppTests {
                 return c;
             }
         }
-        return null;
-    }
-
-    @Deprecated
-    // Через рефлексию находим метод "valid" у NewsItemBuilder
-    private Method findValid() {
         return null;
     }
 }
