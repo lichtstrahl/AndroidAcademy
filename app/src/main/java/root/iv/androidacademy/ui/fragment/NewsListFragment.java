@@ -46,6 +46,7 @@ import root.iv.androidacademy.ui.ivEditText;
 import root.iv.androidacademy.ui.ivHorizontalScrollView;
 import root.iv.androidacademy.util.Action1;
 import root.iv.androidacademy.util.DBObserver;
+import root.iv.androidacademy.util.NotifyWrapper;
 import root.iv.androidacademy.util.listener.ButtonUpdateClickListener;
 import root.iv.androidacademy.util.listener.ClickListener;
 import root.iv.androidacademy.util.listener.ListenerEditText;
@@ -108,7 +109,7 @@ public class NewsListFragment extends Fragment {
         loadSections();
 
         App.logI("Fragment: onCrateView");
-        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater());
+        adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater(), new NotifyWrapper());
         recyclerListNews.setAdapter(adapter);
         recyclerListNews.setLayoutManager(new LinearLayoutManager(getActivity()));
 

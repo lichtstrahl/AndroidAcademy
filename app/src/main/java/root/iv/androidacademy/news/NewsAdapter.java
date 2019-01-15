@@ -15,6 +15,7 @@ import java.util.List;
 
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.util.GlideApp;
+import root.iv.androidacademy.util.NotifyWrapper;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа
@@ -23,13 +24,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private View.OnClickListener listener;
     private View.OnLongClickListener longListener;
     private String curSection = Section.SECTIONS[0].getName();
+    private NotifyWrapper notifyWrapper;
 
-    public NewsAdapter(List<NewsItem> list, LayoutInflater inf){
+    public NewsAdapter(List<NewsItem> list, LayoutInflater inf, NotifyWrapper wrapper){
         this.listNews = list;
         this.inflater = inf;
         this.listener = null;
         this.longListener = null;
         this.originNews = new LinkedList<>();
+        this.notifyWrapper = wrapper;
         notifyOriginNews();
     }
 
@@ -78,23 +81,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public void clear() {
         int count = listNews.size();
         listNews.clear();
-        wrapNotifyItemRemoved(0, count);
-    }
-
-    public void wrapNotifyItemRemoved(int pos, int count) {
-        notifyItemRangeRemoved(pos, count);
+        notifyWrapper.wrapNotifyItemRemoved(this,0, count);
     }
 
     public void append(@Nullable NewsItem item) {
         if (item != null) {
             listNews.add(item);
-            wrapNotifyItemInserted(listNews.size() - 1);
+            notifyWrapper.wrapNotifyItemInserted(this,listNews.size() - 1);
         }
     }
 
-    public void wrapNotifyItemInserted(int pos) {
-        notifyItemInserted(pos);
-    }
 
     public void notifyOriginNews() {
         originNews.clear();
@@ -117,12 +113,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     public void sort() {
         Collections.sort(listNews, new NewsItem.Comparator());
-        wrapNotifyDataSetChanged();
+        notifyWrapper.wrapNotifyDataSetChanged(this);
     }
 
-    public void wrapNotifyDataSetChanged() {
-        notifyDataSetChanged();
-    }
 
     class NewsViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imageView;

@@ -27,8 +27,8 @@ public class AppTests {
 
     protected static final NewsItem exampleNews = NewsItem.getBuilder()
             .buildTitle("Title")
-            .buildFullText("Long long long long text")
-            .buildImageURL("URL")
+            .buildFullText(EXAMPLE_LINK)
+            .buildImageURL(EXAMPLE_LINK)
             .buildPreviewText("Preview")
             .buildSubSection("Section")
             .buildPublishDate(Calendar.getInstance().getTime())

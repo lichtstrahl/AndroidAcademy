@@ -1,18 +1,23 @@
-package root.iv.androidacademy;
+package root.iv.androidacademy.news;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import root.iv.androidacademy.AppTests;
 import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsItem;
+import root.iv.androidacademy.util.NotifyWrapper;
 
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 
@@ -21,14 +26,8 @@ import static org.mockito.Mockito.spy;
 // sort
 // append
 // filter : clear, append, sort - Составная функция
-/* TODO корректность заполнения списка
-   TODO Протестировать то что попадает в список
-   TODO После проверки на корректность
-   TODO Разблокировать конструктор и проверять структуру новости
-   TODO то что здесь это уже интеграция
-*/
-public class AdapterSetFilterUnitTests extends AppTests {
-
+public class AdapterSetFilterTests extends AppTests {
+    private NotifyWrapper wrapper;
     // Arrange
     @Before
     public void initTestEnvironment() {
@@ -36,27 +35,25 @@ public class AdapterSetFilterUnitTests extends AppTests {
         List<NewsItem> exampleNews = new LinkedList<>();
 
         for (int i = 0; i < COUNT_NEWS; i++) {
-            try {
-                Thread.sleep(1001);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(exampleTimeInMillis[i]);
                 exampleNews.add(
                         NewsItem.getBuilder()
                                 .buildTitle(EXAMPLE_TXT)
-                                .buildFullText(EXAMPLE_TXT)
-                                .buildImageURL(EXAMPLE_TXT)
+                                .buildFullText(EXAMPLE_LINK)
+                                .buildImageURL(EXAMPLE_LINK)
                                 .buildPreviewText(examplePreviews[i])
                                 .buildSubSection(EXAMPLE_TXT)
-                                .buildPublishDate(Calendar.getInstance().getTime())
+                                .buildPublishDate(calendar.getTime())
                                 .build()
                 );
-            } catch (InterruptedException ex) {
-
-            }
         }
 
-        adapter = spy(new NewsAdapter(exampleNews, mockInflater));
-        doNothing().when(adapter).wrapNotifyDataSetChanged();
-        doNothing().when(adapter).wrapNotifyItemRemoved(anyInt(), anyInt());
-        doNothing().when(adapter).wrapNotifyItemInserted(anyInt());
+        wrapper = spy(NotifyWrapper.class);
+        doNothing().when(wrapper).wrapNotifyDataSetChanged(anyObject());
+        doNothing().when(wrapper).wrapNotifyItemRemoved(anyObject(), anyInt(), anyInt());
+        doNothing().when(wrapper).wrapNotifyItemInserted(anyObject(), anyInt());
+        adapter = spy(new NewsAdapter(exampleNews, mockInflater, wrapper));
     }
 
     @Test
@@ -109,7 +106,7 @@ public class AdapterSetFilterUnitTests extends AppTests {
         int count2 = adapter.getItemCount();
 
         // Assert
-        Assert.assertEquals(count2, COUNT_NEWS + d);
+        Assert.assertEquals(COUNT_NEWS + d, count2);
     }
 
     // Добавление null-ов
