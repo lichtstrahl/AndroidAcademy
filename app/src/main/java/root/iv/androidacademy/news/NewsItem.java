@@ -86,12 +86,21 @@ public class NewsItem implements Parcelable {
 
 
         public static boolean valid(NewsItem x) {
-                boolean notNull = x.getFullText() != null && x.getPreviewText() != null && x.getImageUrl() != null && x.getPublishDate() != null && x.getSubSection() != null && x.getTitle() != null;
-                boolean notEmpty = !x.getPreviewText().isEmpty() && !x.getTitle().isEmpty() && !x.getPublishDateString().isEmpty() && !x.getFullText().isEmpty();
-                boolean validFullURL = (x.getFullText().contains("http://") || x.getFullText().contains("https://"));
-                boolean validImageURL = x.getImageUrl().isEmpty() || (x.getImageUrl().contains("http://") || x.getImageUrl().contains("https://"));
-                return notEmpty && notNull && validImageURL && validFullURL;
+                return validNull(x) && validEmpty(x) && validURL(x);
+        }
 
+        public static boolean validNull(NewsItem x) {
+            return x.getFullText() != null && x.getPreviewText() != null && x.getImageUrl() != null && x.getPublishDate() != null && x.getSubSection() != null && x.getTitle() != null;
+        }
+
+        public static boolean validEmpty(NewsItem x) {
+            return !x.getPreviewText().isEmpty() && !x.getTitle().isEmpty() && !x.getPublishDateString().isEmpty() && !x.getFullText().isEmpty();
+        }
+
+        public static boolean validURL(NewsItem x) {
+            boolean validFullText = x.getFullText().contains("http://") || x.getFullText().contains("https://");
+            boolean validImageURL = x.getImageUrl().contains("http://") || x.getImageUrl().contains("https://");
+            return validFullText && validImageURL;
         }
     }
 

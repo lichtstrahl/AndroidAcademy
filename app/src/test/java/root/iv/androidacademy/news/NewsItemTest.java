@@ -1,6 +1,5 @@
 package root.iv.androidacademy.news;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +17,7 @@ public class NewsItemTest extends AppTests {
 
     @Before
     public void onStart() throws Exception {
-        constructorNewsItems = findItemsContructor();
+        constructorNewsItems = findItemsConstructor();
         builder = NewsItem.getBuilder()
                 .buildSubSection(EXAMPLE_TXT)
                 .buildTitle(EXAMPLE_TXT)
@@ -38,28 +37,74 @@ public class NewsItemTest extends AppTests {
         Assert.assertTrue(valid);
     }
 
-    // Передаём null в качестве Date
     @Test
-    public void testDateIsNULL() {
-        try {
-            // Agree
-            builder.buildPublishDate(null);
-            // Action
-            NewsItem item = (NewsItem) constructorNewsItems.newInstance(builder);
-            boolean valid = NewsItem.NewsItemBuilder.valid(item);
-            // Assert (Deprecated)
-            Assert.assertFalse(valid);
-        } catch (Exception e) {
-            // Assert
-            Assert.assertTrue(e.toString().contains("NullPointer"));
-        }
+    public void testNULL1() throws Exception{
+        // Agree
+        builder.buildPublishDate(null);
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validNull(item);
+        // Assert
+        Assert.assertFalse(valid);
     }
 
-    // Передаём пустую строку в качестве Preview
     @Test
-    public void testPreviewIsEmpty() throws Exception {
+    public void testNULL2() throws Exception {
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validNull(item);
+        // Assert
+        Assert.assertTrue(valid);
+    }
+
+    @Test
+    public void testEmpty1() throws Exception {
         // Agree
         builder.buildPreviewText("");
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
+        // Assert
+        Assert.assertFalse(valid);
+    }
+
+    @Test
+    public void testEmpty2() throws Exception {
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
+        // Assert
+        Assert.assertTrue(valid);
+    }
+
+    @Test
+    public void testURL1() throws Exception {
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validURL(item);
+        // Assert
+        Assert.assertTrue(valid);
+    }
+
+    @Test
+    public void testURL2() throws Exception {
+        // Agree
+        builder.buildImageURL(EXAMPLE_TXT);
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validURL(item);
+        // Assert
+        Assert.assertFalse(valid);
+    }
+
+    @Test
+    public void testAllNULL() throws Exception {
+        // Agree
+        builder.buildTitle(null);
+        builder.buildPreviewText(null);
+        builder.buildFullText(null);
+        builder.buildPublishDate(null);
+        builder.buildSubSection(null);
+        builder.buildImageURL(null);
         // Action
         NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
         boolean valid = NewsItem.NewsItemBuilder.valid(item);
@@ -67,8 +112,35 @@ public class NewsItemTest extends AppTests {
         Assert.assertFalse(valid);
     }
 
+    @Test
+    public void testEmptyAll() throws Exception {
+        // Agree
+        builder.buildTitle("");
+        builder.buildPreviewText("");
+        builder.buildFullText("");
+        builder.buildSubSection("");
+        builder.buildImageURL("");
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
+        // Assert
+        Assert.assertFalse(valid);
+    }
+
+    @Test
+    public void testURLAll() throws Exception {
+        // Agree
+        builder.buildImageURL(EXAMPLE_TXT);
+        builder.buildFullText(EXAMPLE_TXT);
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validURL(item);
+        // Assert
+        Assert.assertFalse(valid);
+    }
+
     // Через рефлексию находим приватный конструктор
-    private Constructor findItemsContructor() {
+    private Constructor findItemsConstructor() {
         for (Constructor c : NewsItem.class.getDeclaredConstructors()) {
             if (c.getParameterCount() == 1 && c.getParameters()[0].getType().equals(NewsItem.NewsItemBuilder.class)) {
                 c.setAccessible(true);
