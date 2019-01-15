@@ -16,6 +16,7 @@ import java.util.Locale;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
+
 public class NewsItem implements Parcelable {
     public static final String DATE_FORMAT = "E dd:MM:yyyy KK:mm a";
     private String title;
@@ -24,6 +25,7 @@ public class NewsItem implements Parcelable {
     private String fullText;
     private String subSection;
     private Date publishDate;
+
 
     private NewsItem(NewsItemBuilder builder) {
         this.title = builder.title;
@@ -78,19 +80,18 @@ public class NewsItem implements Parcelable {
 
         @Nullable
         public NewsItem build() {
-            boolean done =
-                    title != null &&
-                    imageUrl != null &&
-                    subSection != null &&
-                    publishDate != null &&
-                    previewText != null &&
-                    fullText != null;
+            NewsItem item = new NewsItem(this);
+            return valid(item) ? item : null;
+        }
 
-            if (done) {
-                return new NewsItem(this);
-            } else {
-                return null;
-            }
+
+        public static boolean valid(NewsItem x) {
+                boolean notNull = x.getFullText() != null && x.getPreviewText() != null && x.getImageUrl() != null && x.getPublishDate() != null && x.getSubSection() != null && x.getTitle() != null;
+                boolean notEmpty = !x.getPreviewText().isEmpty() && !x.getTitle().isEmpty() && !x.getPublishDateString().isEmpty() && !x.getFullText().isEmpty();
+                boolean validFullURL = (x.getFullText().contains("http://") || x.getFullText().contains("https://"));
+                boolean validImageURL = x.getImageUrl().isEmpty() || (x.getImageUrl().contains("http://") || x.getImageUrl().contains("https://"));
+                return notEmpty && notNull && validImageURL && validFullURL;
+
         }
     }
 
@@ -135,12 +136,6 @@ public class NewsItem implements Parcelable {
 
     public String getPublishDateString() {
         SimpleDateFormat dFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
-        Date date;
-        try {
-            date = (Date)dFormat.parseObject(dFormat.format(publishDate), new ParsePosition(0));
-        } catch (Exception e) {
-            App.logE(e.getMessage());
-        }
         return dFormat.format(publishDate);
     }
 
@@ -198,4 +193,5 @@ public class NewsItem implements Parcelable {
             return new NewsItem[size];
         }
     };
+
 }

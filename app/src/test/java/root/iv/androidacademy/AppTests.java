@@ -12,11 +12,14 @@ import root.iv.androidacademy.news.NewsItem;
 public class AppTests {
     protected static final int COUNT_NEWS = 3;
     protected static final String[] examplePreviews = new String[] {
-            "Asia",
-            "New York",
-            "USA"
+            "Asia", "New York", "USA"
     };
-    protected static final String STD_TXT = "***";
+    protected static final long[] exampleTimeInMillis = new long[] {
+            1000, 2000, 3000
+    };
+
+    protected static final String EXAMPLE_TXT = "***";
+    protected static final String EXAMPLE_LINK = "https://www.google.com";
     // Тестирование adapter-а
     protected NewsAdapter adapter;
     @Mock

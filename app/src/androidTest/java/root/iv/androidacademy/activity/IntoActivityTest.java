@@ -48,14 +48,4 @@ public class IntoActivityTest {
         // Ждём 2 секунды, пока запустится MainActivity
         await().atMost(3, TimeUnit.SECONDS).until(introRule.getActivity()::isFinishing);
     }
-
-
-    private void isDisplayedById(int id) {
-        onView(ViewMatchers.withId(id)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-    }
 }
-
-// Возможное оформление паузы на 5 секунд. Но потом выбросится исключение
-// Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> {
-//        return false;
-//        });

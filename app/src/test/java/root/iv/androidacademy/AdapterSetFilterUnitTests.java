@@ -21,6 +21,12 @@ import static org.mockito.Mockito.spy;
 // sort
 // append
 // filter : clear, append, sort - Составная функция
+/* TODO корректность заполнения списка
+   TODO Протестировать то что попадает в список
+   TODO После проверки на корректность
+   TODO Разблокировать конструктор и проверять структуру новости
+   TODO то что здесь это уже интеграция
+*/
 public class AdapterSetFilterUnitTests extends AppTests {
 
     // Arrange
@@ -34,11 +40,11 @@ public class AdapterSetFilterUnitTests extends AppTests {
                 Thread.sleep(1001);
                 exampleNews.add(
                         NewsItem.getBuilder()
-                                .buildTitle(STD_TXT)
-                                .buildFullText(STD_TXT)
-                                .buildImageURL(STD_TXT)
+                                .buildTitle(EXAMPLE_TXT)
+                                .buildFullText(EXAMPLE_TXT)
+                                .buildImageURL(EXAMPLE_TXT)
                                 .buildPreviewText(examplePreviews[i])
-                                .buildSubSection(STD_TXT)
+                                .buildSubSection(EXAMPLE_TXT)
                                 .buildPublishDate(Calendar.getInstance().getTime())
                                 .build()
                 );

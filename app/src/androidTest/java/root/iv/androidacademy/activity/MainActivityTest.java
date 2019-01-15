@@ -1,12 +1,7 @@
 package root.iv.androidacademy.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
@@ -20,14 +15,8 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
-import android.support.test.uiautomator.UiSelector;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
-import android.telephony.TelephonyManager;
-import android.widget.ScrollView;
-
-import com.linkedin.android.testbutler.TestButler;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -39,11 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Completable;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.ui.activity.MainActivity;
@@ -54,14 +41,10 @@ import root.iv.androidacademy.ui.ivHorizontalScrollView;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.RootMatchers.isSystemAlertWindow;
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.waitAtMost;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -154,19 +137,19 @@ public class MainActivityTest {
         // Активируем поле и вводим туда что-нибудь
         editFilter.perform(click(), replaceText("1"));
         // Должна появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
 
         // Нажимаем "Back"
         device.pressBack();
         // Должна спрятаться клавиатура и деактивироваться поле ввода
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
 
-        // Активируем поле и добавляем текст
+        // Активируем поле и удаляем текст
         editFilter.perform(click(), replaceText(""));
         // Должна появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
 
         // Находим список, проматываем его
@@ -178,10 +161,10 @@ public class MainActivityTest {
         await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
 
-        // Активируем поле и удаляем текст
+        // Активируем поле и вводим текст
         editFilter.perform(click(), replaceText("2"));
         // Должна появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
 
         // Находим секции, проматываем их
@@ -192,10 +175,10 @@ public class MainActivityTest {
         await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
 
-        // Активируем поле и вводим текст
+        // Активируем поле и удаляем текст
         editFilter.perform(click(), replaceText(""));
         // Должна появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
 
         // Кликаем по категории
@@ -207,7 +190,7 @@ public class MainActivityTest {
         // Активируем поле и вводим текст
         editFilter.perform(click(), replaceText("3"));
         // Должна появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
 
         // Находим кнопку "обновить"
@@ -218,10 +201,10 @@ public class MainActivityTest {
         await().atMost(5, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
 
-        // Активируем поле и вводим текст
+        // Активируем поле и удаляем текст
         editFilter.perform(click(), replaceText(""));
         // Должна появиться клавиатура и активироваться поле
-        await().atMost(1, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
+        await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsVisible);
         editFilter.check(ViewAssertions.matches(ViewMatchers.hasFocus()));
 
         // Вызываем OptionsMenu
@@ -230,10 +213,9 @@ public class MainActivityTest {
         // Должна пропасть клавиатура и деактивироваться поле
         await().atMost(2, TimeUnit.SECONDS).until(this::keyBoardIsInvisible);
         editFilter.check(ViewAssertions.matches(not(ViewMatchers.hasFocus())));
-
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void testDownload() throws Exception {
         await().atMost(2, TimeUnit.SECONDS).until(activity::hasWindowFocus);

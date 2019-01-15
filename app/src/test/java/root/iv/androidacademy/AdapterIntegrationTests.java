@@ -1,10 +1,7 @@
 package root.iv.androidacademy;
 
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.View;
 
-import org.apache.tools.ant.Main;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,11 +48,11 @@ public class AdapterIntegrationTests extends AppTests {
         items = new LinkedList<>();
         for (int i = 0; i < COUNT_NEWS; i++) {
             items.add(NewsItem.getBuilder()
-                            .buildTitle(STD_TXT)
-                            .buildFullText(STD_TXT)
-                            .buildImageURL(STD_TXT)
+                            .buildTitle(EXAMPLE_TXT)
+                            .buildFullText(EXAMPLE_TXT)
+                            .buildImageURL(EXAMPLE_TXT)
                             .buildPreviewText(examplePreviews[i])
-                            .buildSubSection(STD_TXT)
+                            .buildSubSection(EXAMPLE_TXT)
                             .buildPublishDate(Calendar.getInstance().getTime())
                             .build());
         }
@@ -86,7 +83,7 @@ public class AdapterIntegrationTests extends AppTests {
     @Test
     public void testGetId1() {
         getIdObserver = new DBObserver<>(null, this::errorLoadFromDB);
-        RobolectricApp.getDatabase().getNewsDAO().getIdAsSingle(STD_TXT, examplePreviews[0], "")
+        RobolectricApp.getDatabase().getNewsDAO().getIdAsSingle(EXAMPLE_TXT, examplePreviews[0], "")
                 .subscribe(getIdObserver);
     }
 
@@ -94,7 +91,7 @@ public class AdapterIntegrationTests extends AppTests {
     @Test
     public void testGetId2() {
         getIdObserver = new DBObserver<>(this::successfulFindId, this::failLoadFromDB);
-        RobolectricApp.getDatabase().getNewsDAO().getIdAsSingle(STD_TXT, examplePreviews[0], items.get(0).getPublishDateString())
+        RobolectricApp.getDatabase().getNewsDAO().getIdAsSingle(EXAMPLE_TXT, examplePreviews[0], items.get(0).getPublishDateString())
                 .subscribe(getIdObserver);
     }
 
@@ -105,8 +102,8 @@ public class AdapterIntegrationTests extends AppTests {
         NewsListFragment fragment = (NewsListFragment)mainActivity.getSupportFragmentManager().findFragmentByTag(NewsListFragment.TAG);
         fragment.performClickItem(0);
 
-        // Assert. DetailsFragment появился, т.е. теперь стало 3 фрагмента
-        Assert.assertEquals(3, mainActivity.getSupportFragmentManager().getFragments().size());
+        // Assert. DetailsFragment появился, т.е. теперь стало 2 фрагмента
+        Assert.assertEquals(2, mainActivity.getSupportFragmentManager().getFragments().size());
     }
 
     @Test
