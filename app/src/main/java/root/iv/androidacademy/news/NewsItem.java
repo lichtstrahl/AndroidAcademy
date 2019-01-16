@@ -99,8 +99,8 @@ public class NewsItem implements Parcelable {
 
         public static boolean validURL(NewsItem x) {
             boolean validFullText = x.getFullText().contains("http://") || x.getFullText().contains("https://");
-//            boolean validImageURL = x.getImageUrl().contains("http://") || x.getImageUrl().contains("https://");
-            return validFullText;
+            boolean validImageURL = x.getImageUrl().contains("http://") || x.getImageUrl().contains("https://");
+            return validFullText && validImageURL;
         }
     }
 
