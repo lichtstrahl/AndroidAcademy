@@ -94,7 +94,7 @@ public class NewsItem implements Parcelable {
         }
 
         public static boolean validEmpty(NewsItem x) {
-            return !x.getTitle().isEmpty() && !x.getPublishDateString().isEmpty() && !x.getFullText().isEmpty();
+            return !x.getTitle().isEmpty() && !x.getPublishDateString().isEmpty() && !x.getFullText().isEmpty() && !x.getSubSection().isEmpty();
         }
 
         public static boolean validURL(NewsItem x) {
