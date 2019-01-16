@@ -58,12 +58,12 @@ public class NewsItemTest extends AppTests {
     @Test
     public void testEmpty1() throws Exception {
         // Agree
-        builder.buildPreviewText("");
+        builder.buildSubSection("");
         // Action
         NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
         boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
         // Assert
-        Assert.assertFalse(valid);
+        Assert.assertTrue(valid);
     }
 
     @Test
@@ -72,6 +72,17 @@ public class NewsItemTest extends AppTests {
         boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
         // Assert
         Assert.assertTrue(valid);
+    }
+
+    @Test
+    public void testEmpty3() throws Exception {
+        // Agree
+        builder.buildPreviewText("");
+        // Action
+        NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
+        boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
+        // Assert
+        Assert.assertFalse(valid);
     }
 
     @Test
@@ -91,7 +102,7 @@ public class NewsItemTest extends AppTests {
         NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
         boolean valid = NewsItem.NewsItemBuilder.validURL(item);
         // Assert
-        Assert.assertFalse(valid);
+        Assert.assertTrue(valid);
     }
 
     @Test
@@ -105,7 +116,7 @@ public class NewsItemTest extends AppTests {
         builder.buildImageURL(null);
         // Action
         NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
-        boolean valid = NewsItem.NewsItemBuilder.valid(item);
+        boolean valid = NewsItem.NewsItemBuilder.validNull(item);
         // Assert
         Assert.assertFalse(valid);
     }

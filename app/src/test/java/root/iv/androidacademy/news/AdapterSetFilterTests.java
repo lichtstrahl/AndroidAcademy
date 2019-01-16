@@ -30,7 +30,7 @@ public class AdapterSetFilterTests extends AppTests {
     private NotifyWrapper wrapper;
     // Arrange
     @Before
-    public void initTestEnvironment() {
+    public void onStart() {
         MockitoAnnotations.initMocks(this);
         List<NewsItem> exampleNews = new LinkedList<>();
 

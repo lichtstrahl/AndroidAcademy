@@ -85,7 +85,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void append(@Nullable NewsItem item) {
-        if (item != null) {
+        if (item != null && NewsItem.NewsItemBuilder.valid(item)) {
             listNews.add(item);
             notifyWrapper.wrapNotifyItemInserted(this,listNews.size() - 1);
         }
