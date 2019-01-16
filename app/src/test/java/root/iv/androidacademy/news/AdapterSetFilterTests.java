@@ -133,7 +133,7 @@ public class AdapterSetFilterTests extends AppTests {
         // Action
         adapter.append(exampleNews);
         // Assert
-        Assert.assertEquals(COUNT_NEWS+1, adapter.getItemCount());
+        Assert.assertEquals(COUNT_NEWS, adapter.getItemCount());
     }
 
     // Проверка на полное соответствие
