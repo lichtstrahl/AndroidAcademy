@@ -112,13 +112,17 @@ public class AdapterSetFilterTests extends AppTests {
     // Добавление null-ов
     @Test
     public void testAppend2() {
-        // Action
-        int d = 5;
-        for (int i = 0; i < d; i++)
-            adapter.append(null);
-        int count1 = adapter.getItemCount();
-        // Assert
-        Assert.assertEquals(COUNT_NEWS, count1);
+        try {
+            // Action
+            int d = 5;
+            for (int i = 0; i < d; i++)
+                adapter.append(null);
+            int count1 = adapter.getItemCount();
+            // Assert
+            Assert.assertEquals(COUNT_NEWS, count1);
+        } catch (NullPointerException e) {
+            Assert.assertTrue(true);
+        }
     }
 
     // Добавление некорректной новости
