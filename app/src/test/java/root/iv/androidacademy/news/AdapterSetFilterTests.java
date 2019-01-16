@@ -121,6 +121,17 @@ public class AdapterSetFilterTests extends AppTests {
         Assert.assertEquals(COUNT_NEWS, count1);
     }
 
+    // Добавление некорректной новости
+    @Test
+    public void testAppend3() {
+        // Agree
+        exampleNews.setTitle("");
+        // Action
+        adapter.append(exampleNews);
+        // Assert
+        Assert.assertEquals(COUNT_NEWS+1, adapter.getItemCount());
+    }
+
     // Проверка на полное соответствие
     @Test
     public void testFilterSearch1() {
