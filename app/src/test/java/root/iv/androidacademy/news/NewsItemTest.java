@@ -82,7 +82,7 @@ public class NewsItemTest extends AppTests {
         NewsItem item = (NewsItem)constructorNewsItems.newInstance(builder);
         boolean valid = NewsItem.NewsItemBuilder.validEmpty(item);
         // Assert
-        Assert.assertFalse(valid);
+        Assert.assertTrue(valid);
     }
 
     @Test
