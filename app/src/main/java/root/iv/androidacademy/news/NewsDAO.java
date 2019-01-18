@@ -10,34 +10,30 @@ import android.arch.persistence.room.Update;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 @Dao
 public interface NewsDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(NewsEntity item);
-    @Insert(onConflict =  OnConflictStrategy.REPLACE)
-    void insertAll(NewsEntity ... items);
-
-    @Delete
-    int delete(NewsEntity item);
     @Update
-    void update(NewsEntity item);
+    int update(NewsEntity item);
 
     @Query("DELETE FROM NewsEntity WHERE id = :id")
-    void delete(int id);
+    int delete(int id);
 
     @Query("SELECT * FROM NewsEntity")
-    Flowable<List<NewsEntity>> getAllAsFlowable();
-
-    @Query("SELECT * FROM NewsEntity")
-    List<NewsEntity> getAllAsList();
+    Single<List<NewsEntity>> getAllAsSingle();
 
     @Query("DELETE FROM NewsEntity")
-    void deleteAll();
+    int deleteAll();
+
+    @Query("SELECT * FROM NewsEntity WHERE id = :id")
+    Single<NewsEntity> getItemByIdAsSingle(int id);
 
     @Query("SELECT * FROM NewsEntity WHERE id = :id")
     NewsEntity getItemById(int id);
 
     @Query("SELECT id FROM NewsEntity WHERE title = :title AND previewText = :preview AND publishDate = :date")
-    int getId(String title, String preview, String date);
+    Single<Integer> getIdAsSingle(String title, String preview, String date);
 }
