@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.internal.operators.observable.BlockingObservableLatest;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.AppTests;
 import root.iv.androidacademy.app.App;
@@ -107,7 +108,7 @@ public class EmptyDatabaseTest extends AppTests {
     }
 
     @Test
-    public void multiTest() throws Exception {
+    public void multiTest() {
         final  Synhro synhro = new Synhro();
 
         database.getAllAsSingle()
@@ -123,6 +124,19 @@ public class EmptyDatabaseTest extends AppTests {
 
         Awaitility.await().atMost(10, TimeUnit.SECONDS).until(synhro::getFlag);
     }
+
+    @Test
+    public void multiTest2() {
+        List<NewsEntity> list = database.getAllAsSingle()
+                .subscribeOn(Schedulers.io())
+                .toObservable()
+                .blockingLast();
+
+        Assert.assertEquals(0, list.size());
+        System.out.println("Тест завершился");
+    }
+
+
 
     @After
     public void onStop() {
