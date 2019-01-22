@@ -52,15 +52,11 @@ public class MainActivityTest {
     @Rule
     public ActivityTestRule<root.iv.androidacademy.ui.activity.MainActivity> mainRule = new ActivityTestRule<>(root.iv.androidacademy.ui.activity.MainActivity.class);
     private MainActivity activity;
-    private FragmentManager fragmentManager;
     private UiDevice device;
-    private static final String DETAILS_TAG = NewsDetailsFragment.TAG;
-    private static final String LIST_TAG = NewsListFragment.TAG;
 
     @Before
     public void onStart() throws Exception {
         activity = mainRule.getActivity();
-        fragmentManager = activity.getSupportFragmentManager();
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.setOrientationNatural();
     }
