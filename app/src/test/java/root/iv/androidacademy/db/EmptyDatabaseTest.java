@@ -24,11 +24,14 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.internal.operators.observable.BlockingObservableLatest;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 import root.iv.androidacademy.AppTests;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.app.RobolectricApp;
@@ -86,25 +89,16 @@ public class EmptyDatabaseTest extends AppTests {
     // Ожидается, что БД пуста
     @Test
     public void getAllDBFromIO() {
-        disposables.add(
-          database.getAllAsSingle()
-                .subscribeOn(scheduler)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe()
-        );
+        List<NewsEntity> list = database.getAllAsSingle()
+                                    .subscribeOn(scheduler)
+                                    .toObservable()
+                                    .blockingLast();
+        Assert.assertTrue(list.isEmpty());
     }
 
     @Test
     public void testHello() {
-        disposables.add(
-                database.getAllAsSingle()
-                .subscribeOn(scheduler)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result ->RobolectricApp.logI("List size: " + result.size()),
-                        error -> RobolectricApp.logE(error.getMessage())
-                )
-        );
+
     }
 
     @Test
@@ -136,6 +130,15 @@ public class EmptyDatabaseTest extends AppTests {
         System.out.println("Тест завершился");
     }
 
+    @Test
+    public void multiTest3() {
+        final TestObserver<List<NewsEntity>> testSubscriber = database.getAllAsSingle().subscribeOn(Schedulers.io()).test();
+        testSubscriber.awaitTerminalEvent();
+
+        testSubscriber
+                .assertNoErrors();
+        RobolectricApp.logI("Тест завершился");
+    }
 
 
     @After
