@@ -91,7 +91,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         }
     }
 
-
     public void notifyOriginNews() {
         originNews.clear();
         originNews.addAll(listNews);

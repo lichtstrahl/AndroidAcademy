@@ -1,6 +1,8 @@
 package root.iv.androidacademy.db;
 
 
+import android.arch.persistence.room.EmptyResultSetException;
+
 import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Assert;
@@ -44,31 +46,11 @@ import root.iv.androidacademy.news.NewsItem;
 public class EmptyDatabaseTest extends AppTests {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
-    
-    @Mock 
-    protected NewsDAO database;
-    protected NewsItem exampleItem;
-    protected CompositeDisposable disposables;
-    protected Scheduler scheduler;
-    private final Object lock = new Object();
 
     @Before
     public void onStart() {
-        Calendar calendar = Calendar.getInstance();
         disposables = new CompositeDisposable();
-
-        exampleItem = new NewsItem.NewsItemBuilder()
-                .buildFullText(EXAMPLE_LINK)
-                .buildImageURL(EXAMPLE_LINK)
-                .buildTitle(EXAMPLE_TXT)
-                .buildPreviewText(EXAMPLE_TXT)
-                .buildSubSection(EXAMPLE_TXT)
-                .buildPublishDate(calendar.getTime())
-                .build();
         database = RobolectricApp.getDatabase().getNewsDAO();
-
-        ThreadFactory factory = new TestThreadFactory();
-        scheduler = Schedulers.from(Executors.newSingleThreadExecutor(factory));
     }
 
     // Обращение к БД из главного потока
@@ -90,77 +72,49 @@ public class EmptyDatabaseTest extends AppTests {
     @Test
     public void getAllDBFromIO() {
         List<NewsEntity> list = database.getAllAsSingle()
-                                    .subscribeOn(scheduler)
+                                    .subscribeOn(Schedulers.io())
                                     .toObservable()
                                     .blockingLast();
         Assert.assertTrue(list.isEmpty());
     }
 
+    // Сразу из нескольких потоков пытаемся получить информацию из БД
     @Test
-    public void testHello() {
+    public void callDBFromMultiThread() {
+        for (int i = 0; i < COUNT_THREADS; i++)
+            new Thread(() -> {
+                List<NewsEntity> list = database.getAllAsSingle()
+                        .toObservable()
+                        .blockingLast();
+                Assert.assertTrue(list.isEmpty());
+                synhro.threadFinished();
+            }).start();
 
+        // Ждём 10 секунд, пока 10 потоков обратятся к БД
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).until(synhro::allIsFinished);
     }
 
+    // Пробуем получить несуществующие данные из БД
+    // Ожидаем получить EmptyResultSetException
     @Test
-    public void multiTest() {
-        final  Synhro synhro = new Synhro();
-
-        database.getAllAsSingle()
+    public void getNullFromDB() {
+        TestObserver<NewsEntity> getItemObserver = database.getItemByIdAsSingle(10)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-                .subscribe(
-                        list -> {
-                            Assert.assertNotNull(list);
-                            App.logI("Size: " + list.size());
-                            synhro.pick();
-                        }, this::stdErrorHandler
-                );
+                .test();
+        getItemObserver.awaitTerminalEvent();
 
-        Awaitility.await().atMost(10, TimeUnit.SECONDS).until(synhro::getFlag);
+        Assert.assertEquals(1, getItemObserver.errorCount());
+        Assert.assertTrue(getItemObserver.errors().get(0) instanceof EmptyResultSetException);
     }
-
-    @Test
-    public void multiTest2() {
-        List<NewsEntity> list = database.getAllAsSingle()
-                .subscribeOn(Schedulers.io())
-                .toObservable()
-                .blockingLast();
-
-        Assert.assertEquals(0, list.size());
-        System.out.println("Тест завершился");
-    }
-
-    @Test
-    public void multiTest3() {
-        final TestObserver<List<NewsEntity>> testSubscriber = database.getAllAsSingle().subscribeOn(Schedulers.io()).test();
-        testSubscriber.awaitTerminalEvent();
-
-        testSubscriber
-                .assertNoErrors();
-        RobolectricApp.logI("Тест завершился");
-    }
-
 
     @After
     public void onStop() {
         disposables.dispose();
+        synhro.reset();
     }
 
     private void stdEmptyHandler(Object o) { }
     private void stdErrorHandler(@NonNull Throwable t) {
         RobolectricApp.logE(t.getMessage());
-    }
-
-    // Класс, переключатель
-    private class Synhro {
-        private boolean flag = false;
-
-        public void pick() {
-            flag = !flag;
-        }
-
-        public boolean getFlag() {
-            return flag;
-        }
     }
 }
