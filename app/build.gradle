@@ -106,11 +106,11 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.0'
 
     // Awaitility
-    androidTestImplementation 'org.awaitility:awaitility:3.1.5'
+    implementation 'org.awaitility:awaitility:3.1.5'
 
     // UI Automator
     androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:2.1.2"
 
-    // Test-Builder (for WiFi, GSM)
+    // Test-Butler (for WiFi, GSM)
     androidTestImplementation "com.linkedin.testbutler:test-butler-library:2.0.0"
 }
