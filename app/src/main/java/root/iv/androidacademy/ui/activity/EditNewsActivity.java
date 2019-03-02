@@ -68,6 +68,8 @@ public class EditNewsActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         updateNewsItemObserver.unsubscribe();
+        updateNewsEntityObserver.unsubscribe();
+        findNewsItemObserver.unsubscribe();
     }
 
     private void fillNewsItem(NewsEntity item) {

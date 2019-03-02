@@ -5,6 +5,9 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
+
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -12,6 +15,7 @@ import me.relex.circleindicator.CircleIndicator;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.intro.IntroAdapter;
+import root.iv.androidacademy.util.intro.IntroOnPageChangeListener;
 
 public class IntoActivity extends FragmentActivity {
     private static final String INTENT_INTRO_SHOW = "intent:intro-flag";
