@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import root.iv.androidacademy.BuildConfig;
 import root.iv.androidacademy.db.NewsDatabase;
 import root.iv.androidacademy.retrofit.TopStoriesAPI;
-import root.iv.androidacademy.util.InterceptorAPIKey;
+import root.iv.androidacademy.retrofit.InterceptorAPIKey;
 
 public class App extends Application {
     private static final String ROBO_UNIT_TEST = "robolectric";

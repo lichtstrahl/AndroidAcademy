@@ -8,7 +8,7 @@ import java.util.Calendar;
 
 import io.reactivex.disposables.CompositeDisposable;
 import root.iv.androidacademy.db.Synhro;
-import root.iv.androidacademy.news.NewsAdapter;
+import root.iv.androidacademy.news.adapter.NewsAdapter;
 import root.iv.androidacademy.news.NewsDAO;
 import root.iv.androidacademy.news.NewsItem;
 

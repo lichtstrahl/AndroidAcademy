@@ -5,18 +5,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
 import root.iv.androidacademy.AppTests;
-import root.iv.androidacademy.news.NewsAdapter;
-import root.iv.androidacademy.news.NewsItem;
-import root.iv.androidacademy.util.NotifyWrapper;
+import root.iv.androidacademy.news.adapter.NewsAdapter;
+import root.iv.androidacademy.news.adapter.NotifyWrapper;
 
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;

@@ -1,4 +1,4 @@
-package root.iv.androidacademy.news;
+package root.iv.androidacademy.news.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +14,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import root.iv.androidacademy.R;
+import root.iv.androidacademy.news.NewsItem;
+import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.util.GlideApp;
-import root.iv.androidacademy.util.NotifyWrapper;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsItem> listNews;    // То что в данный момент показывается и с чем идет работа

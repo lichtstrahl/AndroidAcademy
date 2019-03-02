@@ -11,19 +11,16 @@ import org.robolectric.annotation.Config;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observer;
 
-import io.reactivex.Completable;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.AppTests;
 import root.iv.androidacademy.app.RobolectricApp;
-import root.iv.androidacademy.news.NewsAdapter;
+import root.iv.androidacademy.news.adapter.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
-import root.iv.androidacademy.util.NotifyWrapper;
+import root.iv.androidacademy.news.adapter.NotifyWrapper;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;

@@ -1,18 +1,11 @@
 package root.iv.androidacademy.ui.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.fragment.app.Fragment;
-import androidx.core.widget.TextViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,35 +16,38 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
-import root.iv.androidacademy.news.NewsAdapter;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
 import root.iv.androidacademy.news.Section;
+import root.iv.androidacademy.news.adapter.NewsAdapter;
+import root.iv.androidacademy.news.adapter.NotifyWrapper;
 import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 import root.iv.androidacademy.ui.activity.EditNewsActivity;
 import root.iv.androidacademy.ui.ivEditText;
 import root.iv.androidacademy.ui.ivHorizontalScrollView;
-import root.iv.androidacademy.util.Action1;
 import root.iv.androidacademy.util.DBObserver;
-import root.iv.androidacademy.util.NotifyWrapper;
-import root.iv.androidacademy.util.listener.ButtonUpdateClickListener;
-import root.iv.androidacademy.util.listener.ClickListener;
 import root.iv.androidacademy.util.listener.ListenerEditText;
-import root.iv.androidacademy.util.listener.NewsItemClickListener;
-import root.iv.androidacademy.util.listener.NewsItemLongClickListener;
 import root.iv.androidacademy.util.listener.ScrollListener;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -68,9 +64,6 @@ public class NewsListFragment extends Fragment {
     private AlertDialog loadDialog;
     private RetrofitLoader loader;
     private ListenerEditText inputListener;
-    private ClickListener<Action1<View>> adapterListener;
-    private ClickListener<Action> buttonUpdateListener;
-    private NewsItemLongClickListener adapterLongListener;
     private ScrollListener scrollListener;
     @Nullable
     private Parcelable listState;
@@ -89,11 +82,13 @@ public class NewsListFragment extends Fragment {
     private LinearLayout layoutSections;
     private ivHorizontalScrollView viewSections;
     private Listener listenerActivity;
+    private SharedPreferences preferences;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         listenerActivity = (Listener)context;
+        preferences = context.getSharedPreferences(((Activity)context).getLocalClassName(), MODE_PRIVATE);
     }
 
     @Nullable
@@ -105,7 +100,7 @@ public class NewsListFragment extends Fragment {
         recyclerListNews = view.findViewById(R.id.listNews);
         buttonUpdate = view.findViewById(R.id.buttonUpdate);
         inputFilter = view.findViewById(R.id.inputFilter);
-        section = getActivity().getPreferences(MODE_PRIVATE).getInt(LAST_SECTION, 0);
+        section = preferences.getInt(LAST_SECTION, 0);
         loadSections();
 
         App.logI("Fragment: onCrateView");
@@ -144,7 +139,10 @@ public class NewsListFragment extends Fragment {
                 loader.load();
             }
 
-            recyclerListNews.getLayoutManager().onRestoreInstanceState(listState);
+            RecyclerView.LayoutManager layoutManager = recyclerListNews.getLayoutManager();
+            if (layoutManager != null) {
+                layoutManager.onRestoreInstanceState(listState);
+            }
         }
     }
 
@@ -159,36 +157,6 @@ public class NewsListFragment extends Fragment {
         super.onResume();
         inputFilter.clearFocus();
 
-        buttonUpdateListener.subscribe(() -> {
-            loadDialog.show();
-            releaseInputFilterFull();
-            loader.setSection(Section.SECTIONS[section].getName());
-            loader.load();
-        });
-
-        adapterListener.subscribe(view -> {
-            releaseInputFilterFull();
-            int pos = recyclerListNews.getChildAdapterPosition(view);
-            NewsItem item = adapter.getItem(pos);
-            // Аналогично loadFromDB. Single создаём там же, где и используем
-            itemClickObserver = new DBObserver<>(listenerActivity::clickItemNews, this::errorLoadFromDB);
-            App.getDatabase().getNewsDAO().getIdAsSingle(item.getTitle(), item.getPreviewText(), item.getPublishDateString())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(itemClickObserver);
-        });
-
-        adapterLongListener.subscribe(view -> {
-            int pos = recyclerListNews.getChildAdapterPosition(view);
-            NewsItem item = adapter.getItem(pos);
-            itemLongClickObserver = new DBObserver<>(this::startEditActivity, this::errorLoadFromDB);
-
-            App.getDatabase().getNewsDAO().getIdAsSingle(item.getTitle(), item.getPreviewText(), item.getPublishDateString())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(itemLongClickObserver);
-        });
-
         scrollListener.subscribe(state -> {
             if (state != 0) {
                 buttonUpdate.hide();
@@ -199,10 +167,36 @@ public class NewsListFragment extends Fragment {
         });
 
         recyclerListNews.addOnScrollListener(scrollListener);
+
         inputListener.subscribe(adapter::setFilter);
-        adapter.addOnClickListener(adapterListener);
-        adapter.addOnLongClickListener(adapterLongListener);
-        buttonUpdate.setOnClickListener(buttonUpdateListener);
+        adapter.addOnClickListener(view -> {
+            releaseInputFilterFull();
+            int pos = recyclerListNews.getChildAdapterPosition(view);
+            NewsItem item = adapter.getItem(pos);
+            // Аналогично loadFromDB. Single создаём там же, где и используем
+            itemClickObserver = new DBObserver<>(listenerActivity::clickItemNews, this::errorLoadFromDB);
+            App.getDatabase().getNewsDAO().getIdAsSingle(item.getTitle(), item.getPreviewText(), item.getPublishDateString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(itemClickObserver);
+        });
+        adapter.addOnLongClickListener(view -> {
+            int pos = recyclerListNews.getChildAdapterPosition(view);
+            NewsItem item = adapter.getItem(pos);
+            itemLongClickObserver = new DBObserver<>(this::startEditActivity, this::errorLoadFromDB);
+
+            App.getDatabase().getNewsDAO().getIdAsSingle(item.getTitle(), item.getPreviewText(), item.getPublishDateString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(itemLongClickObserver);
+            return true;
+        });
+        buttonUpdate.setOnClickListener(v -> {
+            loadDialog.show();
+            releaseInputFilterFull();
+            loader.setSection(Section.SECTIONS[section].getName());
+            loader.load();
+        });
         inputFilter.subscribe(this::releaseInputFilterLite);
         viewSections.subscribe(this::scrollSections);
         App.setListFragmentVisible(true);
@@ -213,13 +207,11 @@ public class NewsListFragment extends Fragment {
         super.onPause();
         scrollListener.unsubscribe();
         inputListener.unsubscribe();
-        buttonUpdateListener.unsubscribe();
-        adapterListener.unsubscribe();
         adapter.delOnClickListener();
         adapter.delOnLongClickListener();
         inputFilter.unsubscribe();
         viewSections.unsubscribe();
-
+        recyclerListNews.removeOnScrollListener(scrollListener);
         App.setListFragmentVisible(false);
     }
 
@@ -227,26 +219,28 @@ public class NewsListFragment extends Fragment {
     public void onStop() {
         super.onStop();
         loader.stop();
-        adapter.clear();    // Зачем это здесь!?!?!??!
+        adapter.clear();
 
-        SharedPreferences preferences = getActivity().getPreferences(MODE_PRIVATE);
-        preferences
-                .edit()
-                .putInt(LAST_SECTION, section)
-                .apply();
+        RecyclerView.LayoutManager layoutManager = recyclerListNews.getLayoutManager();
+        if (layoutManager != null) {
+            preferences
+                    .edit()
+                    .putInt(LAST_SECTION, section)
+                    .apply();
 
-        App.logI("Fragment: onStop");
-        listState = recyclerListNews.getLayoutManager().onSaveInstanceState();
+            App.logI("Fragment: onStop");
+            listState = layoutManager.onSaveInstanceState();
 
-        if (loadDBObserver != null) loadDBObserver.unsubscribe();
-        if (itemClickObserver != null) itemClickObserver.unsubscribe();
-        if (itemLongClickObserver != null) itemLongClickObserver.unsubscribe();
-        if (deleteAllObserver != null) deleteAllObserver.unsubscribe();
-        if (completeLoad != null) completeLoad.dispose();   // Возможно обновление не вызывалось
+            if (loadDBObserver != null) loadDBObserver.unsubscribe();
+            if (itemClickObserver != null) itemClickObserver.unsubscribe();
+            if (itemLongClickObserver != null) itemLongClickObserver.unsubscribe();
+            if (deleteAllObserver != null) deleteAllObserver.unsubscribe();
+            if (completeLoad != null) completeLoad.dispose();   // Возможно обновление не вызывалось
+        }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         App.logI("Fragment: onSaveInstanceState");
         outState.putInt(SAVE_SECTION, section);
@@ -276,8 +270,9 @@ public class NewsListFragment extends Fragment {
     }
 
     private void releaseInputFilterFull() {
-        if (inputFilter.isFocused()) {
-            InputMethodManager manager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        Activity activity = getActivity();
+        if (inputFilter.isFocused() && activity != null) {
+            InputMethodManager manager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             manager.hideSoftInputFromWindow(inputFilter.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             inputFilter.clearFocus();
             App.logI("Release Input Filter");
@@ -289,8 +284,11 @@ public class NewsListFragment extends Fragment {
     }
 
     private void loadSections() {
+        Activity activity = this.getActivity();
+        if (activity == null) return;
+
         for (int i = 0; i < Section.SECTIONS.length; i++) {
-            Chip chip = new Chip(this.getActivity());
+            Chip chip = new Chip(activity);
             TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -337,9 +335,6 @@ public class NewsListFragment extends Fragment {
 
     private void initialListener() {
         inputListener = new ListenerEditText(inputFilter);
-        adapterListener = new NewsItemClickListener();
-        adapterLongListener = new NewsItemLongClickListener();
-        buttonUpdateListener = new ButtonUpdateClickListener();
         scrollListener = new ScrollListener();
     }
 
@@ -360,7 +355,7 @@ public class NewsListFragment extends Fragment {
     /**
      * Если истории получены и все впорядке, тогда сначала наблюдаем за их удалением. Ждем, параллельно наблюдая просто за stories.
      * Как только удаление завершилось, реагируем на это, получив наши stories благодаря "storiesDTO"
-     * @param stories
+     * @param stories - список загруженных новостей
      */
     private void completeLoad(@Nullable TopStoriesDTO stories) {
         if (stories != null) {
@@ -384,7 +379,7 @@ public class NewsListFragment extends Fragment {
      * После того как они все завершатся, а мы объединили их завершение в zip
      * Мы обновляем содержимое UI и убираем диалог загрузки.
      * При ошибке мы также скрываем диалог и выводим в лог сообщение.
-     * @param stories
+     * @param stories - список нвостей, пришедший с сети
      */
     private void insertAllToDB(TopStoriesDTO stories) {
         List<Single<Long>> singles = new LinkedList<>();
@@ -426,7 +421,11 @@ public class NewsListFragment extends Fragment {
         adapter.notifyOriginNews();
         adapter.sort();
         adapter.setFilter(inputFilter.getText().toString());
-        if (listState != null) recyclerListNews.getLayoutManager().onRestoreInstanceState(listState);
+
+        RecyclerView.LayoutManager layoutManager = recyclerListNews.getLayoutManager();
+        if (listState != null && layoutManager != null) {
+            layoutManager.onRestoreInstanceState(listState);
+        }
     }
 
     private void startEditActivity(Integer id) {
@@ -445,16 +444,5 @@ public class NewsListFragment extends Fragment {
 
     public static NewsListFragment newInstance() {
         return new NewsListFragment();
-    }
-
-    public void performClickItem(int id) {
-        RecyclerView.ViewHolder viewHolder = recyclerListNews.findViewHolderForAdapterPosition(id);
-        if (viewHolder != null) {
-            viewHolder.itemView.performClick();
-        }
-    }
-
-    public boolean isShowingDialog() {
-        return loadDialog.isShowing();
     }
 }

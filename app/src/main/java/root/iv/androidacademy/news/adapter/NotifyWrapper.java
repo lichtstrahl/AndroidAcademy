@@ -1,6 +1,6 @@
-package root.iv.androidacademy.util;
+package root.iv.androidacademy.news.adapter;
 
-import root.iv.androidacademy.news.NewsAdapter;
+import root.iv.androidacademy.news.adapter.NewsAdapter;
 
 public class NotifyWrapper {
     public void wrapNotifyItemInserted(NewsAdapter adapter, int pos) {

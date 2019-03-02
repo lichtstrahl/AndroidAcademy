@@ -1,4 +1,4 @@
-package root.iv.androidacademy.util;
+package root.iv.androidacademy.retrofit;
 
 import java.io.IOException;
 
