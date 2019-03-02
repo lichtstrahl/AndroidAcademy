@@ -12,6 +12,10 @@ public class NotificationFactory {
     private static final String CHANEL_ID = "chanel-1";
     private static final String CHANEL_NAME = "chanel-name";
 
+    private NotificationFactory() {
+        throw new UnsupportedOperationException("Это вспомогательный класс. Для использования не следует создавать объект.");
+    }
+
     public static Notification loading(Context context) {
         Notification.Builder builder = new Notification.Builder(context)
                 .setSmallIcon(R.drawable.ic_new_york_times)

@@ -1,25 +1,35 @@
 package root.iv.androidacademy.app;
 
 import android.app.Application;
-import androidx.sqlite.db.SupportSQLiteDatabase;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
-import androidx.room.migration.Migration;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkRequest;
 import android.os.Build;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 
+import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import root.iv.androidacademy.BuildConfig;
+import root.iv.androidacademy.background.NewsWorker;
 import root.iv.androidacademy.db.NewsDatabase;
-import root.iv.androidacademy.retrofit.TopStoriesAPI;
 import root.iv.androidacademy.retrofit.InterceptorAPIKey;
+import root.iv.androidacademy.retrofit.TopStoriesAPI;
+import root.iv.androidacademy.util.NetworkMonitor;
+import root.iv.androidacademy.util.NetworkUtils;
 
 public class App extends Application {
     private static final String ROBO_UNIT_TEST = "robolectric";
@@ -29,15 +39,20 @@ public class App extends Application {
     private static boolean espressTest = false;
     private static boolean listFragmentVisible = false;
     private static boolean detailsFragmentVisible = false;
+    private static App app;
 
     public static TopStoriesAPI getApiTopStories() {
         return apiTopStories;
     }
+    public static Context getContext() {
+        return app;
+    }
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        app = this;
         // Проверяем, является ли данный запуск тестовым
         try {
             Class.forName("android.support.test.espresso.Espresso");
@@ -73,7 +88,11 @@ public class App extends Application {
         apiTopStories = retrofit.create(TopStoriesAPI.class);
 
         database = getDatabaseBuilder(false).build();
+
+        NetworkUtils.instance.getMonitor().enable(this);
     }
+
+
 
     private static OkHttpClient createClient() {
         return new OkHttpClient.Builder()

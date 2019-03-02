@@ -1,21 +1,17 @@
 package root.iv.androidacademy.ui.activity;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
-
-import java.util.concurrent.TimeUnit;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Completable;
-import io.reactivex.disposables.Disposable;
+import butterknife.OnClick;
 import me.relex.circleindicator.CircleIndicator;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.intro.IntroAdapter;
-import root.iv.androidacademy.util.intro.IntroOnPageChangeListener;
 
 public class IntoActivity extends FragmentActivity {
     private static final String INTENT_INTRO_SHOW = "intent:intro-flag";
@@ -24,10 +20,10 @@ public class IntoActivity extends FragmentActivity {
     ViewPager pager;
     @BindView(R.id.indicator)
     CircleIndicator indicator;
-    private IntroAdapter pagerAdapter;
-    private IntroOnPageChangeListener introListener;
-    @Nullable
-    private Disposable disposable;
+    @OnClick(R.id.viewWelcome)
+    public void startUpdate() {
+        startMainActivity();
+    }
 
 
     @Override
@@ -40,40 +36,19 @@ public class IntoActivity extends FragmentActivity {
         } else {
             showIntro = true;
         }
-        introListener = new IntroOnPageChangeListener();
 
         if (showIntro) {
             setContentView(R.layout.activity_into);
             ButterKnife.bind(this);
 
-            pagerAdapter = new IntroAdapter(getSupportFragmentManager(), COUNT_PAGE);
+            IntroAdapter pagerAdapter = new IntroAdapter(getSupportFragmentManager(), COUNT_PAGE);
             pager.setAdapter(pagerAdapter);
-            pager.addOnPageChangeListener(introListener);
             indicator.setViewPager(pager);
             return;
         }
 
         startMainActivity();
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        introListener.subscribe(page -> {
-            if (page == (COUNT_PAGE-1)) {
-                disposable = Completable.complete()
-                    .delay(1500, TimeUnit.MILLISECONDS)
-                    .subscribe(this::startMainActivity);
-            }
-        });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        introListener.unsubscribe();
-        if (disposable != null) disposable.dispose();
     }
 
     private void startMainActivity() {

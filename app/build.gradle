@@ -114,4 +114,7 @@ dependencies {
 
     // UI Automator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+
+    // Workmanager
+    implementation "android.arch.work:work-runtime:1.0.0-rc02"
 }

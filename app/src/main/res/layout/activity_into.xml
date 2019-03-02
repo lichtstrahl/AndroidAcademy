@@ -30,6 +30,6 @@
         android:layout_below="@id/indicator"
         android:textColor="@android:color/white"
         android:textSize="@dimen/xxxText"
-        android:text="@string/welcome"/>
+        android:text="@string/skip"/>
 
 </RelativeLayout>

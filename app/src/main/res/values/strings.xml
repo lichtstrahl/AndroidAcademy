@@ -49,4 +49,5 @@
     <string name="editTitle">Edit title</string>
     <string name="editPreview">Edit preview</string>
     <string name="successfulLoading">Successful loading</string>
+    <string name="skip">Skip</string>
 </resources>

@@ -103,7 +103,6 @@ public class NewsListFragment extends Fragment {
         section = preferences.getInt(LAST_SECTION, 0);
         loadSections();
 
-        App.logI("Fragment: onCrateView");
         adapter = new NewsAdapter(new LinkedList<>(), getLayoutInflater(), new NotifyWrapper());
         recyclerListNews.setAdapter(adapter);
         recyclerListNews.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -122,7 +121,7 @@ public class NewsListFragment extends Fragment {
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
         }
 
-        loader = new RetrofitLoader(Section.SECTIONS[section].getName(), this::completeLoad, this::errorLoad);
+        loader = new RetrofitLoader(Section.getName(section), this::completeLoad, this::errorLoad);
         setHasOptionsMenu(true);
         return view;
     }
@@ -149,7 +148,7 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        loadFromDB(Section.SECTIONS[section].getName());
+        loadFromDB(Section.getName(section));
     }
 
     @Override
@@ -194,7 +193,7 @@ public class NewsListFragment extends Fragment {
         buttonUpdate.setOnClickListener(v -> {
             loadDialog.show();
             releaseInputFilterFull();
-            loader.setSection(Section.SECTIONS[section].getName());
+            loader.setSection(Section.getName(section));
             loader.load();
         });
         inputFilter.subscribe(this::releaseInputFilterLite);
@@ -287,7 +286,7 @@ public class NewsListFragment extends Fragment {
         Activity activity = this.getActivity();
         if (activity == null) return;
 
-        for (int i = 0; i < Section.SECTIONS.length; i++) {
+        for (int i = 0; i < Section.getCount(); i++) {
             Chip chip = new Chip(activity);
             TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
 
@@ -298,7 +297,7 @@ public class NewsListFragment extends Fragment {
 
             chip.setLayoutParams(params);
             chip.setChipBackgroundColorResource(R.color.colorPrimary);
-            chip.setText(Section.SECTIONS[i].getName());
+            chip.setText(Section.getName(i));
             int finalI = i;
             chip.setOnClickListener(view -> clickSection(finalI));
             layoutSections.addView(chip);
@@ -309,8 +308,8 @@ public class NewsListFragment extends Fragment {
         releaseInputFilterFull();
         section = index;
         loadDialog.show();
-        adapter.setNewSection(Section.SECTIONS[index].getName());
-        loader.setSection(Section.SECTIONS[index].getName());
+        adapter.setNewSection(Section.getName(index));
+        loader.setSection(Section.getName(index));
         loader.load();
     }
 

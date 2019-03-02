@@ -29,4 +29,5 @@
     <string name="editTitle">Редактирование названия</string>
     <string name="editPreview">Редактирование preview</string>
     <string name="successfulLoading">Загрузка завершена</string>
+    <string name="skip">Пропустить</string>
 </resources>
