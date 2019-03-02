@@ -54,17 +54,6 @@ public class Section implements Serializable {
         return SECTIONS[0].colorRes;
     }
 
-    public static String getName(int index) {
-        return SECTIONS[index].getName();
-    }
-
-    public static int getColorRes(int index) {
-        return SECTIONS[index].getColor();
-    }
-
-    public static int getCount() {
-        return SECTIONS.length;
-    }
 
     private Section(String name, int color) {
         this.name = name;
