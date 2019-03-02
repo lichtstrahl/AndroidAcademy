@@ -10,7 +10,7 @@ public class Section implements Serializable {
     private final String name;
     private final int colorRes;
 
-    public static final Section[] SECTIONS = new Section[] {
+    private static final Section[] SECTIONS = new Section[] {
             new Section("home",R.color.colorHome),
             new Section("opinion", R.color.colorOpinion),
             new Section("world",R.color.colorWorld),
@@ -46,6 +46,18 @@ public class Section implements Serializable {
         return SECTIONS[0].colorRes;
     }
 
+    public static String getName(int index) {
+        return SECTIONS[index].getName();
+    }
+
+    public static int getColorRes(int index) {
+        return SECTIONS[index].getColor();
+    }
+
+    public static int getCount() {
+        return SECTIONS.length;
+    }
+
     private Section(String name, int color) {
         this.name = name;
         this.colorRes = color;
@@ -60,9 +72,12 @@ public class Section implements Serializable {
         return name;
     }
 
+
+
     public int getColor() {
         return colorRes;
     }
+
 
     @Deprecated
     @Nullable

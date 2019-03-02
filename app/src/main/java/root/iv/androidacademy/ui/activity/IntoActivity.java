@@ -24,7 +24,6 @@ public class IntoActivity extends FragmentActivity {
     ViewPager pager;
     @BindView(R.id.indicator)
     CircleIndicator indicator;
-    private IntroAdapter pagerAdapter;
     private IntroOnPageChangeListener introListener;
     @Nullable
     private Disposable disposable;
@@ -46,7 +45,7 @@ public class IntoActivity extends FragmentActivity {
             setContentView(R.layout.activity_into);
             ButterKnife.bind(this);
 
-            pagerAdapter = new IntroAdapter(getSupportFragmentManager(), COUNT_PAGE);
+            IntroAdapter pagerAdapter = new IntroAdapter(getSupportFragmentManager(), COUNT_PAGE);
             pager.setAdapter(pagerAdapter);
             pager.addOnPageChangeListener(introListener);
             indicator.setViewPager(pager);

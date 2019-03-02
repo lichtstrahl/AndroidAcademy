@@ -28,4 +28,5 @@
     <string name="search_hint">Поиск</string>
     <string name="editTitle">Редактирование названия</string>
     <string name="editPreview">Редактирование preview</string>
+    <string name="successfulLoading">Загрузка успешно завершена</string>
 </resources>

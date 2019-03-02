@@ -3,7 +3,9 @@ package root.iv.androidacademy.ui.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -35,12 +37,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
+import root.iv.androidacademy.background.NewsService;
 import root.iv.androidacademy.news.NewsEntity;
 import root.iv.androidacademy.news.NewsItem;
 import root.iv.androidacademy.news.Section;
 import root.iv.androidacademy.news.adapter.NewsAdapter;
 import root.iv.androidacademy.news.adapter.NotifyWrapper;
-import root.iv.androidacademy.retrofit.RetrofitLoader;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 import root.iv.androidacademy.retrofit.dto.TopStoriesDTO;
 import root.iv.androidacademy.ui.activity.EditNewsActivity;
@@ -61,8 +63,6 @@ public class NewsListFragment extends Fragment {
     private RecyclerView recyclerListNews;
     private FloatingActionButton buttonUpdate;
     private NewsAdapter adapter;
-    private AlertDialog loadDialog;
-    private RetrofitLoader loader;
     private ListenerEditText inputListener;
     private ScrollListener scrollListener;
     @Nullable
@@ -108,7 +108,6 @@ public class NewsListFragment extends Fragment {
         recyclerListNews.setAdapter(adapter);
         recyclerListNews.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        loadDialog = buildLoadDialog();
         initialListener();
 
         inputFilter.setOnEditorActionListener((v, action, event) -> {
@@ -122,7 +121,6 @@ public class NewsListFragment extends Fragment {
             inputFilter.setText(savedInstanceState.getString(SAVE_FILTER, ""));
         }
 
-        loader = new RetrofitLoader(Section.SECTIONS[section].getName(), this::completeLoad, this::errorLoad);
         setHasOptionsMenu(true);
         return view;
     }
@@ -135,8 +133,7 @@ public class NewsListFragment extends Fragment {
             // Если при повороте была загрузка, значит она была уже остановлена. Поэтому нужно начать всё заново.
             boolean isLoading = savedInstanceState.getBoolean(SAVE_LOAD, false);
             if (isLoading) {
-                loadDialog.show();
-                loader.load();
+                load(Section.getName(section));
             }
 
             RecyclerView.LayoutManager layoutManager = recyclerListNews.getLayoutManager();
@@ -149,7 +146,7 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        loadFromDB(Section.SECTIONS[section].getName());
+        loadFromDB(Section.getName(section));
     }
 
     @Override
@@ -192,10 +189,8 @@ public class NewsListFragment extends Fragment {
             return true;
         });
         buttonUpdate.setOnClickListener(v -> {
-            loadDialog.show();
             releaseInputFilterFull();
-            loader.setSection(Section.SECTIONS[section].getName());
-            loader.load();
+            load(Section.getName(section));
         });
         inputFilter.subscribe(this::releaseInputFilterLite);
         viewSections.subscribe(this::scrollSections);
@@ -218,7 +213,7 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        loader.stop();
+//        loader.stop();
         adapter.clear();
 
         RecyclerView.LayoutManager layoutManager = recyclerListNews.getLayoutManager();
@@ -245,7 +240,6 @@ public class NewsListFragment extends Fragment {
         App.logI("Fragment: onSaveInstanceState");
         outState.putInt(SAVE_SECTION, section);
         outState.putString(SAVE_FILTER, inputFilter.getText().toString());
-        outState.putBoolean(SAVE_LOAD, loadDialog.isShowing());
     }
 
     @Override
@@ -287,7 +281,7 @@ public class NewsListFragment extends Fragment {
         Activity activity = this.getActivity();
         if (activity == null) return;
 
-        for (int i = 0; i < Section.SECTIONS.length; i++) {
+        for (int i = 0; i < Section.getCount(); i++) {
             Chip chip = new Chip(activity);
             TextViewCompat.setTextAppearance(chip, R.style.TextAppearance_AppCompat_Title_Inverse);
 
@@ -298,7 +292,7 @@ public class NewsListFragment extends Fragment {
 
             chip.setLayoutParams(params);
             chip.setChipBackgroundColorResource(R.color.colorPrimary);
-            chip.setText(Section.SECTIONS[i].getName());
+            chip.setText(Section.getName(i));
             int finalI = i;
             chip.setOnClickListener(view -> clickSection(finalI));
             layoutSections.addView(chip);
@@ -308,10 +302,8 @@ public class NewsListFragment extends Fragment {
     private void clickSection(int index) {
         releaseInputFilterFull();
         section = index;
-        loadDialog.show();
-        adapter.setNewSection(Section.SECTIONS[index].getName());
-        loader.setSection(Section.SECTIONS[index].getName());
-        loader.load();
+        adapter.setNewSection(Section.getName(index));
+        load(Section.getName(index));
     }
 
     private void loadFromDB(String section) {
@@ -352,68 +344,6 @@ public class NewsListFragment extends Fragment {
         }
     }
 
-    /**
-     * Если истории получены и все впорядке, тогда сначала наблюдаем за их удалением. Ждем, параллельно наблюдая просто за stories.
-     * Как только удаление завершилось, реагируем на это, получив наши stories благодаря "storiesDTO"
-     * @param stories - список загруженных новостей
-     */
-    private void completeLoad(@Nullable TopStoriesDTO stories) {
-        if (stories != null) {
-            Single<Integer> deleteAll = Single.fromCallable(() -> App.getDatabase().getNewsDAO().deleteAll());
-            Single<TopStoriesDTO> storiesDTO = Single.fromCallable(() -> stories);
-
-            deleteAllObserver = new DBObserver<>(this::insertAllToDB, this::errorLoadFromDB);
-            deleteAll.zipWith(storiesDTO, (integer, st) -> st)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(deleteAllObserver);
-        } else {
-            loadDialog.dismiss();
-        }
-    }
-
-    /**
-     * Реакция на удаление старых данных из БД. Её очистки.
-     * Теперь каждую новость нужно вставить в БД.
-     * Для этого мы будем наблюдать за КАЖДОЙ вставкой, создавая массив Single
-     * После того как они все завершатся, а мы объединили их завершение в zip
-     * Мы обновляем содержимое UI и убираем диалог загрузки.
-     * При ошибке мы также скрываем диалог и выводим в лог сообщение.
-     * @param stories - список нвостей, пришедший с сети
-     */
-    private void insertAllToDB(TopStoriesDTO stories) {
-        List<Single<Long>> singles = new LinkedList<>();
-
-        for (NewsDTO news : stories.getListNews()) {
-            try {
-                NewsItem item = NewsItem.fromNewsDTO(news);
-                singles.add(Single.fromCallable(() -> App.getDatabase().getNewsDAO().insert(NewsEntity.fromNewsItem(item))));
-            } catch (ParseException e) {
-                App.logE(e.getMessage());
-            }
-        }
-
-         completeLoad = Single.zip(singles, args -> 0)
-                 .subscribeOn(Schedulers.io())
-                 .observeOn(AndroidSchedulers.mainThread())
-                 .subscribe(i -> {
-                     loadFromDB(stories.getSection());
-                     loadDialog.dismiss();
-                 }, t -> {
-                     loadDialog.dismiss();
-                     errorLoadFromDB(t);
-                 });
-    }
-
-    private void errorLoad() {
-        Toast.makeText(this.getActivity(), R.string.errorLoading, Toast.LENGTH_SHORT).show();
-        loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
-        TextView textView = loadDialog.findViewById(R.id.text);
-        textView.setText(R.string.errorLoading);
-        loadDialog.findViewById(R.id.buttonReconnect).setVisibility(View.VISIBLE);
-        loadDialog.findViewById(R.id.buttonReconnect).setOnClickListener(view -> loader.load());
-    }
-
     private void successfulLoadFromDB(List<NewsEntity> list) {
         for (NewsEntity entity : list) {
             adapter.append(entity.toNewsItem());
@@ -444,5 +374,15 @@ public class NewsListFragment extends Fragment {
 
     public static NewsListFragment newInstance() {
         return new NewsListFragment();
+    }
+
+    /**
+     * Загрузка новостей
+     */
+    private void load(String section) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            NewsService.call(activity, section);
+        }
     }
 }

@@ -24,7 +24,6 @@ import static org.mockito.Mockito.spy;
 // append
 // filter : clear, append, sort - Составная функция
 public class AdapterSetFilterTests extends AppTests {
-    private NotifyWrapper wrapper;
     // Arrange
     @Before
     public void onStart() {
@@ -46,7 +45,7 @@ public class AdapterSetFilterTests extends AppTests {
                 );
         }
 
-        wrapper = spy(NotifyWrapper.class);
+        NotifyWrapper wrapper = spy(NotifyWrapper.class);
         doNothing().when(wrapper).wrapNotifyDataSetChanged(anyObject());
         doNothing().when(wrapper).wrapNotifyItemRemoved(anyObject(), anyInt(), anyInt());
         doNothing().when(wrapper).wrapNotifyItemInserted(anyObject(), anyInt());

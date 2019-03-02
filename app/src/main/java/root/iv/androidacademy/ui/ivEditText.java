@@ -6,11 +6,12 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
+import androidx.appcompat.widget.AppCompatEditText;
 import io.reactivex.functions.Action;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.listener.Subscribed;
 
-public class ivEditText extends EditText implements Subscribed<Action> {
+public class ivEditText extends AppCompatEditText implements Subscribed<Action> {
     @Nullable
     private Action action;
 

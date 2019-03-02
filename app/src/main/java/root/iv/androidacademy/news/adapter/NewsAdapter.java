@@ -24,7 +24,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private LayoutInflater inflater;
     private View.OnClickListener listener;
     private View.OnLongClickListener longListener;
-    private String curSection = Section.SECTIONS[0].getName();
+    private String curSection = Section.getName(0);
     private NotifyWrapper notifyWrapper;
 
     public NewsAdapter(List<NewsItem> list, LayoutInflater inf, NotifyWrapper wrapper){
