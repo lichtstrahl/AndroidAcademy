@@ -1,7 +1,7 @@
 package root.iv.androidacademy.db;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.RoomDatabase;
+import androidx.room.Database;
+import androidx.room.RoomDatabase;
 
 import root.iv.androidacademy.news.NewsDAO;
 import root.iv.androidacademy.news.NewsEntity;

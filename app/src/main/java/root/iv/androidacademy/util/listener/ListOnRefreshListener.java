@@ -1,6 +1,6 @@
 package root.iv.androidacademy.util.listener;
 
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import root.iv.androidacademy.app.App;
 

@@ -29,7 +29,7 @@
             android:layout_margin="@dimen/smallMargin"
             android:layout_gravity="center_vertical"
             android:visibility="gone"/>
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/headHeight"
@@ -46,11 +46,11 @@
                 android:layout_margin="@dimen/smallMargin"
                 android:inputType="textPersonName"
                 android:hint="@string/search_hint"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:toolsList="http://schemas.android.com/tools"
         android:id="@+id/listNews"
@@ -63,7 +63,7 @@
         toolsList:listitem="@layout/item_news" />
 
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/buttonUpdate"
         android:layout_width="@dimen/floatingButtonSize"

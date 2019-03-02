@@ -1,6 +1,6 @@
 package root.iv.androidacademy.ui.activity.listener;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;

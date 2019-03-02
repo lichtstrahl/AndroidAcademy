@@ -2,11 +2,11 @@ package root.iv.androidacademy.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +41,7 @@ public class NewsDetailsFragment extends Fragment {
         webView = view.findViewById(R.id.webView);
         // Вроде это немножко помогло в ускорении прогрузки
         webView.getSettings().setJavaScriptEnabled(true);
+
         webView.loadUrl( "javascript:window.location.reload( true )" );
         webView.setWebViewClient(new WebViewClient() {
             @Override

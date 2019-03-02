@@ -1,12 +1,12 @@
 package root.iv.androidacademy.app;
 
 import android.app.Application;
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
@@ -18,7 +18,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import root.iv.androidacademy.BuildConfig;
 import root.iv.androidacademy.db.NewsDatabase;
-import root.iv.androidacademy.news.NewsDAO;
 import root.iv.androidacademy.retrofit.TopStoriesAPI;
 import root.iv.androidacademy.util.InterceptorAPIKey;
 

@@ -1,7 +1,7 @@
 package root.iv.androidacademy.db;
 
 
-import android.arch.persistence.room.EmptyResultSetException;
+import androidx.room.EmptyResultSetException;
 
 import org.awaitility.Awaitility;
 import org.junit.After;
@@ -10,36 +10,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.internal.operators.observable.BlockingObservableLatest;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
 import root.iv.androidacademy.AppTests;
-import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.app.RobolectricApp;
-import root.iv.androidacademy.news.NewsDAO;
 import root.iv.androidacademy.news.NewsEntity;
-import root.iv.androidacademy.news.NewsItem;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21, manifest = Config.NONE, application = RobolectricApp.class)

@@ -1,7 +1,7 @@
 package root.iv.androidacademy.retrofit;
 
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;

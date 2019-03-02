@@ -1,6 +1,6 @@
 package root.iv.androidacademy.util.listener;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import root.iv.androidacademy.util.Action1;

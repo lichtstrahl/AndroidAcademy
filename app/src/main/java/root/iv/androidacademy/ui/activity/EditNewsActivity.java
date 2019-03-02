@@ -2,9 +2,8 @@ package root.iv.androidacademy.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.EditText;
 
 import butterknife.BindView;
@@ -16,7 +15,6 @@ import io.reactivex.schedulers.Schedulers;
 import root.iv.androidacademy.R;
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.news.NewsEntity;
-import root.iv.androidacademy.news.NewsItem;
 import root.iv.androidacademy.util.DBObserver;
 
 public class EditNewsActivity extends AppCompatActivity {

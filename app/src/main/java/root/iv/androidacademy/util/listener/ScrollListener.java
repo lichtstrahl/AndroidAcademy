@@ -1,9 +1,8 @@
 package root.iv.androidacademy.util.listener;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.util.Action1;

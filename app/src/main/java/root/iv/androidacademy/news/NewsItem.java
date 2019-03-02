@@ -2,7 +2,7 @@ package root.iv.androidacademy.news;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.gson.internal.bind.util.ISO8601Utils;
 
@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import root.iv.androidacademy.app.App;
 import root.iv.androidacademy.retrofit.dto.MultimediaDTO;
 import root.iv.androidacademy.retrofit.dto.NewsDTO;
 
